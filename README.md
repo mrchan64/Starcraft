@@ -5,4 +5,4 @@ In order to use the player, clone this repository into the scaffold folder.  To 
 
 ### Eclipse Integration
 
-If you're using Sublime then you do you, but to use Eclipse, initialize your workspace in the `\bc18-scaffold` folder and create the new java project with the same name as the player folder name, which by default should be `\Starcraft`.  Then everything should fall into place properly.
+If you're using Sublime then you do you, but to use Eclipse, initialize your workspace in the `\bc18-scaffold` folder and create the new java project with the same name as the player folder name, which by default should be `\Starcraft`.  Then everything should fall into place properly.  Also you make sure you get the bc.jar file from Matt and add it to the build path in Eclipse using "Add External Archives" in order for Eclipse to work to its fullest extent.
