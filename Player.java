@@ -28,12 +28,9 @@ public class Player {
                 Unit unit = units.get(i);
 
                 // Most methods on gc take unit IDs, instead of the unit objects themselves.
-               if (gc.isMoveReady(unit.id()) && gc.canMove(unit.id(), direction[rand])) {
-                    gc.moveRobot(unit.id(), direction[rand]);
-                }
-                else {
-
-                }
+	            if (gc.isMoveReady(unit.id()) && gc.canMove(unit.id(), direction[rand])) {
+	                gc.moveRobot(unit.id(), direction[rand]);
+	            }
             }
             // Submit the actions we've done, and wait for our next turn.
             gc.nextTurn();
