@@ -18,6 +18,7 @@ public class Player {
 
         // Direction is a normal java enum.
         Direction[] directions = Direction.values();
+        int rand = Math.random() * 8;
 
         while (true) {
             System.out.println("Current round: "+gc.round());
@@ -27,9 +28,17 @@ public class Player {
                 Unit unit = units.get(i);
 
                 // Most methods on gc take unit IDs, instead of the unit objects themselves.
-                if (gc.isMoveReady(unit.id()) && gc.canMove(unit.id(), Direction.Southeast)) {
-                    gc.moveRobot(unit.id(), Direction.Southeast);
-                }
+               if (unit.id() == worker_id) {
+                    if (false) {
+
+                    }
+                    else if (gc.isMoveReady(unit.id()) && gc.canMove(unit.id(), direction[rand])) {
+                        gc.moveRobot(unit.id(), direction[rand]);
+                    }
+                    else {
+
+                    }
+            	}
             }
             // Submit the actions we've done, and wait for our next turn.
             gc.nextTurn();
