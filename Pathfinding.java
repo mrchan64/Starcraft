@@ -81,7 +81,7 @@ public class Pathfinding {
     public static Direction getPath(MapLocation loc) {
         int x = loc.getX();
         int y = loc.getY();
-        Square start = new Square (x, y, 7); //temp type
+        Square start = earthMap[y][x]; //temp type
         ArrayList<Direction> newList = pathConverter(calcPath(start));
         return newList.remove(0);
     }
