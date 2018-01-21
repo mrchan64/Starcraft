@@ -1,11 +1,12 @@
 // import the API.
 // See xxx for the javadocs.
 import bc.*;
+import java.util.*;
 
 public class Player {
     public static void main(String[] args) {
         // MapLocation is a data structure you'll use a lot.
-        MapLocation loc = new MapLocation(Planet.Earth, 10, 20);
+        MapLocation loc = new MapLocation(Planet.Earth, 0, 14);
         System.out.println("loc: "+loc+", one step to the Northwest: "+loc.add(Direction.Northwest));
         System.out.println("loc x: "+loc.getX());
 
@@ -18,7 +19,19 @@ public class Player {
 
         // Direction is a normal java enum.
         Direction[] directions = Direction.values();
-        int rand = Math.random() * 8;
+        int rand = (int) (Math.random() * 8);
+        PlanetMap pMap = gc.startingMap(Planet.Earth);
+        Pathfinding.initMap(pMap);
+        for (int i = 0; i < Pathfinding.earthMap.length; i++) {
+            for (int j = 0; j < Pathfinding.earthMap.length; j++) {
+                System.out.print(Pathfinding.earthMap[i][j]);
+            }
+            System.out.println();
+        }
+
+        
+        System.out.println(Pathfinding.getPath(loc));
+
 
         while (true) {
             System.out.println("Current round: "+gc.round());
@@ -28,17 +41,7 @@ public class Player {
                 Unit unit = units.get(i);
 
                 // Most methods on gc take unit IDs, instead of the unit objects themselves.
-               if (unit.id() == worker_id) {
-                    if (false) {
-
-                    }
-                    else if (gc.isMoveReady(unit.id()) && gc.canMove(unit.id(), direction[rand])) {
-                        gc.moveRobot(unit.id(), direction[rand]);
-                    }
-                    else {
-
-                    }
-            	}
+             
             }
             // Submit the actions we've done, and wait for our next turn.
             gc.nextTurn();

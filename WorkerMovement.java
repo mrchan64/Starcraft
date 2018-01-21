@@ -1,14 +1,11 @@
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.Stack;
-import java.util.Queue;
+import java.util.*;
 
 import bc.*;
 
 public class WorkerMovement {
 
-	private static Stack trace = new Stack<Square>();
-	private static PriorityQueue workList = new PriorityQueue<Square>();
+	public static Stack<Square> trace = new Stack<Square>();
+	private static ArrayList<Square> workList = new ArrayList<Square>();
 	static Square[][] map;
 	static boolean found = false;
 	
@@ -29,9 +26,26 @@ public class WorkerMovement {
 		}
 		
 	}
+
+
+	public static void findKarbonite(Square start) {
+		Square last = null;
+		workList.add(start);
+		while(!found){
+			last = step();
+			if(last.getType() == 2){
+				found = true;
+			}
+		}
+		trace.push(last);
+		while(last.previous != null){
+			trace.push(last.previous);
+			last = last.previous;
+		}
+	}
 	
 	public static Square step(){
-		Square previous = (Square) workList.poll();
+		Square previous = (Square) workList.remove(0);
 		ArrayList<Square> neighbors = neighbors(previous);
 		Square neighbor;
 		previous.setVisited();
@@ -52,15 +66,37 @@ public class WorkerMovement {
 		ArrayList<Square> neighbors = new ArrayList<Square>();
 		int x = square.x;
 		int y = square.y;
-		neighbors.add(map[x+1][y]);
-		neighbors.add(map[x+1][y+1]);
-		neighbors.add(map[x+1][y-1]);
-		neighbors.add(map[x-1][y]);
-		neighbors.add(map[x-1][y+1]);
-		neighbors.add(map[x-1][y-1]);
-		neighbors.add(map[x][y+1]);
-		neighbors.add(map[x][y-1]);
-		return neighbors;
 
+		int height = Pathfinding.eHeight;
+		int width = Pathfinding.eWidth;
+		
+		if (x+1 < width) {
+			neighbors.add(Pathfinding.earthMap[x+1][y]);
+		}
+		if (x+1 < width && y+1 < height) {
+			neighbors.add(Pathfinding.earthMap[x+1][y+1]);
+		}
+		if (x+1 < width && y-1 >= 0) {
+			neighbors.add(Pathfinding.earthMap[x+1][y-1]);
+		}
+		if (x-1 >= 0 && y-1 >= 0) {
+			neighbors.add(Pathfinding.earthMap[x-1][y-1]);
+		}
+		if (x-1 >= 0) {
+			neighbors.add(Pathfinding.earthMap[x-1][y]);
+		}
+		if (x-1 >= 0 && y+1 < height) {
+			neighbors.add(Pathfinding.earthMap[x-1][y+1]);
+		}
+		
+		if (y+1 < height) {
+			neighbors.add(Pathfinding.earthMap[x][y+1]);
+		}
+		if (y-1 >= 0) {
+			neighbors.add(Pathfinding.earthMap[x][y-1]);
+		}
+		return neighbors;
 	}
+
+	
 }

@@ -1,4 +1,3 @@
-
 public class Square {
 
 	Square previous;
@@ -8,14 +7,17 @@ public class Square {
 	boolean onFinalPath;
 	boolean workList;
 	int type;
+
 	public Square(int x, int y, int type){
 		this.x = x;
 		this.y = y;
 		visited = false;
 		previous = null;
-		this.type = type;
-			
+		onFinalPath = false;
+		workList = false;
+		this.type = type;	
 	}
+
 	public boolean isVisited(){
 		if(visited){
 			return true;
@@ -55,5 +57,21 @@ public class Square {
 	 */
 	public void setPrevious(Square square){
 		previous = square;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public String toString() {
+		return " "+type+" ";
 	}
 }
