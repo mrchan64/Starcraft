@@ -1,6 +1,7 @@
 // import the API.
 // See xxx for the javadocs.
 import bc.*;
+import java.util.*;
 
 public class Player {
     public static void main(String[] args) {
@@ -19,8 +20,6 @@ public class Player {
 
         while(stage == 1) {
         		units = gc.myUnits();
-        		
-
         		gc.nextTurn();
         }
         
