@@ -4,7 +4,7 @@ import java.util.*;
 public class Start {
 
 	public static Direction[] directions = Direction.values();
-	public static boolean isRandom = false;
+	public static boolean toKarbonite = false;
 	public static ArrayList<MapLocation> factories = new ArrayList<>();
 	
 	public static int runTurn(GameController gc, VecUnit units){
@@ -33,7 +33,7 @@ public class Start {
 		loc = new MapLocation(Planet.Earth, x, y);
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
-			moveToClosestDirection(gc, unit, loc, Start.isRandom);
+			moveToClosestDirection(gc, unit, loc, Start.toKarbonite);
 			
 			for(Direction dir : directions) {
 				if(gc.canHarvest(unit.id(), dir)) {
@@ -47,25 +47,25 @@ public class Start {
 			replicate(gc, units);
 		}
 		else {
-			buildFactory(gc, units);
-			return 1;
+			if(buildFactory(gc, units)) return 1;
 		}
 		
-		Start.isRandom = !Start.isRandom;
+		Start.toKarbonite = !Start.toKarbonite;
 		return 0;
 	}
 
-	private static void moveToClosestDirection(GameController gc, Unit unit, MapLocation loc, boolean isRandom) {
+	private static void moveToClosestDirection(GameController gc, Unit unit, MapLocation loc, boolean toKarbonite) {
 		
 		Direction ideal;
 		
 		int mean = (Pathfinding.eHeight + Pathfinding.eWidth)/2;
 		if(!loc.isWithinRange(mean/3, unit.location().mapLocation())) {
-			isRandom = true;
+			toKarbonite = true;
 		}
 		
-		if(isRandom) {
-			ideal = Pathfinding.getPath(loc);
+		if(toKarbonite) {
+			ideal = Direction.North;
+			//ideal = Pathfinding.getPath(loc);
 		}
 		
 		else {
@@ -119,50 +119,75 @@ public class Start {
 		}
 	}
 	
-	private static void buildFactory(GameController gc, VecUnit units) {
+	private static boolean buildFactory(GameController gc, VecUnit units) {
 		
 		Unit unit;
 		int unitId;
 		Unit idealUnit = units.get(0);
-		MapLocation ideal;
+		int idealUnitId = idealUnit.id();
+		MapLocation attempt;
+		MapLocation attemptAround;
 		Direction idealDir = Direction.North;
 		Direction[] allDirs = Direction.values();
 		int bestOption = 0;
 		int numOccupiable = 0;
+		
+		int x, y;
 		
 		for(int i = 0; i < units.size(); i++) {
 			unit = units.get(i);
 			unitId = unit.id();
 
 			for(Direction dir : allDirs) {
+				if(dir == Direction.Center) continue;
 				if(gc.canBlueprint(unitId, UnitType.Factory, dir)) {
 					
-					idealDir = dir;
-					ideal = unit.location().mapLocation().add(dir);
+					attempt = unit.location().mapLocation().add(dir);
 					for(Direction dir1 : allDirs) {
-						if(gc.isOccupiable(ideal.add(dir1)) == 1) {
-							numOccupiable++;
+						try {
+							if(dir1 == Direction.Center) continue;
+							
+							attemptAround = attempt.add(dir1);
+							x = attemptAround.getX();
+							y = attemptAround.getY();
+							
+							if(VectorField.terrain[x][y] == 1) {
+								numOccupiable++;
+							}
+						}
+						catch(Exception E) {
+							// do nothing
 						}
 					}
 					
 					if(numOccupiable == 8) {
 						gc.blueprint(unitId, UnitType.Factory, dir);
-						factories.add(unit.location().mapLocation().add(dir)); 
-						return;
+						factories.add(unit.location().mapLocation().add(dir));
+						Player.numFactories++;
+						Player.factoriesBuilt = false;
+						return true;
 					}
 					
 					else if (numOccupiable > bestOption) {
 						idealDir = dir;
 						bestOption = numOccupiable;
 						idealUnit = unit;
+						idealUnitId = idealUnit.id();
 					}
 				}
+				
+				numOccupiable = 0;
 			}
 		}
-		gc.blueprint(idealUnit.id(), UnitType.Factory, idealDir);
-		factories.add(idealUnit.location().mapLocation().add(idealDir)); 
 		
-		Player.numFactories++;
-		Player.factoriesBuilt = false;
+		if(gc.canBlueprint(idealUnitId, UnitType.Factory, idealDir)) {
+			gc.blueprint(idealUnitId, UnitType.Factory, idealDir);
+			factories.add(idealUnit.location().mapLocation().add(idealDir));
+			Player.numFactories++;
+			Player.factoriesBuilt = false;
+			return true;
+		}
+		
+		return false;
 	}
 }

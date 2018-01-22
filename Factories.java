@@ -1,5 +1,4 @@
 import bc.*;
-import java.util.*;
 
 public class Factories {
 
@@ -11,21 +10,23 @@ public class Factories {
 		toFactory.setTarget(factory);
 		
 		for(int i = 0; i < units.length; i++) {
-			
 			unit = units[i];
 			currLoc = unit.location().mapLocation();
 			
-			while(!currLoc.isAdjacentTo(factory)) {
+			if(!currLoc.isAdjacentTo(factory)) {
 				moveUnit(gc, unit, toFactory.getDirection(currLoc));
+				
+				System.out.println(toFactory);
 			}
+			
 		}
 	}
 	
-	private static void moveUnit(GameController gc, Unit unit, Direction dir) {
+	public static void moveUnit(GameController gc, Unit unit, Direction dir) {
 		
 		int unitId = unit.id();
 
-		if(gc.canMove(unitId, dir) && gc.isMoveReady(unit.id())) {
+		if(gc.canMove(unitId, dir) && gc.isMoveReady(unitId)) {
 			gc.moveRobot(unitId, dir);
 		}
 	}
@@ -41,7 +42,7 @@ public class Factories {
 		int[] magnitudes = new int[numOpenSpaces];
 		Unit unit = units.get(0);
 		int magnitude = toFactory.getMagnitude(unit.location().mapLocation());
-		int last = 0;
+		int last = 1;
 	
 		closestUnits[0] = unit;
 		magnitudes[0] = magnitude;
@@ -51,7 +52,7 @@ public class Factories {
 			unit = units.get(i);
 			magnitude = toFactory.getMagnitude(unit.location().mapLocation());
 			
-			for(int j = last; j >= 0; j--) {
+			for(int j = last-1; j >= 0; j--) {
 				if(magnitude < magnitudes[j]) {
 					if(j + 1 < numOpenSpaces) {
 						magnitudes[j+1] = magnitudes[j];
@@ -68,18 +69,33 @@ public class Factories {
 					break;
 				}
 			}
+			
+			if(last < 7) last++;
 		}	
 		
 		return closestUnits;
 	}
 	
-	private static int getOpenSpaces(GameController gc, MapLocation loc) {
+	public static int getOpenSpaces(GameController gc, MapLocation loc) {
 		
+		MapLocation locAround;
+		int x, y;
 		int num = 0;
 		
 		for(Direction dir : Direction.values()) {
-			if(gc.isOccupiable(loc.add(dir)) == 1) {
-				num++;
+			if(dir == Direction.Center) continue;
+			try {
+				
+				locAround = loc.add(dir);
+				x = locAround.getX();
+				y = locAround.getY();
+				
+				if(VectorField.terrain[x][y] == 1) {
+					num++;
+				}
+			}
+			catch(Exception E) {
+				// do nothing
 			}
 		}
 		
