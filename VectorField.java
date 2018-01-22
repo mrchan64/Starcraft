@@ -7,6 +7,7 @@ public class VectorField {
 	int[][] magnitude;
 	static int[][] terrain;
 	boolean[][] checked;
+	static int[][] obstacles;
 	ArrayList<MapLocation> working = new ArrayList<MapLocation>();
 	ArrayList<MapLocation> done;
 	static int width;
@@ -19,6 +20,7 @@ public class VectorField {
 		dirs = new Direction[width][height];
 		magnitude = new int[width][height];
 		checked = new boolean[width][height];
+		obstacles = new int[width][height];
 		for(int i = 0; i<width; i++){
 			for(int j = 0; j<height; j++){
 				squares[i][j] = new MapLocation(planet, i, j);
@@ -59,6 +61,20 @@ public class VectorField {
 		}
 	}
 	
+	/*public void updateObstacles(int x, int y, int[][] obs){
+		int len = obs.length;
+		for(int i = 0; i<len; i++){
+			for(int j = 0; j<len; j++){
+				int data = obs[i][j];
+				if(data == 0)continue;
+				if(obstacles[x+i][y+j] != obs[i][j]){
+					
+					obstacles[x+i][y+j] = obs[i][j];
+				}
+			}
+		}
+	}*/
+	
 	public void setTarget(MapLocation start){
 		done = new ArrayList<MapLocation>();
 		done.add(start);
@@ -82,6 +98,10 @@ public class VectorField {
 		populateTo(x, y);
 		return magnitude[x][y];
 	}
+	
+	/*private void removeAndQueueBranch(MapLocation root){
+		
+	}*/
 	
 	private void populateTo(int x, int y){
 		while(magnitude[x][y]==Integer.MAX_VALUE){
