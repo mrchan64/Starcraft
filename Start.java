@@ -161,5 +161,8 @@ public class Start {
 		}
 		gc.blueprint(idealUnit.id(), UnitType.Factory, idealDir);
 		factories.add(idealUnit.location().mapLocation().add(idealDir)); 
+		
+		Player.numFactories++;
+		Player.factoriesBuilt = false;
 	}
 }
