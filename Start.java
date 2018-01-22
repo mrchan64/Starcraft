@@ -29,6 +29,13 @@ public class Start {
 			x /= size;
 			y /= size;
 		}
+		
+		if(numWorkers <= 15) {
+			replicate(gc, units);
+		}
+		else {
+			if(buildFactory(gc, units)) return 1;
+		}
 			
 		loc = new MapLocation(Planet.Earth, x, y);
 		for(int i = 0; i < size; i++) {
@@ -41,13 +48,6 @@ public class Start {
 					break;
 				}
 			}
-		}
-		
-		if(numWorkers <= 15) {
-			replicate(gc, units);
-		}
-		else {
-			if(buildFactory(gc, units)) return 1;
 		}
 		
 		Start.toKarbonite = !Start.toKarbonite;
@@ -64,8 +64,11 @@ public class Start {
 		}
 		
 		if(toKarbonite) {
-			ideal = Direction.North;
+			ideal = directions[(int)(Math.random()*8)];
 			//ideal = Pathfinding.getPath(loc);
+			
+			//IF THEY ARE AT KARBONITE THEN START MINING AND KEEP TRACK OF KARBONITE LOCATION IN ARRAYLIST AND PASS TO EDWARDO
+			//MINED KARBONITE
 		}
 		
 		else {
@@ -93,7 +96,7 @@ public class Start {
 		}
 	}
 
-	private static int linearSearch(Direction[] array, Direction dir) {
+	public static int linearSearch(Direction[] array, Direction dir) {
 		
 		for(int i = 0; i < 8; i++) {
 			if(array[i] == dir) return i;

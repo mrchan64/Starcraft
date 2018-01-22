@@ -19,32 +19,37 @@ public class Player {
         while (stage == 0) {
         	
         	System.out.println(gc.round());
-        	 	units = gc.myUnits();
-        	 	stage += Start.runTurn(gc, units); 
-        	 	
-        	 	gc.nextTurn();
+    	 	units = gc.myUnits();
+    	 	stage += Start.runTurn(gc, units); 
+    	 	
+    	 	gc.nextTurn();
         }
 
         MapLocation factory;
         
         while(stage == 1) {
         	
-        		if(!factoriesBuilt) {
-        			
-        			factory = Start.factories.get(numFactories - 1);
-        			closestUnits = Factories.getClosest(gc, units, factory);
-        			
-        			while(gc.senseUnitAtLocation(factory).health() < 300) {
-        			
-        				Factories.sendUnits(gc, closestUnits, factory);
-        				gc.nextTurn();
-        			}
-        			
-        			factoriesBuilt = true;
-        		}
-        		else {
-        			gc.nextTurn();
-        		}
+    		if(!factoriesBuilt) {
+    			VectorField toFactory = new VectorField();
+    			
+    			factory = Start.factories.get(numFactories - 1);
+    			toFactory.setTarget(factory);
+    			closestUnits = Factories.getClosest(gc, units, factory, toFactory);
+    			
+    			Unit test = gc.senseUnitAtLocation(factory);
+    			
+    			while(test.health() < 300) {
+    	        	System.out.println(gc.round());
+    			
+    				Factories.sendUnits(gc, closestUnits, factory, toFactory);
+    				gc.nextTurn();
+    			}
+    			
+    			factoriesBuilt = true;
+    		}
+    		else {
+    			gc.nextTurn();
+    		}
         }
         
         while(true) {
