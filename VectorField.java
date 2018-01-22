@@ -164,30 +164,45 @@ public class VectorField {
 		for(int j = height-1; j>=0; j--){
 			String row1 = "";
 			String row2 = "";
+			String row3 = "";
 			for(int i = 0; i<width; i++){
 				row1+=magnitude[i][j]+" ";
 				switch(dirs[i][j]){
 				case North:
+					row3+="N  ";
+					break;
 				case South:
+					row3+="S  ";
 					row2+="| ";
 					break;
 				case Northeast:
+					row3+="NE ";
+					break;
 				case Southwest:
+					row3+="SW ";
 					row2+="/ ";
 					break;
 				case Northwest:
+					row3+="NW ";
+					break;
 				case Southeast:
+					row3+="SE ";
 					row2+="\\ ";
 					break;
 				case West:
+					row3+="W  ";
+					break;
 				case East:
+					row3+="E  ";
 					row2+="- ";
 					break;
 				case Center: 
 					row2+="o ";
+					row3+="C  ";
 				}
 			}
-			ret+=/*row1+"\n"+*/row2+"\n";
+			//ret+=/*row1+"\n"+*/row2+"\n";
+			ret+=row3+"\n";
 		}
 		return ret;
 	}

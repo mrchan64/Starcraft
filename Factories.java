@@ -1,88 +1,117 @@
 import bc.*;
-import java.util.*;
 
 public class Factories {
 
-	public static void sendUnits(GameController gc, Unit[] units, MapLocation factory) {
+	public static void sendUnits(GameController gc, Unit[] units, MapLocation factory, VectorField toFactory) {
 		
-		VectorField toFactory = new VectorField();
 		MapLocation currLoc;
 		Unit unit;
-		toFactory.setTarget(factory);
+		int unitId;
+		int factoryId = gc.senseUnitAtLocation(factory).id();
 		
 		for(int i = 0; i < units.length; i++) {
-			
 			unit = units[i];
-			currLoc = unit.location().mapLocation();
+			unitId = unit.id();
+			currLoc = gc.unit(unitId).location().mapLocation();
 			
-			while(!currLoc.isAdjacentTo(factory)) {
-				moveUnit(gc, unit, toFactory.getDirection(currLoc));
+			if(!currLoc.isAdjacentTo(factory)) {
+				moveToClosestDirection(gc, unit, toFactory.getDirection(currLoc));
+			}else{
+				if(gc.canBuild(unitId, factoryId)){
+					gc.build(unitId, factoryId);
+				}
 			}
+			
 		}
 	}
 	
-	private static void moveUnit(GameController gc, Unit unit, Direction dir) {
-		
-		int unitId = unit.id();
+	public static Unit[] getClosest(GameController gc, VecUnit units, MapLocation factory, VectorField toFactory) {
 
-		if(gc.canMove(unitId, dir) && gc.isMoveReady(unit.id())) {
-			gc.moveRobot(unitId, dir);
-		}
-	}
-	
-	public static Unit[] getClosest(GameController gc, VecUnit units, MapLocation factory) {
-		
-		VectorField toFactory = new VectorField();
-		toFactory.setTarget(factory);
 		
 		int numOpenSpaces = getOpenSpaces(gc, factory);
 		
+		int size = (int) units.size();
 		Unit[] closestUnits = new Unit[numOpenSpaces];
 		int[] magnitudes = new int[numOpenSpaces];
-		Unit unit = units.get(0);
-		int magnitude = toFactory.getMagnitude(unit.location().mapLocation());
+		Unit unit;
+		int magnitude;
 		int last = 0;
-	
-		closestUnits[0] = unit;
-		magnitudes[0] = magnitude;
+		int place = 0;
+		MapLocation currloc;
 		
-		for(int i = 1; i < units.size(); i++) {
-			
+		for(int i = 0; i<size; i++){
 			unit = units.get(i);
-			magnitude = toFactory.getMagnitude(unit.location().mapLocation());
+			if(unit.unitType()!=UnitType.Worker)continue;
+			currloc = unit.location().mapLocation();
 			
-			for(int j = last; j >= 0; j--) {
-				if(magnitude < magnitudes[j]) {
-					if(j + 1 < numOpenSpaces) {
-						magnitudes[j+1] = magnitudes[j];
-						closestUnits[j+1] = closestUnits[j];
-					}
-					magnitudes[j] = magnitude;
-					closestUnits[j] = unit;
-				}
-				else {
-					if(j + 1 < numOpenSpaces) {
-						magnitudes[j+1] = magnitude;
-						closestUnits[j+1] = unit;
-					}
-					break;
+			magnitude = toFactory.getMagnitude(currloc);
+			
+			last = i>numOpenSpaces? numOpenSpaces:i;
+			for(place = last; place>0; place--){
+				if(magnitudes[place-1]<=magnitude)break;
+				if(place!=numOpenSpaces){
+					magnitudes[place]=magnitudes[place-1];
+					closestUnits[place] = closestUnits[place-1];
 				}
 			}
-		}	
+			if(place!=numOpenSpaces){
+				closestUnits[place] = unit;
+				magnitudes[place] = magnitude;
+				last = last>=numOpenSpaces?numOpenSpaces:last+1;
+			}
+		}
+		for(int i = 0;i<numOpenSpaces; i++){
+			System.out.println(closestUnits[i].id());
+		}
 		
 		return closestUnits;
 	}
 	
-	private static int getOpenSpaces(GameController gc, MapLocation loc) {
+	public static int getOpenSpaces(GameController gc, MapLocation loc) {
 		
+		MapLocation locAround;
+		int x, y;
 		int num = 0;
 		
 		for(Direction dir : Direction.values()) {
-			if(gc.isOccupiable(loc.add(dir)) == 1) {
-				num++;
+			if(dir == Direction.Center) continue;
+			try {
+				
+				locAround = loc.add(dir);
+				x = locAround.getX();
+				y = locAround.getY();
+				
+				if(VectorField.terrain[x][y] == 1) {
+					num++;
+				}
+			}
+			catch(Exception E) {
+				// do nothing
 			}
 		}
 		
 		return num;
+	}
+	
+	public static void moveToClosestDirection(GameController gc, Unit unit, Direction ideal) {
+		int index = Start.linearSearch(Start.directions, ideal);
+		Direction actual = ideal;
+		int unitId = unit.id();
+		
+		for(int i = 0; i < 5; i++) {
+
+			actual = Start.directions[(index + i) % 8];
+			if(gc.canMove(unitId, actual) && gc.isMoveReady(unitId)) {
+				gc.moveRobot(unitId, actual);
+				break;
+			}
+
+			if(i == 0 || i == 4) continue;
+			actual = Start.directions[(index - i + 8) % 8];
+			if(gc.canMove(unitId, actual) && gc.isMoveReady(unitId)) {
+				gc.moveRobot(unitId, actual);
+				break;
+			}
+		}
 	}
 }
