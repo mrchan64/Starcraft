@@ -1,9 +1,11 @@
 import bc.*;
+import java.util.*;
 
 public class Start {
 
 	public static Direction[] directions = Direction.values();
 	public static boolean isRandom = false;
+	public static ArrayList<MapLocation> factories = new ArrayList<>();
 	
 	public static int runTurn(GameController gc, VecUnit units){
 		
@@ -13,7 +15,7 @@ public class Start {
 		int size = (int)units.size();
 		int x = 0;
 		int y = 0;
-	
+		
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
 			loc = unit.location().mapLocation();
@@ -32,13 +34,21 @@ public class Start {
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
 			moveToClosestDirection(gc, unit, loc, Start.isRandom);
+			
+			for(Direction dir : directions) {
+				if(gc.canHarvest(unit.id(), dir)) {
+					gc.harvest(unit.id(), dir);
+					break;
+				}
+			}
 		}
 		
 		if(numWorkers <= 15) {
 			replicate(gc, units);
 		}
 		else {
-			if(buildFactory(gc, units)) return 1;
+			buildFactory(gc, units);
+			return 1;
 		}
 		
 		Start.isRandom = !Start.isRandom;
@@ -49,13 +59,13 @@ public class Start {
 		
 		Direction ideal;
 		
-		int mean = (Pathfinding.eHeight() + Pathfinding.eWidth())/2;
+		int mean = (Pathfinding.eHeight + Pathfinding.eWidth)/2;
 		if(!loc.isWithinRange(mean/3, unit.location().mapLocation())) {
 			isRandom = true;
 		}
 		
 		if(isRandom) {
-			ideal = directions[(int)(Math.random() * 8)];
+			ideal = Pathfinding.getPath(loc);
 		}
 		
 		else {
@@ -109,23 +119,50 @@ public class Start {
 		}
 	}
 	
-	private static boolean buildFactory(GameController gc, VecUnit units) {
+	private static void buildFactory(GameController gc, VecUnit units) {
 		
 		Unit unit;
 		int unitId;
+		Unit idealUnit = units.get(0);
+		MapLocation ideal;
+		Direction idealDir = Direction.North;
+		Direction[] allDirs = Direction.values();
+		int bestOption = 0;
+		int numOccupiable = 0;
 		
 		for(int i = 0; i < units.size(); i++) {
 			unit = units.get(i);
 			unitId = unit.id();
 
-			for(Direction dir: Direction.values()) {
+			for(Direction dir : allDirs) {
 				if(gc.canBlueprint(unitId, UnitType.Factory, dir)) {
-					gc.blueprint(unitId, UnitType.Factory, dir);
-					return true;
+					
+					idealDir = dir;
+					ideal = unit.location().mapLocation().add(dir);
+					for(Direction dir1 : allDirs) {
+						if(gc.isOccupiable(ideal.add(dir1)) == 1) {
+							numOccupiable++;
+						}
+					}
+					
+					if(numOccupiable == 8) {
+						gc.blueprint(unitId, UnitType.Factory, dir);
+						factories.add(unit.location().mapLocation().add(dir)); 
+						return;
+					}
+					
+					else if (numOccupiable > bestOption) {
+						idealDir = dir;
+						bestOption = numOccupiable;
+						idealUnit = unit;
+					}
 				}
 			}
 		}
+		gc.blueprint(idealUnit.id(), UnitType.Factory, idealDir);
+		factories.add(idealUnit.location().mapLocation().add(idealDir)); 
 		
-		return false;
+		Player.numFactories++;
+		Player.factoriesBuilt = false;
 	}
 }

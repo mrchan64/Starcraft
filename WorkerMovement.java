@@ -1,7 +1,5 @@
 import java.util.*;
 
-import bc.*;
-
 public class WorkerMovement {
 
 	public static Stack<Square> trace = new Stack<Square>();
@@ -42,6 +40,7 @@ public class WorkerMovement {
 			trace.push(last.previous);
 			last = last.previous;
 		}
+		found = false;
 	}
 	
 	public static Square step(){
@@ -71,29 +70,29 @@ public class WorkerMovement {
 		int width = Pathfinding.eWidth;
 		
 		if (x+1 < width) {
-			neighbors.add(Pathfinding.earthMap[x+1][y]);
+			neighbors.add(Pathfinding.earthMap[y][x+1]);
 		}
 		if (x+1 < width && y+1 < height) {
-			neighbors.add(Pathfinding.earthMap[x+1][y+1]);
+			neighbors.add(Pathfinding.earthMap[y+1][x+1]);
 		}
 		if (x+1 < width && y-1 >= 0) {
-			neighbors.add(Pathfinding.earthMap[x+1][y-1]);
+			neighbors.add(Pathfinding.earthMap[y-1][x+1]);
 		}
 		if (x-1 >= 0 && y-1 >= 0) {
-			neighbors.add(Pathfinding.earthMap[x-1][y-1]);
+			neighbors.add(Pathfinding.earthMap[y-1][x-1]);
 		}
 		if (x-1 >= 0) {
-			neighbors.add(Pathfinding.earthMap[x-1][y]);
+			neighbors.add(Pathfinding.earthMap[y][x-1]);
 		}
 		if (x-1 >= 0 && y+1 < height) {
-			neighbors.add(Pathfinding.earthMap[x-1][y+1]);
+			neighbors.add(Pathfinding.earthMap[y+1][x-1]);
 		}
 		
 		if (y+1 < height) {
-			neighbors.add(Pathfinding.earthMap[x][y+1]);
+			neighbors.add(Pathfinding.earthMap[y+1][x]);
 		}
 		if (y-1 >= 0) {
-			neighbors.add(Pathfinding.earthMap[x][y-1]);
+			neighbors.add(Pathfinding.earthMap[y-1][x]);
 		}
 		return neighbors;
 	}
