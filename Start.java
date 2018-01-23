@@ -10,7 +10,7 @@ public class Start {
 	
 	static int numWorkers;
 	
-	public static int runTurn(GameController gc, ArrayList<Unit> units){
+	public static int runTurn(GameController gc, VecUnit units){
 		
 		Unit unit;
 		MapLocation loc;
@@ -61,12 +61,12 @@ public class Start {
 			toKarbonite = true;
 		}
 		
-		//if(toKarbonite) {
+		if(toKarbonite) {
 			Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unit.location().mapLocation()));
 			return;
-		//}
+		}
 		
-		/*else {
+		else {
 			ideal = loc.directionTo(unit.location().mapLocation());
 		}
 		
@@ -88,7 +88,7 @@ public class Start {
 				gc.moveRobot(unitId, actual);
 				break;
 			}
-		}*/
+		}
 	}
 
 	public static int linearSearch(Direction[] array, Direction dir) {
@@ -99,7 +99,7 @@ public class Start {
 		return 999;
 	}
 	
-	private static void replicate(GameController gc, ArrayList<Unit> units) {
+	private static void replicate(GameController gc, VecUnit units) {
 		
 		Unit unit;
 		int unitId;
@@ -117,7 +117,7 @@ public class Start {
 		}
 	}
 	
-	private static boolean buildFactory(GameController gc, ArrayList<Unit> units) {
+	private static boolean buildFactory(GameController gc, VecUnit units) {
 		
 		Unit unit;
 		int unitId;
