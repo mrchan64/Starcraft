@@ -19,7 +19,7 @@ public class Player {
 
 		gc = new GameController();
 		VectorField.initWalls(gc);
-		findKarbonite.vectFieldKarb(gc);
+		findKarbonite.initKarb(gc);
 		Upgrades.upgradeUnits(gc);
 
         VecUnit units = gc.myUnits();
@@ -50,14 +50,17 @@ public class Player {
         VectorField toFactory = new VectorField();
         MapLocation factory = new MapLocation(Planet.Earth, 0, 0);
 
-        
         while (true) {
         		UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 
         		Start.factories = new ArrayList<>();
         		UnitBuildOrder.builtFacts = new ArrayList<>();
         		numFactories = 0;
-            	Combat.rangerList = new ArrayList<>(); 
+
+            Combat.rangerList = new ArrayList<>(); 
+			
+            findKarbonite.updateFieldKarb(gc);
+
         		
         		units = gc.myUnits();
         		
@@ -66,8 +69,10 @@ public class Player {
         			unit = units.get(i);
         			
               
+
 	         		if (unit.unitType() == UnitType.Ranger) {
 	         			Combat.rangerList.add(unit);
+
 					}
 
         			
@@ -76,11 +81,9 @@ public class Player {
 
         				if(unit.health() < 300) {
         					Start.factories.add(unit);
-        					System.out.println("Factory size: "+Start.factories.size());
         				}
         				else {
         					UnitBuildOrder.builtFacts.add(unit);
-        					System.out.println("Completed Factory size: "+UnitBuildOrder.builtFacts.size());
         				}
         			}
         			
@@ -92,8 +95,7 @@ public class Player {
 	    				if(gc.canHarvest(unit.id(), dir)) {
 	    						
 	    					gc.harvest(unit.id(), dir);
-	    					Start.minedKarbonite.add(unitLoc.add(dir));
-	    					findKarbonite.updateFieldKarb();
+
 	    					break;
 	    				}
 	    			}
@@ -124,17 +126,15 @@ public class Player {
 	        			if(fac.health() < 300) {
 	        				
 	        				closestUnits = Factories.getClosest(gc, availableUnits, fac, toFactory);
+
 	        				
 	        				Factories.sendUnits(gc, closestUnits, fac, toFactory);
-	        				
-	        			
+
 	        				for(int i = 0; i < closestUnits.length; i++) {
 	        					
 	        					unit = closestUnits[i];
 	        					for(int j = 0; j < availableUnits.size(); j++) {
 	        						
-	        						//System.out.println(availableUnits.get(j) == null);
-	        						//System.out.println(unit == null);
 	        						if(availableUnits.get(j).equals(unit)) {
 	        							availableUnits.remove(unit);
 	        							j--;
@@ -142,7 +142,7 @@ public class Player {
 	        					}
 	        				}
 	        			}
-        			
+
 	        		}
 		    			
 	        		for(int i = 0; i < availableUnits.size(); i++) {
@@ -174,7 +174,6 @@ public class Player {
         				Start.runTurn(gc, availableUnits);
         			}
         		}
-	        
 	        	gc.nextTurn();
         }
     }

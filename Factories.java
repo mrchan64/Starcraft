@@ -31,6 +31,10 @@ public class Factories {
 				if(gc.canBuild(unitId, structureId)) {
 					gc.build(unitId, structureId);
 				}
+
+				else if(gc.canRepair(unitId, structureId)) {
+					gc.repair(unitId, structureId);
+				}
 			}
 		}
 	}
@@ -90,7 +94,6 @@ public class Factories {
 
 		int numOpenSpaces = getOpenSpaces(gc, structure.location().mapLocation());
 		int unitsReady = Player.availableUnits.size();
-		System.out.println("numOpenSpaces - unitsReady = " + numOpenSpaces + " " + unitsReady);
 		
 		if(numOpenSpaces > unitsReady) numOpenSpaces = unitsReady;
 		
@@ -159,7 +162,7 @@ public class Factories {
 		int unitId = unit.id();
 		
 		if(ideal == Direction.Center) {
-			actual = Start.directions[(int)(Math.random() * 8)];
+			index = (int)(Math.random() * 8);
 		}
 		
 		for(int i = 0; i < 5; i++) {
