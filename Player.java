@@ -4,15 +4,17 @@ import bc.*;
 import java.util.*;
 
 public class Player {
-	
+
 	public static boolean factoriesBuilt = true;
 	public static int numFactories = 0;
 	public static ArrayList<Unit> availableUnits;
 	
     public static void main(String[] args) {
 
-        GameController gc = new GameController();
-        VectorField.initWalls(gc);
+	public static void main(String[] args) {
+
+		GameController gc = new GameController();
+		VectorField.initWalls(gc);
 		findKarbonite.vectFieldKarb(gc);
 		Upgrades.upgradeUnits(gc);
 
@@ -25,6 +27,21 @@ public class Player {
         
         VectorField toFactory = new VectorField();
         MapLocation factory = new MapLocation(Planet.Earth, 0, 0);
+    		Combat.rangerList = new ArrayList<>(); 
+
+			  units = gc.myUnits();
+
+			  for(int i = 0; i < units.size(); i++) {
+
+				unit = units.get(i);
+
+				if (unit.unitType() == UnitType.Ranger) {
+					for (int j = 0; j < Combat.combatList.size(); j++) {
+						if (!Combat.combatList.get(j).equals(unit)) {
+							Combat.rangerList.add(unit);
+						}
+					}
+				}
 
         
         while (true) {
@@ -148,4 +165,5 @@ public class Player {
 	        	gc.nextTurn();
         }
     }
+
 }
