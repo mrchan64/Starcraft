@@ -8,8 +8,8 @@ public class Combat {
 	//2d array of where enemy is
 	//radius = (width/2)^2 + (height/2)^2
 	
-	static GameController gc;
-	static Team team;
+	static GameController gc = Player.gc;
+	static Team team = Player.team;
 	static boolean combatState = false;
 	static VecUnit enemies;
 	static int rangerCount = 0;
@@ -33,17 +33,30 @@ public class Combat {
 		Unit target = null;
 		updateEnemyPositions(rangerList);
 		for(Unit ranger : rangerList){
+			try {
+				MapLocation location = ranger.location().mapLocation();
+			}
+			catch (Exception e) {
+				continue;
+			}
 			int id = ranger.id();
 			target = rangeTarget(ranger, enemies);
 			if(target == null){
+				//System.out.println("null");
+				earthField.setTarget(findKarbonite.spawn);
 				Direction dir = earthField.getDirection(findKarbonite.spawn);
 				if (gc.isMoveReady(id) && gc.canMove(id, dir)){
+					System.out.println("moving with vect");
 					gc.moveRobot(id, dir);
+					continue;
 				}
+			    Factories.moveToClosestDirection(gc, ranger, Direction.Center);
 			}else if(attack(ranger, target)){
-				break;
+				System.out.println("attacking");
+				continue;
 			}else{
 				advanceOnTarget(ranger, null, target, 0);
+				System.out.println("advance");
 			}
 			
 			
@@ -53,6 +66,8 @@ public class Combat {
 	public static void setOppositeSpawn() {
 		earthField.setTarget(findKarbonite.spawn);
 	}
+
+	
 	
 	public static int[][] updateEnemyPositions(ArrayList<Unit> units){
 		int posX;
@@ -61,7 +76,9 @@ public class Combat {
 		Unit enemy;
 
 		world = new int[VectorField.width][VectorField.height];
-		enemies = gc.senseNearbyUnitsByTeam(center, radius, team);
+		enemies = gc.senseNearbyUnitsByTeam(center, 
+			radius, 
+			Player.eTeam);
 		
 		for(int i = 0; i < enemies.size(); i++){
 			enemy = enemies.get(i);
@@ -142,9 +159,10 @@ public class Combat {
 			direction = location.directionTo(target.location().mapLocation());
 		}
 		int ID = unit.id();
-		if(!gc.canAttack(ID, target.id())){
+		if(gc.canMove(ID, direction) && gc.isMoveReady(ID)){
 			gc.moveRobot(ID, direction);
-		}else if(advance > 0){
+		}
+		if(advance > 0){
 			if(location.distanceSquaredTo(target.location().mapLocation()) > 
 				unit.attackRange() + advance){
 				gc.moveRobot(ID, direction);
@@ -158,11 +176,14 @@ public class Combat {
 	
 	//attacks target if it can, otherwise returns false
 	public static boolean attack(Unit unit, Unit target){
-		int targetID = unit.id();
-		int unitID = target.id();
+		int unitID = unit.id();
+		int targetID = target.id();
 		UnitType type = target.unitType();
+		System.out.println("attempt");
 		if(gc.isAttackReady(unitID)){
+			System.out.println("attack ready");
 			if(gc.canAttack(unitID, targetID)){
+				System.out.println("attack");
 				gc.attack(unitID, targetID);
 				if(target.health() == 0){
 					if(type == UnitType.Ranger){
@@ -220,11 +241,15 @@ public class Combat {
 		UnitType uType = unit.unitType();
 		MapLocation location = unit.location().mapLocation();
 		long distance;
-		if(inCombat(unit)){
+		//if(!inCombat(unit)){
 			for(int i = 0; i < list.size(); i++ ){
+
 				curr = list.get(i);
 				cType = curr.unitType();
 				distance = location.distanceSquaredTo(curr.location().mapLocation());
+				if (distance <= unit.rangerCannotAttackRange() || distance > unit.attackRange()) {
+					continue;
+				}
 				//nearest mage
 				if(uType == UnitType.Ranger){
 					if(cType == UnitType.Healer){
@@ -285,7 +310,9 @@ public class Combat {
 	
 			}
 			
-		}
+		//}
+			if(target != null)
+			System.out.println(target.unitType());
 		return target;
 	}//end target
 

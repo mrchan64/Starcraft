@@ -37,8 +37,8 @@ public class findKarbonite{
     }
     public static void getOppositeSpawn(Unit unit) {
     	spawn = unit.location().mapLocation();
-    	int x = VectorField.width - spawn.getX();
-    	int y = VectorField.height -spawn.getY();
+    	int x = VectorField.width-1 - spawn.getX();
+    	int y = VectorField.height-1 - spawn.getY();
     	spawn = new MapLocation(VectorField.planet, x, y);
     }
 
