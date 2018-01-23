@@ -165,12 +165,14 @@ public class Player {
 	        	}
 	        
 	        if(stage >= 0) {
-
+	      		
+    				Start.updateNumWorkers(availableUnits);
+    				
         			if(stage == 0) {
         				stage += Start.runTurn(gc, availableUnits);
         			}
-        		
-        			else if(numFactories - 1 < findKarbonite.avaSq / 100) {
+        			
+        			else if(numFactories - 1 < findKarbonite.avaSq / 100 || Start.numWorkers < numFactories * 8) {
         				Start.runTurn(gc, availableUnits);
         			}
         		}
