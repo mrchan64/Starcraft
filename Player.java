@@ -144,6 +144,10 @@ public class Player {
 		    				Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unitLoc));
 		    			}
 	    			}
+
+	    			for (int i = 0; i < builtFacts.size(); i++) {
+	    				builtFacts.get(i).queueUnitsAllFactories(gc, UnitType.Ranger);
+	    			}
 		    		
 	        		if(gc.round() >= 500 && gc.karbonite() >= 75) {
 		    			
