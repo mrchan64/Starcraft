@@ -5,6 +5,7 @@ public class UnitBuildOrder {
 	public static VecUnitID unitsMaking;
 	public static Direction[] dir = Direction.values();
 	public static ArrayList<Unit> builtFacts = new ArrayList<>();
+	public static ArrayList<Unit> builtRocks = new ArrayList<>();
 
 
 	public static void buildUnit(GameController gc, UnitType type, Unit factory) {
