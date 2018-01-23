@@ -16,10 +16,6 @@ public class Combat {
 	static int mageCount = 0;
 	static int knightCount = 0;
 	
-	static ArrayList<Unit> rangerList = new ArrayList<>();
-	static ArrayList<Unit> combatList = new ArrayList<>();
-	
-	static VectorField earthField = new VectorField();
 	
 	static int width = VectorField.width;
 	static int height = VectorField.height;
@@ -28,31 +24,6 @@ public class Combat {
 	static MapLocation center = new MapLocation(VectorField.planet, width/2, height/2);
 	
 	
-	
-	public static void commands(){
-		Unit target = null;
-		updateEnemyPositions(rangerList);
-		for(Unit ranger : rangerList){
-			int id = ranger.id();
-			target = rangeTarget(ranger, enemies);
-			if(target == null){
-				Direction dir = earthField.getDirection(findKarbonite.spawn);
-				if (gc.isMoveReady(id) && gc.canMove(id, dir)){
-					gc.moveRobot(id, dir);
-				}
-			}else if(attack(ranger, target)){
-				break;
-			}else{
-				advanceOnTarget(ranger, null, target, 0);
-			}
-			
-			
-		}
-	}
-	
-	public static void setOppositeSpawn() {
-		earthField.setTarget(findKarbonite.spawn);
-	}
 	
 	public static int[][] updateEnemyPositions(ArrayList<Unit> units){
 		int posX;
@@ -102,16 +73,6 @@ public class Combat {
 		}
 	}
 	
-	public static boolean targetDestroyed(Unit unit, Unit target){
-		if(target.health() == 0){
-			combatList.remove(unit);
-			rangerList.add(unit);
-			return true;
-		}else{
-			return false;
-		}
-	}
-	
 	public static boolean inCombat(Unit unit){
 		for(int i = 0; i < enemies.size(); i++){
 			if(inVision(unit, enemies.get(i))){
@@ -126,21 +87,15 @@ public class Combat {
 		return unit.location().mapLocation();
 	}
 	
-	public static VectorField setField(Unit unit, Unit target){
+	public static void setField(Unit unit, Unit target){
 		VectorField field = new VectorField();
 		field.setTarget(target.location().mapLocation());
-		return field;
 	}
 	
 	//advance until in range or if you want to move closer, advance is how much closer
 	public static boolean advanceOnTarget(Unit unit, VectorField field, Unit target, int advance){
 		MapLocation location = unit.location().mapLocation();
-		Direction direction; 
-		if(field != null){
-			direction = field.getDirection(location);
-		}else{
-			direction = location.directionTo(target.location().mapLocation());
-		}
+		Direction direction = field.getDirection(location);
 		int ID = unit.id();
 		if(!gc.canAttack(ID, target.id())){
 			gc.moveRobot(ID, direction);
@@ -338,19 +293,14 @@ public class Combat {
  	 					squad[j+1] = curr;
  	 				}
  				}
- 				if(last < squadSize){
- 	 				last++;
- 	 			}
  		
  			}
  			
- 	
+ 			if(last < squadSize){
+ 				last++;
+ 			}
  			
  			
- 		}
- 	
- 		for(int i = 0; i < squad.length; i++){
- 			combatList.add(squad[i]);
  		}
  	}
 

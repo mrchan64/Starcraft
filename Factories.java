@@ -11,10 +11,7 @@ public class Factories {
 		int structureId = structure.id();
 		
 		for(int i = 0; i < units.length; i++) {
-			
 			unit = units[i];
-			if(unit == null) continue;
-			
 			unitId = unit.id();
 			currLoc = gc.unit(unitId).location().mapLocation();
 			
@@ -88,11 +85,8 @@ public class Factories {
 	
 	public static Unit[] getClosest(GameController gc, ArrayList<Unit> units, Unit structure, VectorField toFactory) {
 
-		int numOpenSpaces = getOpenSpaces(gc, structure.location().mapLocation());
-		int unitsReady = Player.availableUnits.size();
-		System.out.println("numOpenSpaces - unitsReady = " + numOpenSpaces + " " + unitsReady);
 		
-		if(numOpenSpaces > unitsReady) numOpenSpaces = unitsReady;
+		int numOpenSpaces = getOpenSpaces(gc, structure.location().mapLocation());
 		
 		int size = (int) units.size();
 		Unit[] closestUnits = new Unit[numOpenSpaces];
@@ -153,16 +147,11 @@ public class Factories {
 	}
 	
 	public static void moveToClosestDirection(GameController gc, Unit unit, Direction ideal) {
-		
-		Direction actual = ideal;
 		int index = Start.linearSearch(Start.directions, ideal);
+		Direction actual = ideal;
 		int unitId = unit.id();
 		
-		if(ideal == Direction.Center) {
-			actual = Start.directions[(int)(Math.random() * 8)];
-		}
-		
-		for(int i = 0; i < 3; i++) {
+		for(int i = 0; i < 5; i++) {
 
 			actual = Start.directions[(index + i) % 8];
 			if(gc.canMove(unitId, actual) && gc.isMoveReady(unitId)) {
@@ -170,8 +159,7 @@ public class Factories {
 				break;
 			}
 
-			if(i == 0) continue;
-			
+			if(i == 0 || i == 4) continue;
 			actual = Start.directions[(index - i + 8) % 8];
 			if(gc.canMove(unitId, actual) && gc.isMoveReady(unitId)) {
 				gc.moveRobot(unitId, actual);

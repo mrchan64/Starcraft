@@ -33,7 +33,7 @@ public class UnitBuildOrder {
 	public static void queueUnitsAllFactories(GameController gc, UnitType type) {
 		for (int i = 0; i < builtFacts.size(); i++) {
 			Unit unit = builtFacts.get(i);
-			deployUnits(gc, unit);
+			deployedUnits(gc, unit);
 			buildUnit(gc, type, unit);
 		}
 	}
