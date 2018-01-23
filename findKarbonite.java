@@ -18,7 +18,7 @@ public class findKarbonite{
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
             		loc = new MapLocation(planet, j, i);
-                    int karb = map.initialKarboniteAt(loc);
+                    int karb = (int)map.initialKarboniteAt(loc);
             		if (karb != 0) {
             			kTargets.add(loc);
             			avaSq++;

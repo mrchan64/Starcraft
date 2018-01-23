@@ -43,7 +43,6 @@ public class Start {
 		loc = new MapLocation(Planet.Earth, x, y);
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
-			loc = unit.location().mapLocation();
 
 			spread(gc, unit, loc, Start.toKarbonite);
 		}
@@ -61,12 +60,13 @@ public class Start {
 			toKarbonite = true;
 		}
 		
-		//if(toKarbonite) {
+		if(toKarbonite) {
 			Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unit.location().mapLocation()));
+			findKarbonite.updateFieldKarb();
 			return;
-		//}
+		}
 		
-		/*else {
+		else {
 			ideal = loc.directionTo(unit.location().mapLocation());
 		}
 		
@@ -88,7 +88,7 @@ public class Start {
 				gc.moveRobot(unitId, actual);
 				break;
 			}
-		}*/
+		}
 	}
 
 	public static int linearSearch(Direction[] array, Direction dir) {

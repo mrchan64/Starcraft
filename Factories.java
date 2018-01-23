@@ -162,7 +162,7 @@ public class Factories {
 			actual = Start.directions[(int)(Math.random() * 8)];
 		}
 		
-		for(int i = 0; i < 3; i++) {
+		for(int i = 0; i < 5; i++) {
 
 			actual = Start.directions[(index + i) % 8];
 			if(gc.canMove(unitId, actual) && gc.isMoveReady(unitId)) {
