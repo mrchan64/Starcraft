@@ -147,9 +147,14 @@ public class Factories {
 	}
 	
 	public static void moveToClosestDirection(GameController gc, Unit unit, Direction ideal) {
-		int index = Start.linearSearch(Start.directions, ideal);
+		
 		Direction actual = ideal;
+		int index = Start.linearSearch(Start.directions, ideal);
 		int unitId = unit.id();
+		
+		if(ideal == Direction.Center) {
+			actual = Start.directions[(int)(Math.random() * 8)];
+		}
 		
 		for(int i = 0; i < 5; i++) {
 

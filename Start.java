@@ -61,12 +61,12 @@ public class Start {
 			toKarbonite = true;
 		}
 		
-		if(toKarbonite) {
+		//if(toKarbonite) {
 			Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unit.location().mapLocation()));
 			return;
-		}
+		//}
 		
-		else {
+		/*else {
 			ideal = loc.directionTo(unit.location().mapLocation());
 		}
 		
@@ -88,7 +88,7 @@ public class Start {
 				gc.moveRobot(unitId, actual);
 				break;
 			}
-		}
+		}*/
 	}
 
 	public static int linearSearch(Direction[] array, Direction dir) {

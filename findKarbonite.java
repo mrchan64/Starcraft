@@ -39,12 +39,20 @@ public class findKarbonite{
     }
 
    public static void updateFieldKarb() {
+	   
+	   MapLocation loc;
+	   
        karboniteField = new VectorField();
         ArrayList<MapLocation> mined = Start.minedKarbonite;
         for (int i = 0; i < mined.size(); i++) {
             MapLocation miningLoc = mined.get(i);
-            if (kTargets.contains(miningLoc)) {
-                kTargets.remove(miningLoc);
+            for(int j = 0; j < kTargets.size(); j++) {
+            	
+            		loc = kTargets.get(j);
+   
+            		if (miningLoc.equals(loc)) {
+            			kTargets.remove(loc);
+            		}
             }
         }
         karboniteField.setTargets(kTargets);

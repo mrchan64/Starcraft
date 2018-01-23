@@ -64,14 +64,14 @@ public class Player {
 	        	}
 	        
 	        if(stage >= 1) {
+	        	
+	        		availableUnits = new ArrayList<>();
+        		
+	        		for(int i = 0; i < units.size(); i++) {
+	        			availableUnits.add(units.get(i));
+	        		}
 
 	        		for(Unit fac : Start.factories) {
-	    	        	
-		        		availableUnits = new ArrayList<>();
-		        		
-		        		for(int i = 0; i < units.size(); i++) {
-		        			availableUnits.add(units.get(i));
-		        		}
 
 	        			if(!factoriesBuilt) {
 		    			
@@ -80,8 +80,8 @@ public class Player {
 		    				factoriesBuilt = true;
 	        			}
 		    			
-	        			if(fac.structureIsBuilt() == 0) {
-		    				    			
+	        			if(fac.health() < 300) {
+		    				// IF CANT BUILD THEN REPAIR
 	        				System.out.println(fac.health());
 	        				closestUnits = Factories.getClosest(gc, availableUnits, fac, toFactory);
 	        				Factories.sendUnits(gc, closestUnits, fac, toFactory);
@@ -114,6 +114,7 @@ public class Player {
 		    					Start.minedKarbonite.add(unitLoc.add(dir));
 		    						
 		    					System.out.println("Karbonite Mined: " + gc.karbonite());
+		    					findKarbonite.updateFieldKarb();
 		    					break;
 		    				}
 		    			}
