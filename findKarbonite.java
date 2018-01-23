@@ -2,34 +2,40 @@ import bc.*;
 import java.util.*;
 
 public class findKarbonite{
-    ArrayList<MapLocation> kTargets = new ArrayList<MapLocation>();
-    VectorField karboniteField;
-
+    static ArrayList<MapLocation> kTargets = new ArrayList<MapLocation>();
+    static VectorField karboniteField;
+    public static int avaSq;
+    
     public static void initKarb(GameController gc) {
-        int height = VectorField.hegiht;
+        int height = VectorField.height;
         int width = VectorField.width;
         Planet planet = VectorField.planet;
         PlanetMap map = gc.startingMap(planet);
-        MapLocation loc = new MapLocation(planet, 0, 0);
+        MapLocation loc;
+        
+        
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                loc.setX(j);
-                loc.setY(i);
-                if (map.initialKarboniteAt(loc) != 0) {
-                    kTargets.add(loc);
-                    continue;
+            		loc = new MapLocation(planet, j, i);
+            		if (map.initialKarboniteAt(loc) != 0) {
+            			kTargets.add(loc);
+            			avaSq++;
+            			continue;
                 }
+            		else if (map.isPassableTerrainAt(loc) == 1) {
+            			avaSq++;
+            		}
             }
         }
     }
 
     public static void vectFieldKarb(GameController gc) {
-        VectorField karboniteField = new VectorField();
+        findKarbonite.karboniteField = new VectorField();
         initKarb(gc);
         karboniteField.setTargets(kTargets);
     }
 
-   /* public static void updateFieldKarb() {
+   public static void updateFieldKarb() {
         ArrayList<MapLocation> mined = Start.minedKarbonite;
         for (int i = 0; i < mined.size(); i++) {
             MapLocation miningLoc = mined.get(i);
@@ -38,5 +44,5 @@ public class findKarbonite{
             }
         }
         karboniteField.setTargets(kTargets);
-    }*/
+    }
 }

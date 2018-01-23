@@ -5,13 +5,15 @@ public class Start {
 
 	public static Direction[] directions = Direction.values();
 	public static boolean toKarbonite = false;
-	public static ArrayList<MapLocation> factories = new ArrayList<>();
+	public static ArrayList<Unit> factories = new ArrayList<>();
+	public static ArrayList<MapLocation> minedKarbonite = new ArrayList<>();
+	
+	static int numWorkers;
 	
 	public static int runTurn(GameController gc, VecUnit units){
 		
 		Unit unit;
 		MapLocation loc;
-		int numWorkers = 0;
 		int size = (int)units.size();
 		int x = 0;
 		int y = 0;
@@ -30,9 +32,10 @@ public class Start {
 			y /= size;
 		}
 		
-		if(numWorkers <= 15) {
+		if(numWorkers <= 10 * (Player.numFactories + 1)) {
 			replicate(gc, units);
 		}
+		
 		else {
 			if(buildFactory(gc, units)) return 1;
 		}
@@ -40,35 +43,36 @@ public class Start {
 		loc = new MapLocation(Planet.Earth, x, y);
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
-			moveToClosestDirection(gc, unit, loc, Start.toKarbonite);
+			loc = unit.location().mapLocation();
+
+			spread(gc, unit, loc, Start.toKarbonite);
 			
 			for(Direction dir : directions) {
 				if(gc.canHarvest(unit.id(), dir)) {
+					
 					gc.harvest(unit.id(), dir);
+					minedKarbonite.add(loc.add(dir));
 					break;
 				}
 			}
 		}
 		
 		Start.toKarbonite = !Start.toKarbonite;
+		Start.numWorkers = 0;
 		return 0;
 	}
 
-	private static void moveToClosestDirection(GameController gc, Unit unit, MapLocation loc, boolean toKarbonite) {
+	private static void spread(GameController gc, Unit unit, MapLocation loc, boolean toKarbonite) {
 		
 		Direction ideal;
 		
-		int mean = (Pathfinding.eHeight + Pathfinding.eWidth)/2;
-		if(!loc.isWithinRange(mean/3, unit.location().mapLocation())) {
+		if(Player.numFactories > 0) {
 			toKarbonite = true;
 		}
 		
 		if(toKarbonite) {
-			ideal = directions[(int)(Math.random()*8)];
-			//ideal = Pathfinding.getPath(loc);
-			
-			//IF THEY ARE AT KARBONITE THEN START MINING AND KEEP TRACK OF KARBONITE LOCATION IN ARRAYLIST AND PASS TO EDWARDO
-			//MINED KARBONITE
+			Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unit.location().mapLocation()));
+			return;
 		}
 		
 		else {
@@ -165,9 +169,6 @@ public class Start {
 					
 					if(numOccupiable == 8) {
 						gc.blueprint(unitId, UnitType.Factory, dir);
-						factories.add(unit.location().mapLocation().add(dir));
-						Player.numFactories++;
-						Player.factoriesBuilt = false;
 						return true;
 					}
 					
@@ -185,9 +186,6 @@ public class Start {
 		
 		if(gc.canBlueprint(idealUnitId, UnitType.Factory, idealDir)) {
 			gc.blueprint(idealUnitId, UnitType.Factory, idealDir);
-			factories.add(idealUnit.location().mapLocation().add(idealDir));
-			Player.numFactories++;
-			Player.factoriesBuilt = false;
 			return true;
 		}
 		

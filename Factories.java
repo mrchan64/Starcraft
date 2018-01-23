@@ -1,34 +1,92 @@
 import bc.*;
+import java.util.*;
 
 public class Factories {
 
-	public static void sendUnits(GameController gc, Unit[] units, MapLocation factory, VectorField toFactory) {
+	public static void sendUnits(GameController gc, Unit[] units, Unit structure, VectorField toStructure) {
 		
 		MapLocation currLoc;
 		Unit unit;
 		int unitId;
-		int factoryId = gc.senseUnitAtLocation(factory).id();
+		int structureId = structure.id();
 		
 		for(int i = 0; i < units.length; i++) {
 			unit = units[i];
 			unitId = unit.id();
 			currLoc = gc.unit(unitId).location().mapLocation();
 			
-			if(!currLoc.isAdjacentTo(factory)) {
-				moveToClosestDirection(gc, unit, toFactory.getDirection(currLoc));
-			}else{
-				if(gc.canBuild(unitId, factoryId)){
-					gc.build(unitId, factoryId);
-				}
+			if(!currLoc.isAdjacentTo(structure.location().mapLocation())) {
+				moveToClosestDirection(gc, unit, toStructure.getDirection(currLoc));
 			}
 			
+			else{
+				
+				if(gc.isMoveReady(unitId)) {
+					moveAroundUnit(gc, unit, structureId);
+				}
+				
+				if(gc.canBuild(unitId, structureId)) {
+					gc.build(unitId, structureId);
+				}
+			}
 		}
 	}
 	
-	public static Unit[] getClosest(GameController gc, VecUnit units, MapLocation factory, VectorField toFactory) {
+	public static void moveAroundUnit(GameController gc, Unit unit, int structureId) {
+		
+		ArrayList<MapLocation> possibleLocs = adjacent(gc, gc.unit(structureId).location().mapLocation());
+		ArrayList<Direction> possibleDirs = new ArrayList<>();
+		
+		MapLocation unitLoc = unit.location().mapLocation();
+		MapLocation attempt;
+		
+		int unitId = unit.id();
+		
+		for(int i = 0; i < Start.directions.length; i++) {
+			if(Start.directions[i] == Direction.Center) continue;
+			
+			attempt = unitLoc.add(Start.directions[i]);
+			
+			for(int j = 0; j < possibleLocs.size(); j++)
+				if(possibleLocs.get(j).equals(attempt)) {
+					possibleDirs.add(Start.directions[i]);
+				}
+		}
+
+		Direction toMove;
+		
+		for(int i = 0; i < possibleDirs.size(); i++) {
+		
+			toMove = possibleDirs.get(i);
+			if(gc.canMove(unitId, toMove)) {
+				gc.moveRobot(unitId, toMove);
+				break;
+			}
+		}
+	}
+	
+	public static ArrayList<MapLocation> adjacent(GameController gc, MapLocation loc) {
+		
+		ArrayList<MapLocation> adjacentLocs = new ArrayList<>(8);
+		MapLocation newLoc;
+		
+		for(int i = 0; i < Start.directions.length; i++) {
+			if(Start.directions[i] == Direction.Center) continue;
+			
+			newLoc = loc.add(Start.directions[i]);
+			
+			if(gc.isOccupiable(newLoc) == 1) {
+				adjacentLocs.add(loc.add(Start.directions[i]));
+			}
+		}
+		
+		return adjacentLocs;
+	}
+	
+	public static Unit[] getClosest(GameController gc, ArrayList<Unit> units, Unit structure, VectorField toFactory) {
 
 		
-		int numOpenSpaces = getOpenSpaces(gc, factory);
+		int numOpenSpaces = getOpenSpaces(gc, structure.location().mapLocation());
 		
 		int size = (int) units.size();
 		Unit[] closestUnits = new Unit[numOpenSpaces];
@@ -46,7 +104,6 @@ public class Factories {
 			
 			magnitude = toFactory.getMagnitude(currloc);
 			
-			last = i>numOpenSpaces? numOpenSpaces:i;
 			for(place = last; place>0; place--){
 				if(magnitudes[place-1]<=magnitude)break;
 				if(place!=numOpenSpaces){
@@ -60,10 +117,6 @@ public class Factories {
 				last = last>=numOpenSpaces?numOpenSpaces:last+1;
 			}
 		}
-		for(int i = 0;i<numOpenSpaces; i++){
-			System.out.println(closestUnits[i].id());
-		}
-		
 		return closestUnits;
 	}
 	

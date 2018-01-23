@@ -1,6 +1,7 @@
 // import the API.
 // See xxx for the javadocs.
 import bc.*;
+import java.util.*;
 
 public class Player {
 	
@@ -11,49 +12,115 @@ public class Player {
 
         GameController gc = new GameController();
         VectorField.initWalls(gc);
+		findKarbonite.vectFieldKarb(gc);
+		Upgrades.upgradeUnits(gc);
 
         VecUnit units = gc.myUnits();
+        Unit unit;
+        int unitId;
+        MapLocation unitLoc;
         Unit[] closestUnits;
         int stage = 0;
+        ArrayList<Unit> availableUnits;
         
-        while (stage == 0) {
-        	
-        	System.out.println(gc.round());
-    	 	units = gc.myUnits();
-    	 	stage += Start.runTurn(gc, units); 
-    	 	
-    	 	gc.nextTurn();
-        }
+        VectorField toFactory = new VectorField();
+        MapLocation factory = new MapLocation(Planet.Earth, 0, 0);
+        
+        while (true) {
+        		
+        		units = gc.myUnits();
+        		
+        		for(int i = 0; i < units.size(); i++) {
+        			
+        			unit = units.get(i);
+        			if(unit.unitType() == UnitType.Factory) {
+        				numFactories++;
 
-        MapLocation factory;
-        
-        while(stage == 1) {
+        				if(unit.health() < 300) {
+
+        					Start.factories.add(unit);
+        				}
+        			}
+        		}
         	
-    		if(!factoriesBuilt) {
-    			VectorField toFactory = new VectorField();
-    			
-    			factory = Start.factories.get(numFactories - 1);
-    			toFactory.setTarget(factory);
-    			closestUnits = Factories.getClosest(gc, units, factory, toFactory);
-    			
-    			Unit test = gc.senseUnitAtLocation(factory);
-    			
-    			while(test.health() < 300) {
-    	        	System.out.println(gc.round());
-    			
-    				Factories.sendUnits(gc, closestUnits, factory, toFactory);
-    				gc.nextTurn();
-    			}
-    			
-    			factoriesBuilt = true;
-    		}
-    		else {
-    			gc.nextTurn();
-    		}
-        }
-        
-        while(true) {
-        	 	gc.nextTurn();
+	        	if(stage >= 0) {
+
+	        		if(stage == 0) {
+	        			stage += Start.runTurn(gc, units);
+	        		}
+	        		
+	        		else if(numFactories - 1 < findKarbonite.avaSq / 100) {
+			    			Start.runTurn(gc, units);
+			    	}
+	        	}
+	        
+	        if(stage >= 1) {
+
+	        		for(Unit fac : Start.factories) {
+	    	        	
+		        		availableUnits = new ArrayList<>();
+		        		
+		        		for(int i = 0; i < units.size(); i++) {
+		        			availableUnits.add(units.get(i));
+		        		}
+
+	        			if(!factoriesBuilt) {
+		    			
+	        				toFactory = new VectorField();
+		    				toFactory.setTarget(fac.location().mapLocation());
+		    				factoriesBuilt = true;
+	        			}
+		    			
+	        			if(fac.structureIsBuilt() == 0) {
+		    				    			
+	        				System.out.println(fac.health());
+	        				closestUnits = Factories.getClosest(gc, availableUnits, fac, toFactory);
+	        				Factories.sendUnits(gc, closestUnits, fac, toFactory);
+	        				
+	        				for(int i = 0; i < closestUnits.length; i++) {
+	        					
+	        					unit = closestUnits[i];
+	        					for(int j = 0; j < availableUnits.size(); j++) {
+	        						if(availableUnits.get(j).equals(unit)) {
+	        							availableUnits.remove(unit);
+	        							j--;
+	        						}
+	        					}
+	        				}
+	        			}
+		    		
+	        			else {
+		    			
+		    				for(int i = 0; i < units.size(); i++) {
+		    			
+			    				unit = units.get(i);
+			    				unitId = unit.id();
+			    				unitLoc = unit.location().mapLocation();
+			    			
+			    				if(unit.unitType() != UnitType.Worker) continue;
+			    			
+			    				if(gc.isMoveReady(unitId) && (!unitLoc.isAdjacentTo(factory) || Start.factories.size() == 0)) {
+			    					Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unitLoc));
+			    				}
+		    				}
+		    			}
+		    		
+	        			if(gc.round() >= 500 && gc.karbonite() >= 75) {
+		    			
+		    				stage = 2;
+		    			}
+	        	
+		    			numFactories = 0;
+	        		}
+	        }
+	        		
+	        if(stage >= 2) {
+	        	
+	      		//rockets
+	        	
+	        	}
+	        
+	        	gc.nextTurn();
         }
     }
 }
