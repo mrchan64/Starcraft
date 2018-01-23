@@ -117,10 +117,6 @@ public class VectorField {
 		if(foundloc==null){
 			foundloc = new MapLocation(Planet.Earth, 0, 0);
 			founddir = Direction.Center;
-			System.out.println("found nothing");
-		}
-		if(check.equals(foundloc) || founddir == Direction.Center){
-			System.out.println(check+" "+foundloc+ " "+founddir);
 		}
 		dirs[x][y] = founddir;
 		magnitude[x][y] = foundmag+1;
