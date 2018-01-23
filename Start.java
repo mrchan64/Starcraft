@@ -46,15 +46,6 @@ public class Start {
 			loc = unit.location().mapLocation();
 
 			spread(gc, unit, loc, Start.toKarbonite);
-			
-			for(Direction dir : directions) {
-				if(gc.canHarvest(unit.id(), dir)) {
-					
-					gc.harvest(unit.id(), dir);
-					minedKarbonite.add(loc.add(dir));
-					break;
-				}
-			}
 		}
 		
 		Start.toKarbonite = !Start.toKarbonite;

@@ -28,6 +28,7 @@ public class Player {
 
         
         while (true) {
+        	
         		Start.factories = new ArrayList<>();
         		UnitBuildOrder.builtFacts = new ArrayList<>();
         		numFactories = 0;
@@ -96,31 +97,37 @@ public class Player {
 	        					}
 	        				}
 	        			}
-		    		
-	        			else {
+	        		}
 		    			
-		    				for(int i = 0; i < units.size(); i++) {
+	        		for(int i = 0; i < units.size(); i++) {
 		    			
-			    				unit = units.get(i);
-			    				unitId = unit.id();
-			    				unitLoc = unit.location().mapLocation();
-			    			
-			    				if(unit.unitType() != UnitType.Worker) continue;
-			    			
-			    				if(gc.isMoveReady(unitId) && (!unitLoc.isAdjacentTo(factory) || Start.factories.size() == 0)) {
-			    					Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unitLoc));
-			    				}
+		    			unit = units.get(i);
+		    			unitId = unit.id();
+		    			unitLoc = unit.location().mapLocation();
+		    			
+		    			if(unit.unitType() != UnitType.Worker) continue;
+		    				
+		    			for(Direction dir : Start.directions) {
+		    				if(gc.canHarvest(unit.id(), dir)) {
+		    						
+		    					gc.harvest(unit.id(), dir);
+		    					Start.minedKarbonite.add(unitLoc.add(dir));
+		    						
+		    					System.out.println("Karbonite Mined: " + gc.karbonite());
+		    					break;
 		    				}
 		    			}
+		    			
+		    			if(gc.isMoveReady(unitId) && (!unitLoc.isAdjacentTo(factory) || Start.factories.size() == 0)) {
+		    				Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unitLoc));
+		    			}
+	    			}
 		    		
-	        			if(gc.round() >= 500 && gc.karbonite() >= 75) {
+	        		if(gc.round() >= 500 && gc.karbonite() >= 75) {
 		    			
 		    				stage = 2;
-		    			}
-	        	
-		    			numFactories = 0;
-	        		}
-	        }
+		    		}
+	        	}
 	        		
 	        if(stage >= 2) {
 	        	
