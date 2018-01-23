@@ -1,7 +1,55 @@
 import bc.*;
-import java.util.*;
+import java.util.ArrayList;
 
 public class Factories {
+	
+    public static VectorField toFactory;
+    public static MapLocation factory;
+    public static Unit unit;
+    public static int unitId;
+    public static MapLocation unitLoc;
+    public static Unit[] closestUnits;
+	
+	public static void runTurn(GameController gc, ArrayList<Unit> units) {
+		
+		for(Unit fac : Start.factories) {
+			
+			toFactory = new VectorField();
+			toFactory.setTarget(fac.location().mapLocation());
+			
+			if(fac.health() < 300) {
+				
+				closestUnits = Factories.getClosest(gc, Player.availableUnits, fac, toFactory);
+
+				Factories.sendUnits(gc, closestUnits, fac, toFactory);
+
+				for(int i = 0; i < closestUnits.length; i++) {
+					
+					unit = closestUnits[i];
+					for(int j = 0; j < Player.availableUnits.size(); j++) {
+						
+						if(Player.availableUnits.get(j).equals(unit)) {
+							Player.availableUnits.remove(unit);
+							j--;
+						}
+					}
+				}
+			}
+
+		}
+			
+		for(int i = 0; i < Player.availableUnits.size(); i++) {
+			
+			unit = Player.availableUnits.get(i);
+			unitId = unit.id();
+			unitLoc = unit.location().mapLocation();
+			System.out.println(i + ": " + unit.unitType());
+			
+			if(gc.isMoveReady(unitId) && (!unitLoc.isAdjacentTo(factory) || Start.factories.size() == 0)) {
+				Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unitLoc));
+			}
+		}
+	}
 
 	public static void sendUnits(GameController gc, Unit[] units, Unit structure, VectorField toStructure) {
 		

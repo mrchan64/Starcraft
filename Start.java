@@ -1,10 +1,11 @@
 import bc.*;
-import java.util.*;
+import java.util.ArrayList;
 
 public class Start {
 
 	public static Direction[] directions = Direction.values();
 	public static ArrayList<Unit> factories = new ArrayList<>();
+	public static ArrayList<Unit> rockets = new ArrayList<>();
 	
 	static int numWorkers;
 	
@@ -31,7 +32,7 @@ public class Start {
 			y /= size;
 		}
 		
-		if(numWorkers <= 10 * (Player.numFactories + 1)) {
+		if(numWorkers <= 8 * (Player.numFactories + 1)) {
 			replicate(gc, units);
 		}
 		

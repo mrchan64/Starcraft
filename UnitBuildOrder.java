@@ -9,6 +9,7 @@ public class UnitBuildOrder {
 	public static final int RangerPerc = 5;
 	public static final int MagePerc = 2;
 	public static final int KnightPerc = 2;
+	public static ArrayList<Unit> builtRocks = new ArrayList<>();
 
 
 	public static void buildUnit(GameController gc, UnitType type, Unit factory) {
