@@ -7,6 +7,7 @@ public class Player {
 	
 	public static boolean factoriesBuilt = true;
 	public static int numFactories = 0;
+	public static ArrayList<Unit> availableUnits;
 	
     public static void main(String[] args) {
 
@@ -21,7 +22,6 @@ public class Player {
         MapLocation unitLoc;
         Unit[] closestUnits;
         int stage = 0;
-        ArrayList<Unit> availableUnits;
         
         VectorField toFactory = new VectorField();
         MapLocation factory = new MapLocation(Planet.Earth, 0, 0);
@@ -38,6 +38,8 @@ public class Player {
         		for(int i = 0; i < units.size(); i++) {
         			
         			unit = units.get(i);
+        			unitLoc = unit.location().mapLocation();
+        			
         			if(unit.unitType() == UnitType.Factory) {
         				numFactories++;
 
@@ -50,46 +52,60 @@ public class Player {
         					System.out.println("Completed Factory size: "+UnitBuildOrder.builtFacts.size());
         				}
         			}
+        			
+	    			if(unit.unitType() != UnitType.Worker) continue;
+    				
+	    			for(Direction dir : Start.directions) {
+	    				if(gc.canHarvest(unit.id(), dir)) {
+	    						
+	    					gc.harvest(unit.id(), dir);
+	    					Start.minedKarbonite.add(unitLoc.add(dir));
+	    						
+	    					System.out.println("Karbonite Mined: " + gc.karbonite());
+	    					findKarbonite.updateFieldKarb();
+	    					break;
+	    				}
+	    			}
         		}
-        	
-	        	if(stage >= 0) {
-
-	        		if(stage == 0) {
-	        			stage += Start.runTurn(gc, units);
-	        		}
-	        		
-	        		else if(numFactories - 1 < findKarbonite.avaSq / 100) {
-			    			Start.runTurn(gc, units);
-			    	}
-	        	}
+        		
+        		if(stage >= 2) {
+        			
+        			// rockets!!!!!
+        		}
+        		
+        		availableUnits = new ArrayList<>();
+    		
+        		for(int i = 0; i < units.size(); i++) {
+        			
+        			unit = units.get(i);
+        			
+        			if(unit.unitType() == UnitType.Worker) availableUnits.add(units.get(i));
+        		}
 	        
 	        if(stage >= 1) {
 
 	        		for(Unit fac : Start.factories) {
-	    	        	
-		        		availableUnits = new ArrayList<>();
-		        		
-		        		for(int i = 0; i < units.size(); i++) {
-		        			availableUnits.add(units.get(i));
-		        		}
-
-	        			if(!factoriesBuilt) {
 		    			
-	        				toFactory = new VectorField();
-		    				toFactory.setTarget(fac.location().mapLocation());
-		    				factoriesBuilt = true;
-	        			}
+	        			toFactory = new VectorField();
+		    			toFactory.setTarget(fac.location().mapLocation());
 		    			
-	        			if(fac.structureIsBuilt() == 0) {
-		    				    			
-	        				System.out.println(fac.health());
+	        			if(fac.health() < 300) {
+	        				
+	        				System.out.println("starting sending units to factories");
+		    				// IF CANT BUILD THEN REPAIR
+	        				System.out.println("factory " + fac.id() + "health: " + fac.health());
 	        				closestUnits = Factories.getClosest(gc, availableUnits, fac, toFactory);
+	        				System.out.println("num of closest units: " + closestUnits.length);
 	        				Factories.sendUnits(gc, closestUnits, fac, toFactory);
 	        				
+	        				System.out.println("AVAIL UNITS BEFORE: " + availableUnits.size());
 	        				for(int i = 0; i < closestUnits.length; i++) {
 	        					
 	        					unit = closestUnits[i];
 	        					for(int j = 0; j < availableUnits.size(); j++) {
+	        						
+	        						//System.out.println(availableUnits.get(j) == null);
+	        						//System.out.println(unit == null);
 	        						if(availableUnits.get(j).equals(unit)) {
 	        							availableUnits.remove(unit);
 	        							j--;
@@ -97,26 +113,15 @@ public class Player {
 	        					}
 	        				}
 	        			}
+        				
+        				System.out.println("AVAIL UNITS NOW: " + availableUnits.size());
 	        		}
 		    			
-	        		for(int i = 0; i < units.size(); i++) {
+	        		for(int i = 0; i < availableUnits.size(); i++) {
 		    			
-		    			unit = units.get(i);
+		    			unit = availableUnits.get(i);
 		    			unitId = unit.id();
 		    			unitLoc = unit.location().mapLocation();
-		    			
-		    			if(unit.unitType() != UnitType.Worker) continue;
-		    				
-		    			for(Direction dir : Start.directions) {
-		    				if(gc.canHarvest(unit.id(), dir)) {
-		    						
-		    					gc.harvest(unit.id(), dir);
-		    					Start.minedKarbonite.add(unitLoc.add(dir));
-		    						
-		    					System.out.println("Karbonite Mined: " + gc.karbonite());
-		    					break;
-		    				}
-		    			}
 		    			
 		    			if(gc.isMoveReady(unitId) && (!unitLoc.isAdjacentTo(factory) || Start.factories.size() == 0)) {
 		    				Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unitLoc));
@@ -128,12 +133,17 @@ public class Player {
 		    				stage = 2;
 		    		}
 	        	}
-	        		
-	        if(stage >= 2) {
-	        	
-	      		//rockets
-	        	
-	        	}
+	        
+	        if(stage >= 0) {
+
+        			if(stage == 0) {
+        				stage += Start.runTurn(gc, availableUnits);
+        			}
+        		
+        			else if(numFactories - 1 < findKarbonite.avaSq / 100) {
+        				Start.runTurn(gc, availableUnits);
+        			}
+        		}
 	        
 	        	gc.nextTurn();
         }

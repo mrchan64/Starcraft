@@ -10,7 +10,7 @@ public class Start {
 	
 	static int numWorkers;
 	
-	public static int runTurn(GameController gc, VecUnit units){
+	public static int runTurn(GameController gc, ArrayList<Unit> units){
 		
 		Unit unit;
 		MapLocation loc;
@@ -43,7 +43,6 @@ public class Start {
 		loc = new MapLocation(Planet.Earth, x, y);
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
-			loc = unit.location().mapLocation();
 
 			spread(gc, unit, loc, Start.toKarbonite);
 		}
@@ -63,6 +62,7 @@ public class Start {
 		
 		if(toKarbonite) {
 			Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unit.location().mapLocation()));
+			findKarbonite.updateFieldKarb();
 			return;
 		}
 		
@@ -99,7 +99,7 @@ public class Start {
 		return 999;
 	}
 	
-	private static void replicate(GameController gc, VecUnit units) {
+	private static void replicate(GameController gc, ArrayList<Unit> units) {
 		
 		Unit unit;
 		int unitId;
@@ -117,7 +117,7 @@ public class Start {
 		}
 	}
 	
-	private static boolean buildFactory(GameController gc, VecUnit units) {
+	private static boolean buildFactory(GameController gc, ArrayList<Unit> units) {
 		
 		Unit unit;
 		int unitId;
