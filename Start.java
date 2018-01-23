@@ -4,9 +4,7 @@ import java.util.*;
 public class Start {
 
 	public static Direction[] directions = Direction.values();
-	public static boolean toKarbonite = false;
 	public static ArrayList<Unit> factories = new ArrayList<>();
-	public static ArrayList<MapLocation> minedKarbonite = new ArrayList<>();
 	
 	static int numWorkers;
 	
@@ -44,51 +42,16 @@ public class Start {
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
 
-			spread(gc, unit, loc, Start.toKarbonite);
+			goForKarbonite(gc, unit);
 		}
-		
-		Start.toKarbonite = !Start.toKarbonite;
+
 		Start.numWorkers = 0;
 		return 0;
 	}
 
-	private static void spread(GameController gc, Unit unit, MapLocation loc, boolean toKarbonite) {
-		
-		Direction ideal;
-		
-		if(Player.numFactories > 0) {
-			toKarbonite = true;
-		}
-		
-		if(toKarbonite) {
-			Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unit.location().mapLocation()));
-			findKarbonite.updateFieldKarb();
-			return;
-		}
-		
-		else {
-			ideal = loc.directionTo(unit.location().mapLocation());
-		}
-		
-		int index = linearSearch(directions, ideal);
-		Direction actual = ideal;
-		int unitId = unit.id();
-		
-		for(int i = 0; i < 5; i++) {
+	private static void goForKarbonite(GameController gc, Unit unit) {
 
-			actual = directions[(index + i) % 8];
-			if(gc.canMove(unitId, actual) && gc.isMoveReady(unitId)) {
-				gc.moveRobot(unitId, actual);
-				break;
-			}
-
-			if(i == 0 || i == 4) continue;
-			actual = directions[(index - i + 8) % 8];
-			if(gc.canMove(unitId, actual) && gc.isMoveReady(unitId)) {
-				gc.moveRobot(unitId, actual);
-				break;
-			}
-		}
+		Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unit.location().mapLocation()));		
 	}
 
 	public static int linearSearch(Direction[] array, Direction dir) {
@@ -174,7 +137,7 @@ public class Start {
 				numOccupiable = 0;
 			}
 		}
-		
+
 		if(gc.canBlueprint(idealUnitId, UnitType.Factory, idealDir)) {
 			gc.blueprint(idealUnitId, UnitType.Factory, idealDir);
 			return true;

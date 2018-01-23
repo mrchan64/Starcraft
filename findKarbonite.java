@@ -2,69 +2,60 @@ import bc.*;
 import java.util.*;
 
 public class findKarbonite{
-    static ArrayList<MapLocation> kTargets = new ArrayList<MapLocation>();
+
     static VectorField karboniteField;
     public static int avaSq;
     public static int totalKarbOnMap;
     public static MapLocation spawn;
+    public static int[][] currentKarbs;
+    public static MapLocation[][] mapLocations;
     
     public static void initKarb(GameController gc) {
+    	
+    		karboniteField = new VectorField();
         int height = VectorField.height;
         int width = VectorField.width;
         Planet planet = VectorField.planet;
         PlanetMap map = gc.startingMap(planet);
-        MapLocation loc;
+        currentKarbs = new int[width][height];
+        mapLocations = new MapLocation[width][height];
         
-        
-        
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-            		loc = new MapLocation(planet, j, i);
-
-                    int karb = (int)map.initialKarboniteAt(loc);
-
-            		if (karb != 0) {
-            			kTargets.add(loc);
-            			avaSq++;
-                        totalKarbOnMap += karb;
-            			continue;
-                }
-            		else if (map.isPassableTerrainAt(loc) == 1) {
-            			avaSq++;
-            		}
-            }
+        for(int i = 0; i < width; i++) {
+        		for(int j = 0; j < height; j++) {
+        			mapLocations[i][j] = new MapLocation(planet, i, j);
+        			currentKarbs[i][j] = (int)map.initialKarboniteAt(mapLocations[i][j]);
+        			
+        			if(VectorField.terrain[i][j] == 1) avaSq++;
+        		}
         }
     }
+    
     public static void getOppositeSpawn(Unit unit) {
-    	spawn = unit.location().mapLocation();
-    	int x = VectorField.width - spawn.getX();
-    	int y = VectorField.height -spawn.getY();
-    	spawn = new MapLocation(VectorField.planet, x, y);
+    		spawn = unit.location().mapLocation();
+    		int x = VectorField.width - spawn.getX();
+    		int y = VectorField.height -spawn.getY();
+    		spawn = new MapLocation(VectorField.planet, x, y);
     }
 
-    public static void vectFieldKarb(GameController gc) {
-        findKarbonite.karboniteField = new VectorField();
-        initKarb(gc);
-        karboniteField.setTargets(kTargets);
-    }
-
-   public static void updateFieldKarb() {
+   public static void updateFieldKarb(GameController gc) {
+	  
+	   ArrayList<MapLocation> temp = new ArrayList<>();
 	   
-	   MapLocation loc;
+	   for(int i = 0; i < VectorField.width; i++) {
+		   for(int j = 0; j < VectorField.height; j++) {
+			   try {
+				   currentKarbs[i][j] = (int)gc.karboniteAt(mapLocations[i][j]);
+			   }
+			   catch(Exception E) {
+				   // do nothing
+			   }
+			   if(currentKarbs[i][j] > 0) {
+				   temp.add(mapLocations[i][j]);
+			   }
+		   }
+	   }
 	   
        karboniteField = new VectorField();
-        ArrayList<MapLocation> mined = Start.minedKarbonite;
-        for (int i = 0; i < mined.size(); i++) {
-            MapLocation miningLoc = mined.get(i);
-            for(int j = 0; j < kTargets.size(); j++) {
-            	
-            		loc = kTargets.get(j);
-   
-            		if (miningLoc.equals(loc)) {
-            			kTargets.remove(loc);
-            		}
-            }
-        }
-        karboniteField.setTargets(kTargets);
+       karboniteField.setTargets(temp);
     }
 }
