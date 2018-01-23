@@ -10,7 +10,7 @@ public class Start {
 	
 	static int numWorkers;
 	
-	public static int runTurn(GameController gc, VecUnit units){
+	public static int runTurn(GameController gc, ArrayList<Unit> units){
 		
 		Unit unit;
 		MapLocation loc;
@@ -99,7 +99,7 @@ public class Start {
 		return 999;
 	}
 	
-	private static void replicate(GameController gc, VecUnit units) {
+	private static void replicate(GameController gc, ArrayList<Unit> units) {
 		
 		Unit unit;
 		int unitId;
@@ -117,7 +117,7 @@ public class Start {
 		}
 	}
 	
-	private static boolean buildFactory(GameController gc, VecUnit units) {
+	private static boolean buildFactory(GameController gc, ArrayList<Unit> units) {
 		
 		Unit unit;
 		int unitId;
