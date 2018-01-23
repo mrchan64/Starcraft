@@ -5,20 +5,38 @@ public class Combat {
 	//what action to take when fighting
 	//overall commands
 	
+	//2d array of where enemy is
+	//radius = (width/2)^2 + (height/2)^2
+	
 	static GameController gc;
 	static Team team;
-	boolean combatState = false;
-	HashSet<Unit> enemies = new HashSet<Unit>();
-	int rangerCount = 0;
-	int mageCount = 0;
-	int knightCount = 0;
+	static boolean combatState = false;
+	static VecUnit enemies;
+	static int rangerCount = 0;
+	static int mageCount = 0;
+	static int knightCount = 0;
 	
-	public VecUnit inVision(Unit unit){
-		VecUnit inVision = gc.senseNearbyUnitsByTeam(unit.location().mapLocation(), 
-				unit.visionRange(), team);
+	
+	static int width = VectorField.width;
+	static int height = VectorField.height;
+	static int[][] world = new int[width][height];
+	static int radius = (width/2) * (width/2) + (height/2) * (height/2) + 5;
+	static MapLocation center = new MapLocation(VectorField.planet, width/2, height/2);
+	
+	
+	
+	public static int[][] updateEnemyPositions(ArrayList<Unit> units){
+		int posX;
+		int posY;
 		UnitType type;
-		for(int i = 0; i < inVision.size(); i++){
-			type = inVision.get(i).unitType();
+		Unit enemy;
+
+		world = new int[VectorField.width][VectorField.height];
+		enemies = gc.senseNearbyUnitsByTeam(center, radius, team);
+		
+		for(int i = 0; i < enemies.size(); i++){
+			enemy = enemies.get(i);
+			type = enemy.unitType();
 			if(type == UnitType.Ranger){
 				rangerCount++;
 			}else if(type == UnitType.Mage){
@@ -26,32 +44,126 @@ public class Combat {
 			}else if (type == UnitType.Knight){
 				knightCount++;
 			}
-			enemies.add(inVision.get(i));
+			
+			posX = enemy.location().mapLocation().getX();
+			posY = enemy.location().mapLocation().getY();
+			world[posX][posY] = 2;
+
 		}
-		return inVision;
+	
+		return world;
+		
 	}
 	
-	public VecUnit inRange(Unit unit){
-		return gc.senseNearbyUnitsByTeam(unit.location().mapLocation(), 
-				unit.attackRange(), team);
-	}
-	
-	public boolean inCombat(Unit unit){
-		if(inVision(unit).size() > 0){
-			combatState = true;
+	public static boolean inVision(Unit unit, Unit target){
+		if(unit.location().mapLocation().distanceSquaredTo(target.location().mapLocation()) <
+				unit.visionRange()){
+			return true;
 		}else{
-			combatState = false;
+			return false;
 		}
-		return combatState;
 	}
 	
-	public MapLocation setRallyPoint(Unit unit){
+	public static boolean inRange(Unit unit, Unit target){
+		if(unit.location().mapLocation().distanceSquaredTo(target.location().mapLocation()) <
+				unit.attackRange()){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	public static boolean inCombat(Unit unit){
+		for(int i = 0; i < enemies.size(); i++){
+			if(inVision(unit, enemies.get(i))){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	public static MapLocation setRallyPoint(Unit unit){
 		return unit.location().mapLocation();
 	}
 	
-	//determines what unit to target
- 	public Unit target(Unit unit){
+	public static void setField(Unit unit, Unit target){
+		VectorField field = new VectorField();
+		field.setTarget(target.location().mapLocation());
+	}
+	
+	//advance until in range or if you want to move closer, advance is how much closer
+	public static boolean advanceOnTarget(Unit unit, VectorField field, Unit target, int advance){
+		MapLocation location = unit.location().mapLocation();
+		Direction direction = field.getDirection(location);
+		int ID = unit.id();
+		if(!gc.canAttack(ID, target.id())){
+			gc.moveRobot(ID, direction);
+		}else if(advance > 0){
+			if(location.distanceSquaredTo(target.location().mapLocation()) > 
+				unit.attackRange() + advance){
+				gc.moveRobot(ID, direction);
+			}
+		}else{
+			return true;
+		}
+		return false;
+	}
+	
+	
+	//attacks target if it can, otherwise returns false
+	public static boolean attack(Unit unit, Unit target){
+		int targetID = unit.id();
+		int unitID = target.id();
+		UnitType type = target.unitType();
+		if(gc.isAttackReady(unitID)){
+			if(gc.canAttack(unitID, targetID)){
+				gc.attack(unitID, targetID);
+				if(target.health() == 0){
+					if(type == UnitType.Ranger){
+						rangerCount--;
+					}else if(type == UnitType.Mage){
+						mageCount--;
+					}else if (type == UnitType.Knight){
+						knightCount--;
+					}
+				}
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+	
+	}
+	
+	//chooses a target for healer
+	public static Unit healTarget(ArrayList<Unit> units, Unit healer, long range){
 		Unit target = null;
+		MapLocation healPos = healer.location().mapLocation();
+		long targetDist = Long.MAX_VALUE;
+		MapLocation currPos;
+		long currDist;
+		for(Unit unit: units){
+			if(unit.health() < unit.maxHealth()){
+				currPos = unit.location().mapLocation();
+				currDist = healPos.distanceSquaredTo(currPos);
+				if(currDist < range && currDist < targetDist){
+					targetDist = currDist;
+					target = unit;
+				}
+			}
+		}
+		
+		return target;
+	}
+	
+	//determines what unit to target
+ 	public static Unit rangeTarget(Unit unit, VecUnit list){
+		Unit target = null;
+		Unit healer = null;
+		long distanceH = 0;
 		Unit ranger = null;
 		long distanceR = 0;
 		Unit mage = null;
@@ -59,16 +171,27 @@ public class Combat {
 		Unit other = null;
 		long distanceO = 0;
 		Unit curr;
-		VecUnit list = inRange(unit);
+		UnitType cType;
+		UnitType uType = unit.unitType();
 		MapLocation location = unit.location().mapLocation();
 		long distance;
-		if(combatState){
+		if(inCombat(unit)){
 			for(int i = 0; i < list.size(); i++ ){
 				curr = list.get(i);
+				cType = curr.unitType();
 				distance = location.distanceSquaredTo(curr.location().mapLocation());
 				//nearest mage
-				if(unit.unitType() == UnitType.Ranger){
-					if(curr.unitType() == UnitType.Mage){
+				if(uType == UnitType.Ranger){
+					if(cType == UnitType.Healer){
+						if(healer == null){
+							healer = curr;
+							distanceH = distance;
+						}else if(distance < distanceH){
+							healer = curr;
+							distanceH = distance;
+						}
+					}
+					if(cType == UnitType.Mage){
 						if(mage == null){
 							mage = curr;
 							distanceM = distance;
@@ -77,7 +200,7 @@ public class Combat {
 							distanceM = distance;
 						}
 						//nearest ranger
-					}else if(curr.unitType() == UnitType.Ranger){
+					}else if(cType == UnitType.Ranger){
 						if(ranger == null){
 							ranger = curr;
 							distanceR = distance;
@@ -95,7 +218,9 @@ public class Combat {
 							distanceO = distance;
 						}
 					}
-					if(mage != null){
+					if(healer != null){
+						target = healer;
+					}else if(mage != null){
 						target = mage;
 					}else if(ranger != null){
 						target = ranger;
@@ -118,4 +243,65 @@ public class Combat {
 		}
 		return target;
 	}//end target
+
+ 	//probably only good for rangers, but collects closest rangers to target
+ 	public static void concentrateFire(ArrayList<Unit> available, Unit target, boolean snipe){
+ 		Unit first = available.get(0);
+ 		//calculates number of rangers needed to one shot
+ 		int squadSize = (int) target.health() / first.damage();
+ 		Unit[] squad = new Unit[squadSize];
+ 		int last = 0;
+ 		long distance;
+ 		long d2 = 0;
+ 		MapLocation targetPos = target.location().mapLocation();
+ 		Unit curr = available.get(0);
+ 		Unit temp;
+ 		
+ 		squad[0] = curr;
+ 		
+ 		if(squadSize > available.size()){
+ 			squadSize = available.size();
+ 		}
+ 		
+ 		//find closest friendlies to make squad
+ 		for(int i = 1; i < available.size(); i++){
+ 			curr = available.get(i);
+ 			distance = curr.location().mapLocation().distanceSquaredTo(targetPos);
+ 			for(int j = 0; j < last; j++){
+ 				d2 = squad[j].location().mapLocation().distanceSquaredTo(targetPos);
+ 				if(!snipe){
+ 					if(last == squadSize && distance > d2){
+ 	 					break;
+ 	 				}
+ 	 				if(distance < d2){
+ 	 					temp = squad[j];
+ 	 					curr = squad[j];
+ 	 					squad[j+1] = temp;
+ 	 				}else{
+ 	 					squad[j+1] = curr;
+ 	 				}
+ 	 				//if we are sniping we want the furthest rangers
+ 				}else{
+ 					if(curr.rangerCountdown() == 0 || last == squadSize && distance < d2){
+ 	 					break;
+ 	 				}
+ 	 				if(distance > d2){
+ 	 					temp = squad[j];
+ 	 					curr = squad[j];
+ 	 					squad[j+1] = temp;
+ 	 				}else{
+ 	 					squad[j+1] = curr;
+ 	 				}
+ 				}
+ 		
+ 			}
+ 			
+ 			if(last < squadSize){
+ 				last++;
+ 			}
+ 			
+ 			
+ 		}
+ 	}
+
 }
