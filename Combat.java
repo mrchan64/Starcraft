@@ -87,8 +87,80 @@ public class Combat {
 		return unit.location().mapLocation();
 	}
 	
+	public static void setField(Unit unit, Unit target){
+		VectorField field = new VectorField();
+		field.setTarget(target.location().mapLocation());
+	}
+	
+	//advance until in range or if you want to move closer, advance is how much closer
+	public static boolean advanceOnTarget(Unit unit, VectorField field, Unit target, int advance){
+		MapLocation location = unit.location().mapLocation();
+		Direction direction = field.getDirection(location);
+		int ID = unit.id();
+		if(!gc.canAttack(ID, target.id())){
+			gc.moveRobot(ID, direction);
+		}else if(advance > 0){
+			if(location.distanceSquaredTo(target.location().mapLocation()) > 
+				unit.attackRange() + advance){
+				gc.moveRobot(ID, direction);
+			}
+		}else{
+			return true;
+		}
+		return false;
+	}
+	
+	
+	//attacks target if it can, otherwise returns false
+	public static boolean attack(Unit unit, Unit target){
+		int targetID = unit.id();
+		int unitID = target.id();
+		UnitType type = target.unitType();
+		if(gc.isAttackReady(unitID)){
+			if(gc.canAttack(unitID, targetID)){
+				gc.attack(unitID, targetID);
+				if(target.health() == 0){
+					if(type == UnitType.Ranger){
+						rangerCount--;
+					}else if(type == UnitType.Mage){
+						mageCount--;
+					}else if (type == UnitType.Knight){
+						knightCount--;
+					}
+				}
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+	
+	}
+	
+	//chooses a target for healer
+	public static Unit healTarget(ArrayList<Unit> units, Unit healer, long range){
+		Unit target = null;
+		MapLocation healPos = healer.location().mapLocation();
+		long targetDist = Long.MAX_VALUE;
+		MapLocation currPos;
+		long currDist;
+		for(Unit unit: units){
+			if(unit.health() < unit.maxHealth()){
+				currPos = unit.location().mapLocation();
+				currDist = healPos.distanceSquaredTo(currPos);
+				if(currDist < range && currDist < targetDist){
+					targetDist = currDist;
+					target = unit;
+				}
+			}
+		}
+		
+		return target;
+	}
+	
 	//determines what unit to target
- 	public static Unit target(Unit unit, VecUnit list){
+ 	public static Unit rangeTarget(Unit unit, VecUnit list){
 		Unit target = null;
 		Unit healer = null;
 		long distanceH = 0;
