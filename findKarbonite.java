@@ -5,6 +5,7 @@ public class findKarbonite{
     static ArrayList<MapLocation> kTargets = new ArrayList<MapLocation>();
     static VectorField karboniteField;
     public static int avaSq;
+    public static int totalKarbOnMap;
     
     public static void initKarb(GameController gc) {
         int height = VectorField.height;
@@ -17,9 +18,11 @@ public class findKarbonite{
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
             		loc = new MapLocation(planet, j, i);
-            		if (map.initialKarboniteAt(loc) != 0) {
+                    int karb = map.initialKarboniteAt(loc);
+            		if (karb != 0) {
             			kTargets.add(loc);
             			avaSq++;
+                        totalKarbOnMap += karb;
             			continue;
                 }
             		else if (map.isPassableTerrainAt(loc) == 1) {

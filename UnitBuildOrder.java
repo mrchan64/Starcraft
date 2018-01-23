@@ -30,6 +30,14 @@ public class UnitBuildOrder {
 		}
 	}
 
+	public static void queueUnitsAllFactories(GameController gc, UnitType type) {
+		for (int i = 0; i < builtFacts.size(); i++) {
+			Unit unit = builtFacts.get(i);
+			deployedUnits(gc, unit);
+			buildUnit(gc, type, unit);
+		}
+	}
+
 	/*public static void deployUnitsWithRally(GameController gc, Unit factory, Direction dir, MapLocation loc) {
 		unitsMaking = factory.structureGarrison();
 		int factoryId = factory.id();
