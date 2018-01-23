@@ -1,9 +1,11 @@
 import bc.*;
+import java.util.*;
 
 public class UnitBuildOrder {
 	public static int numFact = Player.numFactories;
 	public static VecUnitID unitsMaking;
 	public static Direction[] dir = Direction.values();
+	public static ArrayList<Unit> builtFacts = new ArrayList<>();
 
 	public static boolean canBuildUnit() {
 		if (numFact > 0) {
@@ -28,7 +30,7 @@ public class UnitBuildOrder {
 		}
 	}
 
-	public static void deployUnitsWithRally(GameController gc, Unit factory, Direction dir, MapLocation loc) {
+	/*public static void deployUnitsWithRally(GameController gc, Unit factory, Direction dir, MapLocation loc) {
 		unitsMaking = factory.structureGarrison();
 		int factoryId = factory.id();
 		VectorField field = new VectorField();
@@ -41,5 +43,5 @@ public class UnitBuildOrder {
 				gc.moveRobot(deployedUnit, moveTowards);
 			}
 		}
-	}
+	}*/
 }

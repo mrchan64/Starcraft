@@ -25,8 +25,12 @@ public class Player {
         
         VectorField toFactory = new VectorField();
         MapLocation factory = new MapLocation(Planet.Earth, 0, 0);
+
         
         while (true) {
+        		Start.factories = new ArrayList<>();
+        		UnitBuildOrder.builtFacts = new ArrayList<>();
+        		numFactories = 0;
         		
         		units = gc.myUnits();
         		
@@ -37,8 +41,12 @@ public class Player {
         				numFactories++;
 
         				if(unit.health() < 300) {
-
         					Start.factories.add(unit);
+        					System.out.println("Factory size: "+Start.factories.size());
+        				}
+        				else {
+        					UnitBuildOrder.builtFacts.add(unit);
+        					System.out.println("Completed Factory size: "+UnitBuildOrder.builtFacts.size());
         				}
         			}
         		}
