@@ -12,6 +12,7 @@ public class VectorField {
 	static int width;
 	static int height;
 	static Planet planet;
+
 	Direction[] directions = Direction.values();
 	
 	public VectorField(){

@@ -9,11 +9,15 @@ public class Player {
 	public static int numFactories = 0;
 
 	public static ArrayList<Unit> availableUnits;
+	public static Team team;
+	public static Team eTeam;
+
+	public static GameController gc;
 
 
 	public static void main(String[] args) {
 
-		GameController gc = new GameController();
+		gc = new GameController();
 		VectorField.initWalls(gc);
 		findKarbonite.initKarb(gc);
 		Upgrades.upgradeUnits(gc);
@@ -24,33 +28,53 @@ public class Player {
         MapLocation unitLoc;
         Unit[] closestUnits;
         int stage = 0;
+        if (gc.planet() == Planet.Earth) {
+        	findKarbonite.getOppositeSpawn(units.get(0));
+		    team = units.get(0).team();
+		    if(team== Team.Red){
+		    	eTeam = Team.Blue;
+		    }else{
+		    	eTeam = Team.Red;
+		    }
+		    Combat.setOppositeSpawn();
+        }
+        else {
+        	team = gc.team();
+		    if(team == Team.Red){
+		    	eTeam = Team.Blue;
+		    }else{
+		    	eTeam = Team.Red;
+		    }
+        }
         
         VectorField toFactory = new VectorField();
         MapLocation factory = new MapLocation(Planet.Earth, 0, 0);
 
         while (true) {
-        	
+        		UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
+
         		Start.factories = new ArrayList<>();
         		UnitBuildOrder.builtFacts = new ArrayList<>();
         		numFactories = 0;
+
             Combat.rangerList = new ArrayList<>(); 
 			
             findKarbonite.updateFieldKarb(gc);
+
         		
         		units = gc.myUnits();
         		
         		for(int i = 0; i < units.size(); i++) {
         			
         			unit = units.get(i);
-        			unitLoc = unit.location().mapLocation();
+        			
               
-        			if (unit.unitType() == UnitType.Ranger) {
-					for (int j = 0; j < Combat.combatList.size(); j++) {
-						if (!Combat.combatList.get(j).equals(unit)) {
-							Combat.rangerList.add(unit);
-						}
+
+	         		if (unit.unitType() == UnitType.Ranger) {
+	         			Combat.rangerList.add(unit);
+
 					}
-				}
+
         			
         			if(unit.unitType() == UnitType.Factory) {
         				numFactories++;
@@ -64,15 +88,19 @@ public class Player {
         			}
         			
 	    			if(unit.unitType() != UnitType.Worker) continue;
+
+	    			unitLoc = unit.location().mapLocation(); // error on this line when building from factory
     				
 	    			for(Direction dir : Start.directions) {
 	    				if(gc.canHarvest(unit.id(), dir)) {
 	    						
 	    					gc.harvest(unit.id(), dir);
+
 	    					break;
 	    				}
 	    			}
         		}
+        		Combat.commands();
         		
         		if(stage >= 2) {
         			
@@ -98,8 +126,10 @@ public class Player {
 	        			if(fac.health() < 300) {
 	        				
 	        				closestUnits = Factories.getClosest(gc, availableUnits, fac, toFactory);
+
+	        				
 	        				Factories.sendUnits(gc, closestUnits, fac, toFactory);
-	      
+
 	        				for(int i = 0; i < closestUnits.length; i++) {
 	        					
 	        					unit = closestUnits[i];
@@ -112,6 +142,7 @@ public class Player {
 	        					}
 	        				}
 	        			}
+
 	        		}
 		    			
 	        		for(int i = 0; i < availableUnits.size(); i++) {
@@ -124,6 +155,8 @@ public class Player {
 		    				Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unitLoc));
 		    			}
 	    			}
+
+	    			UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 		    		
 	        		if(gc.round() >= 500 && gc.karbonite() >= 75) {
 		    			

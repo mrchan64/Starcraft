@@ -2,21 +2,14 @@ import bc.*;
 import java.util.*;
 
 public class UnitBuildOrder {
-	public static int numFact = Player.numFactories;
 	public static VecUnitID unitsMaking;
 	public static Direction[] dir = Direction.values();
 	public static ArrayList<Unit> builtFacts = new ArrayList<>();
 
-	public static boolean canBuildUnit() {
-		if (numFact > 0) {
-			return true;
-		}
-		return false;
-	}
 
 	public static void buildUnit(GameController gc, UnitType type, Unit factory) {
 		int factoryId = factory.id();
-		if (canBuildUnit() && gc.canProduceRobot(factoryId, type)) {
+		if (gc.canProduceRobot(factoryId, type)) {
 			gc.produceRobot(factoryId, type);
 		}
 	}
@@ -24,8 +17,13 @@ public class UnitBuildOrder {
 	public static void deployUnits(GameController gc, Unit factory) {
 		int factoryId = factory.id();
 		for (int i = 0; i < dir.length; i++) {
-			if (gc.canUnload(factoryId, dir[i])) {
-				gc.unload(factoryId, dir[i]);
+			try {
+				if (gc.canUnload(factoryId, dir[i])) {
+					gc.unload(factoryId, dir[i]);
+				}
+			}
+			catch(Exception e) {
+				System.out.println("can't deployUnits");
 			}
 		}
 	}
