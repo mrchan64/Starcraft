@@ -9,10 +9,15 @@ public class findKarbonite{
     public static MapLocation spawn;
     public static int[][] currentKarbs;
     public static MapLocation[][] mapLocations;
+    public static MapLocation[][] marsLocs;
+    public static int[][] availMars;
+
+    public static int mHeight;
+    public static int mWidth;
     
     public static void initKarb(GameController gc) {
     	
-    		karboniteField = new VectorField();
+    	karboniteField = new VectorField();
         int height = VectorField.height;
         int width = VectorField.width;
         Planet planet = VectorField.planet;
@@ -21,12 +26,31 @@ public class findKarbonite{
         mapLocations = new MapLocation[width][height];
         
         for(int i = 0; i < width; i++) {
-        		for(int j = 0; j < height; j++) {
-        			mapLocations[i][j] = new MapLocation(planet, i, j);
-        			currentKarbs[i][j] = (int)map.initialKarboniteAt(mapLocations[i][j]);
-        			
-        			if(VectorField.terrain[i][j] == 1) avaSq++;
-        		}
+    		for(int j = 0; j < height; j++) {
+    			mapLocations[i][j] = new MapLocation(planet, i, j);
+    			currentKarbs[i][j] = (int)map.initialKarboniteAt(mapLocations[i][j]);
+    			
+    			if(VectorField.terrain[i][j] == 1) avaSq++;
+    		}
+        }
+
+        map = gc.startingMap(Planet.Mars);
+        mHeight = (int) map.getHeight();
+        mWidth = (int) map.getWidth();
+        availMars = new int[mWidth][mHeight];
+        marsLocs = new MapLocation[mWidth][mHeight];
+        planet = Planet.Mars;
+
+        for(int i = 0; i < mWidth; i++) {
+            for(int j = 0; j < mHeight; j++){
+                marsLocs[i][j] = new MapLocation(planet, i, j);
+                if (map.isPassableTerrainAt(marsLocs[i][j]) == 1) {
+                    availMars[i][j] = 1;
+                }
+                else {
+                    availMars[i][j] = 0;
+                }
+            }
         }
     }
     

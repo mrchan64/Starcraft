@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class Rocket {
 	
     public static VectorField toRocket;
-    public static MapLocation rocket;
+    public static MapLocation rocketLoc;
     public static Unit unit;
     public static int unitId;
     public static MapLocation unitLoc;
@@ -12,14 +12,16 @@ public class Rocket {
 	
 	public static void runTurn(GameController gc, ArrayList<Unit> units) {
 		
-		if(Start.rockets.size() > 0) {
+		if(Start.rockets.size() == 0) {
 			buildRocket(gc, units);
+			return;
 		}
 		
 		for(Unit rocket : Start.rockets) {
 			
 			toRocket = new VectorField();
-			toRocket.setTarget(rocket.location().mapLocation());
+			rocketLoc = rocket.location().mapLocation();
+			toRocket.setTarget(rocketLoc);
 			
 			if(rocket.health() < 200) {
 				
@@ -45,16 +47,23 @@ public class Rocket {
 			
 			unit = Player.availableUnits.get(i);
 			unitId = unit.id();
+
+			if (unit.location().isInGarrison() || unit.location().isInSpace()) {
+				continue;
+			}
 			unitLoc = unit.location().mapLocation();
-			
-			if(gc.isMoveReady(unitId) && (!unitLoc.isAdjacentTo(rocket) || Start.factories.size() == 0)) {
+
+			if(gc.isMoveReady(unitId) && (!unitLoc.isAdjacentTo(rocketLoc) || Start.rockets.size() == 0)) {
 				Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unitLoc));
 			}
 		}
 	}
 	
 	private static boolean buildRocket(GameController gc, ArrayList<Unit> units) {
-		
+		if (units.size() == 0) {
+			return false;
+		}
+
 		Unit unit;
 		int unitId;
 		Unit idealUnit = units.get(0);
@@ -113,9 +122,12 @@ public class Rocket {
 
 		if(gc.canBlueprint(idealUnitId, UnitType.Rocket, idealDir)) {
 			gc.blueprint(idealUnitId, UnitType.Rocket, idealDir);
+			System.out.println("Rocket blueprinted");
 			return true;
 		}
 		
 		return false;
 	}
+
+
 }

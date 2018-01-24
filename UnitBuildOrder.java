@@ -6,6 +6,7 @@ public class UnitBuildOrder {
 	public static Direction[] dir = Direction.values();
 	public static ArrayList<Unit> builtFacts = new ArrayList<>();
 	public static ArrayList<Unit> builtRocks = new ArrayList<>();
+	public static VectorField toRocket = new VectorField();
 
 
 	public static void buildUnit(GameController gc, UnitType type, Unit factory) {
@@ -34,6 +35,42 @@ public class UnitBuildOrder {
 			Unit unit = builtFacts.get(i);
 			deployUnits(gc, unit);
 			buildUnit(gc, type, unit);
+		}
+	}
+
+	public static void loadUnits(GameController gc, Unit rocket, ArrayList<Unit> units) {
+		int rocketId = rocket.id();
+		MapLocation rocketLoc = rocket.location().mapLocation();
+		toRocket.setTarget(rocketLoc);
+		Unit[] astros = Factories.getClosest(gc, units, rocket, toRocket);
+
+		for (int i = 0; i < astros.length; i++) {
+			int unitId = astros[i].id();
+			if (gc.canLoad(rocketId, unitId)) {
+				gc.load(rocketId, unitId);
+			}
+			else if (!gc.canLoad(rocketId, unitId)) {
+				int x = 0;
+				int y = 0;
+				for (int ii = 0; ii < findKarbonite.mWidth; ii++) {
+					for (int j = 0; j < findKarbonite.mHeight; j++) {
+						if (findKarbonite.availMars[ii][j] == 1) {
+							x = ii;
+							y = j;
+							findKarbonite.availMars[ii][j] = 0;
+						}
+					}
+				}
+				MapLocation destination = new MapLocation(Planet.Mars, x, y);
+				if (gc.canLaunchRocket(rocketId, destination)) {
+					gc.launchRocket(rocketId, destination);
+					builtRocks.remove(rocket);
+				}
+			}
+		
+			else {
+				Factories.sendUnits(gc, astros, rocket, toRocket);
+			}
 		}
 	}
 

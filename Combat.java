@@ -46,17 +46,14 @@ public class Combat {
 				earthField.setTarget(findKarbonite.spawn);
 				Direction dir = earthField.getDirection(findKarbonite.spawn);
 				if (gc.isMoveReady(id) && gc.canMove(id, dir)){
-					System.out.println("moving with vect");
 					gc.moveRobot(id, dir);
 					continue;
 				}
 			    Factories.moveToClosestDirection(gc, ranger, Direction.Center);
 			}else if(attack(ranger, target)){
-				System.out.println("attacking");
 				continue;
 			}else{
 				advanceOnTarget(ranger, null, target, 0);
-				System.out.println("advance");
 			}
 			
 			
@@ -179,11 +176,8 @@ public class Combat {
 		int unitID = unit.id();
 		int targetID = target.id();
 		UnitType type = target.unitType();
-		System.out.println("attempt");
 		if(gc.isAttackReady(unitID)){
-			System.out.println("attack ready");
 			if(gc.canAttack(unitID, targetID)){
-				System.out.println("attack");
 				gc.attack(unitID, targetID);
 				if(target.health() == 0){
 					if(type == UnitType.Ranger){
@@ -311,8 +305,11 @@ public class Combat {
 			}
 			
 		//}
-			if(target != null)
-			System.out.println(target.unitType());
+			if(target != null){
+				
+			}
+
+
 		return target;
 	}//end target
 
