@@ -7,7 +7,7 @@ public class Start {
 	public static ArrayList<Unit> factories = new ArrayList<>();
 	public static ArrayList<Unit> rockets = new ArrayList<>();
 	
-	static int numWorkers;
+	public static int numWorkers;
 	
 	public static int runTurn(GameController gc, ArrayList<Unit> units){
 		
@@ -20,9 +20,15 @@ public class Start {
 		
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
-			loc = unit.location().mapLocation();
-			x += loc.getX();
-			y += loc.getY();
+			if (unit.location().isOnMap() && !unit.location().isInGarrison() &&
+				!unit.location().isInSpace()) {
+				loc = unit.location().mapLocation();
+				x += loc.getX();
+				y += loc.getY();
+			}
+			else if (unit.location().isInGarrison()) {
+
+			}
 		}
 		
 		updateNumWorkers(units);
@@ -57,6 +63,10 @@ public class Start {
 	}
 
 	private static void goForKarbonite(GameController gc, Unit unit) {
+
+		if (unit.location().isInGarrison() || unit.location().isInSpace()) {
+			return;
+		}
 
 		Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unit.location().mapLocation()));		
 	}

@@ -15,7 +15,8 @@ public class Factories {
 		for(Unit fac : Start.factories) {
 			
 			toFactory = new VectorField();
-			toFactory.setTarget(fac.location().mapLocation());
+			factory = fac.location().mapLocation();
+			toFactory.setTarget(factory);
 			
 			if(fac.health() < 300) {
 				
@@ -42,9 +43,11 @@ public class Factories {
 			
 			unit = Player.availableUnits.get(i);
 			unitId = unit.id();
+
+			if (unit.location().isInGarrison() || unit.location().isInSpace()) {
+				continue;
+			}
 			unitLoc = unit.location().mapLocation();
-			System.out.println(i + ": " + unit.unitType());
-			
 			if(gc.isMoveReady(unitId) && (!unitLoc.isAdjacentTo(factory) || Start.factories.size() == 0)) {
 				Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unitLoc));
 			}
@@ -158,6 +161,10 @@ public class Factories {
 		for(int i = 0; i<size; i++){
 			unit = units.get(i);
 			if(unit.unitType()!=UnitType.Worker)continue;
+
+			if(unit.location().isInGarrison() || unit.location().isInSpace()) {
+				continue;
+			}
 			currloc = unit.location().mapLocation();
 			
 			magnitude = toFactory.getMagnitude(currloc);

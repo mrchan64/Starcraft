@@ -69,6 +69,10 @@ public class Player {
         			unit = units.get(i);
         			type = unit.unitType();
         			health = (int)unit.health();
+
+                if (gc.planet() == Planet.Mars && type == UnitType.Rocket) {
+                    UnitBuildOrder.deployUnits(gc, unit);
+                }
         			
 	         	if (type == UnitType.Ranger) {
 	         		Combat.rangerList.add(unit);
@@ -96,6 +100,7 @@ public class Player {
         			}
         			
         			else if (type == UnitType.Worker) 
+                        //HAVE TO DIFFERENTIATE PLANETS NOW
         				availableUnits.add(unit);
 	         	
         			else continue;
@@ -115,18 +120,31 @@ public class Player {
         		if(stage >= 2) {
         			
         			Rocket.runTurn(gc, availableUnits);
+
+                    for (int i = 0; i < UnitBuildOrder.builtRocks.size(); i++) {
+                        UnitBuildOrder.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
+                    }
+
         		}
 	        
 	        if(stage >= 1) {
 
-	        		Factories.runTurn(gc, availableUnits);
-	        		
-	        		if(gc.karbonite() > 75) {
+                    if (gc.planet()== Planet.Earth && gc.round() < 675) {
+                        Factories.runTurn(gc, availableUnits);
+                    }
+
+                    if (gc.planet() == Planet.Earth && gc.round() > 500) {
+                        if (Start.numWorkers < 3) {
+                            UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Worker);
+                        }
+                    }
+
+	        		if(gc.karbonite() > 100) {
 
 	        			UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 	        		}
 		    		
-	        		if(gc.round() >= 300 && gc.karbonite() >= 75 && gc.planet() == Planet.Earth) {
+	        		if(gc.round() >= 300 && gc.planet() == Planet.Earth) { //karbonite condition?
 		    			
 		    			stage = 2;
 		    		}
