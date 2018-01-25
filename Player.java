@@ -35,6 +35,8 @@ public class Player {
 
         while (true) {
         	System.out.println("Currently Round "+gc.round());
+        	
+        	try{
         		UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 
         		Start.factories = new ArrayList<>();
@@ -151,6 +153,7 @@ public class Player {
         				Start.runTurn(gc, availableUnits);
         			}
         		}
+        	}catch(Exception e){}
 	        	gc.nextTurn();
         }
     }

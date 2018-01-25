@@ -49,7 +49,7 @@ public class CommandUnits {
 			runEasyTurn(gc);
 			return;
 		}
-		long time = System.currentTimeMillis();
+		//long time = System.currentTimeMillis();
 		VecUnit units = gc.myUnits();
 		ArrayList<Unit> availableUnits = new ArrayList<Unit>();
 		ArrayList<Long> availableUnitsrange = new ArrayList<Long>();
@@ -185,7 +185,7 @@ public class CommandUnits {
 				attackMove(gc, mine, loc.getX(), loc.getY());
 			}
 		}
-		System.out.println("Run Combat Turn took "+(System.currentTimeMillis()-time)+"ms and time left is "+gc.getTimeLeftMs()+"ms");
+		//System.out.println("Run Combat Turn took "+(System.currentTimeMillis()-time)+"ms and time left is "+gc.getTimeLeftMs()+"ms");
 	}
 	
 	private static void runEasyTurn(GameController gc){
