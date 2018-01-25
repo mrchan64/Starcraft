@@ -15,15 +15,16 @@ public class Start {
 		int size = (int)units.size();
 		int x = 0;
 		int y = 0;
+		numWorkers = 0;
 		
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
 			loc = unit.location().mapLocation();
 			x += loc.getX();
 			y += loc.getY();
-			
-			if(unit.unitType() == UnitType.Worker) numWorkers++;
 		}
+		
+		updateNumWorkers(units);
 		
 		if(size > 0) {
 			x /= size;
@@ -45,8 +46,13 @@ public class Start {
 			goForKarbonite(gc, unit);
 		}
 
-		Start.numWorkers = 0;
 		return 0;
+	}
+	
+	public static void updateNumWorkers(ArrayList<Unit> units) {
+		for(Unit unit : units) {
+			if(unit.unitType() == UnitType.Worker) numWorkers++;
+		}
 	}
 
 	private static void goForKarbonite(GameController gc, Unit unit) {

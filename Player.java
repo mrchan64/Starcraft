@@ -21,6 +21,7 @@ public class Player {
 		VectorField.initWalls(gc);
 		findKarbonite.initKarb(gc);
 		Upgrades.upgradeUnits(gc);
+		CommandUnits.initCommand(gc);
 
         VecUnit units = gc.myUnits();
         Unit unit;
@@ -28,36 +29,18 @@ public class Player {
         MapLocation unitLoc;
         Unit[] closestUnits;
         int stage = 0;
-        if (gc.planet() == Planet.Earth) {
-        	findKarbonite.getOppositeSpawn(units.get(0));
-		    team = units.get(0).team();
-		    if(team== Team.Red){
-		    	eTeam = Team.Blue;
-		    }else{
-		    	eTeam = Team.Red;
-		    }
-		    Combat.setOppositeSpawn();
-        }
-        else {
-        	team = gc.team();
-		    if(team == Team.Red){
-		    	eTeam = Team.Blue;
-		    }else{
-		    	eTeam = Team.Red;
-		    }
-        }
         
         VectorField toFactory = new VectorField();
         MapLocation factory = new MapLocation(Planet.Earth, 0, 0);
 
         while (true) {
+        	System.out.println("Currently Round "+gc.round());
         		UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 
         		Start.factories = new ArrayList<>();
         		UnitBuildOrder.builtFacts = new ArrayList<>();
         		numFactories = 0;
 
-            Combat.rangerList = new ArrayList<>(); 
 			
             findKarbonite.updateFieldKarb(gc);
 
@@ -67,14 +50,6 @@ public class Player {
         		for(int i = 0; i < units.size(); i++) {
         			
         			unit = units.get(i);
-        			
-              
-
-	         		if (unit.unitType() == UnitType.Ranger) {
-	         			Combat.rangerList.add(unit);
-
-					}
-
         			
         			if(unit.unitType() == UnitType.Factory) {
         				numFactories++;
@@ -100,7 +75,7 @@ public class Player {
 	    				}
 	    			}
         		}
-        		Combat.commands();
+        		CommandUnits.runTurn(gc);
         		
         		if(stage >= 2) {
         			
@@ -165,12 +140,14 @@ public class Player {
 	        	}
 	        
 	        if(stage >= 0) {
-
+	      		
+    				Start.updateNumWorkers(availableUnits);
+    				
         			if(stage == 0) {
         				stage += Start.runTurn(gc, availableUnits);
         			}
-        		
-        			else if(numFactories - 1 < findKarbonite.avaSq / 100) {
+        			
+        			else if(numFactories - 1 < findKarbonite.avaSq / 100 || Start.numWorkers < numFactories * 8) {
         				Start.runTurn(gc, availableUnits);
         			}
         		}

@@ -81,10 +81,11 @@ public class Factories {
 			if(Start.directions[i] == Direction.Center) continue;
 			
 			newLoc = loc.add(Start.directions[i]);
-			
-			if(gc.isOccupiable(newLoc) == 1) {
-				adjacentLocs.add(loc.add(Start.directions[i]));
-			}
+			try{
+				if(gc.isOccupiable(newLoc) == 1) {
+					adjacentLocs.add(loc.add(Start.directions[i]));
+				}
+			}catch(Exception e){}
 		}
 		
 		return adjacentLocs;
@@ -165,7 +166,7 @@ public class Factories {
 			index = (int)(Math.random() * 8);
 		}
 		
-		for(int i = 0; i < 5; i++) {
+		for(int i = 0; i < 4; i++) {
 
 			actual = Start.directions[(index + i) % 8];
 			if(gc.canMove(unitId, actual) && gc.isMoveReady(unitId)) {
