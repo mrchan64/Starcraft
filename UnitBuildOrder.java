@@ -5,10 +5,15 @@ public class UnitBuildOrder {
 	public static VecUnitID unitsMaking;
 	public static Direction[] dir = Direction.values();
 	public static ArrayList<Unit> builtFacts = new ArrayList<>();
+	
+	public static final int RangerPerc = 5;
+	public static final int MagePerc = 2;
+	public static final int KnightPerc = 2;
 
 
 	public static void buildUnit(GameController gc, UnitType type, Unit factory) {
 		int factoryId = factory.id();
+		type = typeToBuild();
 		if (gc.canProduceRobot(factoryId, type)) {
 			gc.produceRobot(factoryId, type);
 		}
@@ -34,6 +39,17 @@ public class UnitBuildOrder {
 			deployUnits(gc, unit);
 			buildUnit(gc, type, unit);
 		}
+	}
+	
+	private static UnitType typeToBuild(){
+		int perc = (int) (Math.random()*10);
+		if(perc<RangerPerc)return UnitType.Ranger;
+		perc -= RangerPerc;
+		if(perc<MagePerc)return UnitType.Mage;
+		perc -= MagePerc;
+		if(perc<KnightPerc)return UnitType.Knight;
+		//return UnitType.Healer;
+		return UnitType.Knight;
 	}
 
 	/*public static void deployUnitsWithRally(GameController gc, Unit factory, Direction dir, MapLocation loc) {
