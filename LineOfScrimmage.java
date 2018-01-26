@@ -16,7 +16,10 @@ public class LineOfScrimmage {
 	static MapLocation[] centers;
 	static MapLocation[] targets;
 	static Team team;
-	static int scrimDist = 100;
+	static final double scrimRatio = .5;
+	static final double sendPerc = .05;
+	static final int groupMax = 20;
+	static int scrimDist = Integer.MAX_VALUE;
 	static int lastNeighbored = -1;
 	static ScrimQueue queue;
 	
@@ -48,7 +51,18 @@ public class LineOfScrimmage {
 		}
 		queue = new ScrimQueue();
 		MapLocation test;
+		long dist;
 		size /=2;
+		for(int i = 0; i<size; i++){
+			test = targets[i];
+			for(int j = 0; j<size; j++){
+				dist = test.distanceSquaredTo(centers[j]);
+				if(dist<scrimDist){
+					scrimDist = (int)dist;
+				}
+			}
+		}
+		scrimDist *= scrimRatio*scrimRatio;
 		for(int i = 0; i<size; i++){
 			test = targets[i];
 			for(int j = 0; j<size; j++){

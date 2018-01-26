@@ -122,9 +122,9 @@ public class CommandUnits {
 		}
 		
 		//TODO what to do when there are no enemies
-		LineOfScrimmage.runTurn(gc, availableUnits);
-		boolean hi = true;
-		if(hi)return;
+		size = availableUnits.size();
+		boolean scrim = (size<findKarbonite.avaSq*LineOfScrimmage.sendPerc) && (size<LineOfScrimmage.groupMax);
+		if(scrim)LineOfScrimmage.runTurn(gc, availableUnits);
 		
 		//assign units that can attack priority enemies
 		ArrayList<ArrayList<Unit>> assignedToEnemy = new ArrayList<ArrayList<Unit>>();
@@ -146,9 +146,22 @@ public class CommandUnits {
 			}
 			totalDamageToEnemy.add(dmg);
 		}
+
+		size = priorityEnemies.size();
+		if(scrim){
+			System.out.println("scrim");
+			for(int i = 0; i<size; i++){
+				loc = priorityEnemies.get(i);
+				temp = assignedToEnemy.get(i);
+				System.out.println(temp.size());
+				for(Unit mine : temp){
+					onlyAttack(gc, mine, loc.getX(), loc.getY());
+				}
+			}
+			return;
+		}
 		
 		//assign leftover units
-		size = priorityEnemies.size();
 		Unit enemy;
 		for(int i = 0; i<size; i++){
 			if(availableUnits.size() == 0)break;
@@ -347,5 +360,14 @@ public class CommandUnits {
 		Factories.moveToClosestDirection(gc, unit, dir);
 	}
 	
+	private static void onlyAttack(GameController gc, Unit unit, int x, int y){
+		UnitType unitType = unit.unitType();
+		int id = unit.id();
+		int enemyId = enemies[x][y].id();
+		//if(unitType == UnitType.Ranger && gc.isBeginSnipeReady(id) && gc.canBeginSnipe(id, squares[x][y])) gc.beginSnipe(id, squares[x][y]);
+		//if(unitType == UnitType.Mage && gc.isBlinkReady(id) && gc.is)range = unit.abilityRange(); Blink code need fix
+		if(unitType == UnitType.Knight && gc.isJavelinReady(id) && gc.canJavelin(id, enemyId))gc.javelin(id, enemyId);
+		if(gc.isAttackReady(id) && gc.canAttack(id, enemyId)) gc.attack(id, enemyId);
+	}
 	
 }
