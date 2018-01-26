@@ -158,7 +158,7 @@ public class Player {
         				stage += Start.runTurn(gc, availableUnits);
         			}
         			
-        			else if(numFactories - 1 < findKarbonite.avaSq / 100 || Start.numWorkers <= (numFactories + 1) * 8) {
+        			else if(numFactories <= findKarbonite.avaSq / 50 || Start.numWorkers <= 2 * numFactories + 8) {
         				Start.runTurn(gc, availableUnits);
         			}
         		}

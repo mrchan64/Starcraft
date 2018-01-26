@@ -38,7 +38,7 @@ public class Start {
 			y /= size;
 		}
 		
-		if(numWorkers <= 8 * (Player.numFactories + 1)) {
+		if(numWorkers <= 2 * Player.numFactories + 8) {
 			replicate(gc, units);
 		}
 		
