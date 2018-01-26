@@ -6,7 +6,7 @@ public class UnitBuildOrder {
 	public static Direction[] dir = Direction.values();
 	public static ArrayList<Unit> builtFacts = new ArrayList<>();
 	
-	public static final int RangerPerc = 5;
+	public static final int RangerPerc = 10;
 	public static final int MagePerc = 2;
 	public static final int KnightPerc = 2;
 

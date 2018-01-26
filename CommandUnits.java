@@ -122,6 +122,9 @@ public class CommandUnits {
 		}
 		
 		//TODO what to do when there are no enemies
+		LineOfScrimmage.runTurn(gc, availableUnits);
+		boolean hi = true;
+		if(hi)return;
 		
 		//assign units that can attack priority enemies
 		ArrayList<ArrayList<Unit>> assignedToEnemy = new ArrayList<ArrayList<Unit>>();

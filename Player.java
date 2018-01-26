@@ -22,6 +22,7 @@ public class Player {
 		findKarbonite.initKarb(gc);
 		Upgrades.upgradeUnits(gc);
 		CommandUnits.initCommand(gc);
+		LineOfScrimmage.initLine(gc);
 
         VecUnit units = gc.myUnits();
         Unit unit;
@@ -36,7 +37,7 @@ public class Player {
         while (true) {
         	System.out.println("Currently Round "+gc.round());
         	
-        	try{
+        	//try{
         		UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 
         		Start.factories = new ArrayList<>();
@@ -153,7 +154,7 @@ public class Player {
         				Start.runTurn(gc, availableUnits);
         			}
         		}
-        	}catch(Exception e){}
+        	//}catch(Exception e){}
 	        	gc.nextTurn();
         }
     }
