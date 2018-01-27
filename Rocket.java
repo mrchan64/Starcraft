@@ -97,7 +97,7 @@ public class Rocket {
 							x = ii;
 							y = j;
 							Minesweeper.mineMap[ii][j] = 0;
-							Minesweeper.updateMap();
+							Minesweeper.updateMap(x, y);
 						}
 						destination = new MapLocation(Planet.Mars, x, y);
 						if (gc.canLaunchRocket(rocketId, destination)) {
