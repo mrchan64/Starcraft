@@ -1,37 +1,37 @@
 import bc.*;
-import java.util.*;
+import java.util.ArrayList;
 
 public class Start {
 
 	public static Direction[] directions = Direction.values();
 	public static ArrayList<Unit> factories = new ArrayList<>();
+	public static ArrayList<Unit> rockets = new ArrayList<>();
 	
-	static int numWorkers;
+	public static MapLocation spawn;
+	public static int numWorkers;
+	
+	public static void initSpawn(GameController gc) {
+		
+		Unit unit;
+		
+		VecUnit units = gc.startingMap(Player.planet).getInitial_units();
+		for(int i = 0; i < units.size(); i++) {
+			
+			unit = units.get(i);
+			if(unit.team() == Player.team) {
+				spawn = unit.location().mapLocation();
+			}
+		}
+	}
 	
 	public static int runTurn(GameController gc, ArrayList<Unit> units){
 		
 		Unit unit;
-		MapLocation loc;
 		int size = (int)units.size();
-		int x = 0;
-		int y = 0;
-		numWorkers = 0;
-		
-		for(int i = 0; i < size; i++) {
-			unit = units.get(i);
-			loc = unit.location().mapLocation();
-			x += loc.getX();
-			y += loc.getY();
-		}
 		
 		updateNumWorkers(units);
 		
-		if(size > 0) {
-			x /= size;
-			y /= size;
-		}
-		
-		if(numWorkers <= 10 * (Player.numFactories + 1)) {
+		if(numWorkers <= 2 * Player.numFactories + 8) {
 			replicate(gc, units);
 		}
 		
@@ -39,7 +39,6 @@ public class Start {
 			if(buildFactory(gc, units)) return 1;
 		}
 			
-		loc = new MapLocation(Planet.Earth, x, y);
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
 
@@ -56,6 +55,10 @@ public class Start {
 	}
 
 	private static void goForKarbonite(GameController gc, Unit unit) {
+
+		if (unit.location().isInGarrison() || unit.location().isInSpace()) {
+			return;
+		}
 
 		Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unit.location().mapLocation()));		
 	}
