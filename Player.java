@@ -22,6 +22,7 @@ public class Player {
 	public static UnitType type;
 	public static int health;
 	public static Planet planet;
+	public static long round;
 	
 	public static boolean trigger = false;
 
@@ -31,6 +32,7 @@ public class Player {
 		planet = gc.planet();
 		team = gc.team();
 		boolean workersOnMars = false;
+		round = gc.round();
 		
 		VectorField.initWalls(gc);
 		findKarbonite.initKarb(gc);
@@ -40,7 +42,7 @@ public class Player {
 
 		while (planet == Planet.Earth) {
 
-			//System.out.println("Currently Round " + gc.round());
+			//System.out.println("Currently Round " + round);
 			UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 
 			Start.factories = new ArrayList<>();
@@ -99,6 +101,9 @@ public class Player {
 				}
 			}
 			
+			System.out.println("stage: " + stage);
+			System.out.println("numWorkers: " + Start.numWorkers);
+			
 			if (stage >= 2) {
 
 				if(trigger)Rocket.runTurn(gc, availableUnits);
@@ -109,7 +114,7 @@ public class Player {
 						Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
 						workersOnMars = true;
 					}
-					
+
 					else if(Start.rockets.size() < 5){
 						Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableCombatUnits);
 					}
@@ -119,9 +124,8 @@ public class Player {
 			if (stage >= 1) {
 
 				Factories.runTurn(gc, availableUnits);
-				CommandUnits.runTurn(gc);
 
-				if (gc.round() > 100) {
+				if (round > 100) {
 					if (Start.numWorkers < 8) {
 						UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Worker);
 					}
@@ -132,13 +136,14 @@ public class Player {
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
 
-				if (numFactories > 3) {
+				if (numFactories > 3 || round > 300) {
 					stage = 2;
 				}
 			}
 
 			if (stage >= 0) {
 
+				CommandUnits.runTurn(gc);
 				Start.updateNumWorkers(availableUnits);
 
 				if (stage == 0) {
@@ -148,10 +153,7 @@ public class Player {
 				else {
 					Start.runTurn(gc, availableUnits);
 				}
-				
-				if(gc.round() % 50 == 0) System.gc();
 			}
-
 			gc.nextTurn();
 		}
 
@@ -186,7 +188,7 @@ public class Player {
 			CommandUnits.runTurn(gc);
 			Start.runTurn(gc, marsUnits);
 			gc.nextTurn();
-			//System.out.println("Currently Round " + gc.round());
+			//System.out.println("Currently Round " + round);
 		}
 	}
 }

@@ -37,13 +37,15 @@ public class Factories {
 		for (int i = 0; i < Player.availableUnits.size(); i++) {
 
 			unit = Player.availableUnits.get(i);
+			System.out.println(unit.location().isOnPlanet(Planet.Earth) + " : " + unit.unitType());
 			unitId = unit.id();
 
 			if (unit.location().isInGarrison() || unit.location().isInSpace()) {
 				continue;
 			}
 			unitLoc = unit.location().mapLocation();
-			if (gc.isMoveReady(unitId) && (!unitLoc.isAdjacentTo(factory) || Start.factories.size() == 0)) {
+			
+			if (gc.isMoveReady(unitId) && !unitLoc.isAdjacentTo(factory)) {
 				Factories.moveToClosestDirection(gc, unit, findKarbonite.karboniteField.getDirection(unitLoc));
 			}
 		}
@@ -298,7 +300,7 @@ public class Factories {
 						}
 					}
 					
-					if(numOccupiable >= 8) {
+					if(numOccupiable >= 7) {
 						gc.blueprint(unitId, UnitType.Factory, dir);
 						Player.trigger = true;
 						return true;

@@ -82,12 +82,13 @@ public class Rocket {
 			loadable = gc.canLoad(rocketId, unitId);
 			
 			if (!adjacent) {
-				Factories.sendUnits(gc, rocketUnits, rocket, toRocket);
+				Factories.moveToClosestDirection(gc, unit, toRocket.getDirection(unitLoc));
 			}
 			
-			else if(adjacent && loadable) {
+			else if(loadable) {
 				gc.load(rocketId, unitId);
 			}
+			
 			else{
 				int startX = (int) Math.floor(Math.random() *findKarbonite.mWidth/2);
 				int startY = (int) Math.floor(Math.random() *findKarbonite.mWidth/2);
