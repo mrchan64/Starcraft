@@ -99,7 +99,7 @@ public class Player {
 				Rocket.runTurn(gc, availableUnits);
 
 				for (int i = 0; i < UnitBuildOrder.builtRocks.size(); i++) {
-					UnitBuildOrder.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
+					Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
 				}
 			}
 
