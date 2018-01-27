@@ -50,12 +50,29 @@ public class Minesweeper {
 		isDense = false;
 	}
 
-	public static void updateMap() {
-		for (int i = 0; i < findKarbonite.mWidth; i++) {
-			for (int j = 0; j < findKarbonite.mHeight; j++) {
-	            Minesweeper.mineSweep(findKarbonite.marsLocs[i][j]);
+	public static void updateMap(int x, int y)) {
+		if (y - 1 >= 0) {
+			mineMap[x][y-1] -= 1;
+			if (x-1 >=0) {
+				mineMap[x-1][y-1] -= 1;
+				mineMap[x-1][y] -= 1;
+			}
+			if (x+1 < findKarbonite.mWidth) {
+				mineMap[x+1][y-1] -= 1;
+				mineMap[x+1][y] -= 1;
 			}
 		}
+
+		if (y+1 < findKarbonite.mHeight) {
+			mineMap[x][y+1] -= 1;
+			if (x-1 >=0) {
+				mineMap[x-1][y+1] -= 1;
+			}
+			if (x+1 < findKarbonite.mWidth) {
+				mineMap[x+1][y+1] -= 1;
+			}
+		}
+
 	}
 
 	/*public static void addNeighbors(MapLocation loc) {
