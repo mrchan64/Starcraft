@@ -40,7 +40,7 @@ public class Player {
 
 		while (planet == Planet.Earth) {
 
-			System.out.println("Currently Round " + gc.round());
+			//System.out.println("Currently Round " + gc.round());
 			UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 
 			Start.factories = new ArrayList<>();
@@ -186,7 +186,7 @@ public class Player {
 			CommandUnits.runTurn(gc);
 			Start.runTurn(gc, marsUnits);
 			gc.nextTurn();
-			System.out.println("Currently Round " + gc.round());
+			//System.out.println("Currently Round " + gc.round());
 		}
 	}
 }

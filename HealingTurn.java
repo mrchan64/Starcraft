@@ -22,6 +22,7 @@ public class HealingTurn {
 				lowestHealth = unit.location().mapLocation();
 			}
 		}
+
 		int x = lowestHealth.getX();
 		int y = lowestHealth.getY();
 		VectorField vf = CommandUnits.storedField[x][y];
@@ -30,6 +31,7 @@ public class HealingTurn {
 			vf.setTarget(CommandUnits.squares[x][y]);
 			CommandUnits.storedField[x][y] = vf;
 		}
+
 		size = availableHealers.size();
 		int tsize, unitId;
 		Unit tlowest;

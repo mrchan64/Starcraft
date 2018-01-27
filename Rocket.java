@@ -89,10 +89,11 @@ public class Rocket {
 				gc.load(rocketId, unitId);
 			}
 			else{
-				
-				for (int ii = 0; ii < findKarbonite.mWidth; ii++) {
+				int startX = (int) Math.floor(Math.random() *findKarbonite.mWidth/2);
+				int startY = (int) Math.floor(Math.random() *findKarbonite.mWidth/2);
+				for (int ii = startX; ii < findKarbonite.mWidth; ii++) {
 					if (locFound) break;
-					for (int j = 0; j < findKarbonite.mHeight; j++) {
+					for (int j = startY; j < findKarbonite.mHeight; j++) {
 						if (Minesweeper.mineMap[ii][j] == Minesweeper.highest) {
 							x = ii;
 							y = j;
