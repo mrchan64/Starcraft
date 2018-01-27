@@ -23,6 +23,7 @@ public class Start {
 			unit = units.get(i);
 			if(unit.team() == Player.team) {
 				spawn = unit.location().mapLocation();
+				findKarbonite.spawns.add(unit.location().mapLocation());
 			}
 		}
 	}
