@@ -81,26 +81,22 @@ public class Rocket {
 			else if(loaded >= 8) {
 				int x = 0;
 				int y = 0;
-				int random = (int) Math.floor(Math.random() * 10);
-				int counter = 0;
 				for (int ii = 0; ii < findKarbonite.mWidth; ii++) {
 					for (int j = 0; j < findKarbonite.mHeight; j++) {
-						if(counter != random) {
-							counter++;
-							continue;
-						}
-						if (findKarbonite.availMars[ii][j] == 1) {
+						if (Minesweeper.mineMap[ii][j] == Minesweeper.highest) {
 							x = ii;
 							y = j;
-							findKarbonite.availMars[ii][j] = 0;
-						}
-						destination = new MapLocation(Planet.Mars, x, y);
-						if (gc.canLaunchRocket(rocketId, destination)) {
-							gc.launchRocket(rocketId, destination);
-							onMars.add(rocket);
-							UnitBuildOrder.builtRocks.remove(rocket);
-							loaded = 0;
-							break;
+							Minesweeper.mineMap[ii][j] = 0;
+							Minesweeper.updateMap();
+
+							destination = new MapLocation(Planet.Mars, x, y);
+							if (gc.canLaunchRocket(rocketId, destination)) {
+								gc.launchRocket(rocketId, destination);
+								onMars.add(rocket);
+								UnitBuildOrder.builtRocks.remove(rocket);
+								loaded = 0;
+								break;
+							}
 						}
 					}
 				}
@@ -186,7 +182,7 @@ public class Rocket {
 		int numOccupiable = 0;
 		
 		Unit[] rocketUnits = getClosest(gc, units, toSpawn);
-		System.out.println("rockets, rocketUnits: " + rocketUnits.length + ", units: " + units.size());
+		//System.out.println("rockets, rocketUnits: " + rocketUnits.length + ", units: " + units.size());
 		int x, y;
 
 		for (int i = 0; i < rocketUnits.length; i++) {

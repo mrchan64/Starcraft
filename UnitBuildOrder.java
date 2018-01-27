@@ -15,6 +15,11 @@ public class UnitBuildOrder {
 	public static void buildUnit(GameController gc, UnitType type, Unit factory) {
 		int factoryId = factory.id();
 		type = typeToBuild();
+
+		if (gc.round() > 100 && Start.numWorkers < 8) {
+			type = UnitType.Worker;
+		}
+
 		if (gc.canProduceRobot(factoryId, type)) {
 			gc.produceRobot(factoryId, type);
 		}
