@@ -9,7 +9,11 @@ public class Minesweeper {
 	public static int bestY;
 	public static int highest = 0;
 
-	public static void mineSweep(MapLocation loc) {
+	public static void mineSweep(MapLocation loc, PlanetMap map) {
+		if (map.isPassableTerrainAt(loc) == 0) {
+			mineMap[loc.getX()][loc.getY()] = 0;
+			return;
+		}
 		int startX = loc.getX();
 		int startY = loc.getY();
 
@@ -37,10 +41,6 @@ public class Minesweeper {
 			highest = num;
 		}
 		density += num;
-		
-		if(num > highest) {
-			highest = num;
-		}
 	}
 
 	public static void denseMap() {
@@ -50,7 +50,7 @@ public class Minesweeper {
 		isDense = false;
 	}
 
-	public static void updateMap(int x, int y)) {
+	public static void updateMap(int x, int y) {
 		if (y - 1 >= 0) {
 			mineMap[x][y-1] -= 1;
 			if (x-1 >=0) {
@@ -70,6 +70,14 @@ public class Minesweeper {
 			}
 			if (x+1 < findKarbonite.mWidth) {
 				mineMap[x+1][y+1] -= 1;
+			}
+		}
+		highest = 0;
+		for (int i = 0; i < findKarbonite.mWidth; i++) {
+			for (int j = 0; j < findKarbonite.mHeight; j++) {
+				if (mineMap[i][j] > highest) {
+					highest = mineMap[i][j];
+				}
 			}
 		}
 
