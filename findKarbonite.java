@@ -5,8 +5,9 @@ public class findKarbonite {
 
 	static VectorField karboniteField;
 	public static int avaSq;
+    public static int accSq = 1;
 	public static int totalKarb;
-	public static MapLocation spawn;
+    public static MapLocation spawn;
 	public static int[][] currentKarbs;
 	public static MapLocation[][] mapLocations;
 	public static MapLocation[][] marsLocs;
@@ -15,6 +16,13 @@ public class findKarbonite {
 
 	public static int mHeight;
 	public static int mWidth;
+
+
+    public static MapLocation[][] bfsSquares;
+    public static boolean[][] checked;
+    static ArrayList<MapLocation> working = new ArrayList<MapLocation>();
+    static ArrayList<MapLocation> done = new ArrayList<MapLocation>();
+    static ArrayList<MapLocation> spawns = new ArrayList<MapLocation>();
 
 	public static void initKarb(GameController gc) {
 
@@ -37,6 +45,9 @@ public class findKarbonite {
 			}
 		}
 
+        Start.initSpawn(gc);
+        findAccSq(map);
+
 		map = gc.startingMap(Planet.Mars);
 		mHeight = (int) map.getHeight();
 		mWidth = (int) map.getWidth();
@@ -56,12 +67,12 @@ public class findKarbonite {
 				}
 			}
 		}
-        for (int i = 0; i < mWidth; i++) {
+       /* for (int i = 0; i < mWidth; i++) {
             for (int j = 0; j < mHeight; j++) {
                 System.out.print(Minesweeper.mineMap[i][j]);
             }
             System.out.println();
-        }
+        }*/
 
 
 	}
@@ -94,4 +105,72 @@ public class findKarbonite {
 		karboniteField = new VectorField();
 		karboniteField.setTargets(temp);
 	}
+
+    public static void findAccSq(PlanetMap map) {
+        for (int i = 0; i < spawns.size(); i++) {
+            working.add(spawns.get(i));
+        }
+        bfsSquares = new MapLocation[VectorField.width][VectorField.height];
+        checked = new boolean[VectorField.width][VectorField.height];
+        while(step(map)) {
+
+        }
+       // printNumSquares();
+    }  
+
+
+    private static void addNeighbors(MapLocation loc, PlanetMap map){
+        int startX = loc.getX();
+        int startY = loc.getY();
+        checked[startX][startY]=true;
+
+        MapLocation locAround;
+        int x, y;
+    
+        for(Direction dir : Direction.values()) {
+            if(dir == Direction.Center) continue;
+            try {
+                locAround = loc.add(dir);
+                x = locAround.getX();
+                y = locAround.getY();
+                if (x < 0 || y < 0 || x == VectorField.width|| y == VectorField.height) {
+                    continue;
+                }
+                if(map.isPassableTerrainAt(locAround) == 1 && !checked[x][y]) {
+                    checked[x][y]= true;
+                    accSq++;
+                    working.add(locAround);
+                }
+            }
+            catch(Exception E) {
+                // do nothing
+            }
+        }
+    }
+
+    private static boolean step(PlanetMap map){
+        if(working.size()==0)return false;
+        MapLocation check = working.remove(0);
+        int x = check.getX();
+        int y = check.getY();
+        for(int i = -1; i<=1; i++){
+            for(int j = -1; j<=1; j++){
+                if(i==0 && j==0)continue;
+                if(x+i>=VectorField.width || x+i<0 || y+j>=VectorField.height || y+j<0)continue;
+
+                MapLocation locAround = new MapLocation(Planet.Earth, x, y);
+                if(map.isPassableTerrainAt(locAround) != 1)continue;
+                
+            }
+        }
+        done.add(check);
+        addNeighbors(check, map);
+        return true;
+    }
+
+
+    public static void printNumSquares() {
+        System.out.println("available: "+avaSq);
+        System.out.println("access: "+ accSq);
+    }
 }
