@@ -33,7 +33,7 @@ public class Minesweeper {
 		density += num;
 	}
 
-	public static boolean denseMap() {
+	public static void denseMap() {
 		if (density/findKarbonite.avaSq > 4) {
 			isDense = true;
 		}

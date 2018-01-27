@@ -64,9 +64,9 @@ public class CommandUnits {
 		MapLocation loc;
 		for(int i = 0; i<size; i++){
 			unit = units.get(i);
+			if(unit.location().isInGarrison() || unit.location().isInSpace())continue;
 			unitType = unit.unitType();
 			if(validUnits.contains(unitType)){
-				if(unit.location().isInGarrison() || unit.location().isInSpace())continue;
 				loc = unit.location().mapLocation();
 				centerMassX+=loc.getX();
 				centerMassY+=loc.getY();
