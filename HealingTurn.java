@@ -4,7 +4,6 @@ import bc.*;
 
 public class HealingTurn {
 	public static void runTurn(GameController gc, ArrayList<Unit> availableHealers, VecUnit allUnits){
-		System.out.println("healser "+availableHealers.size());
 		if(availableHealers.size() == 0)return;
 		int size = (int) allUnits.size();
 		double temp;
@@ -23,7 +22,6 @@ public class HealingTurn {
 				lowestHealth = unit.location().mapLocation();
 			}
 		}
-		System.out.println("size: "+size);
 		int x = lowestHealth.getX();
 		int y = lowestHealth.getY();
 		VectorField vf = CommandUnits.storedField[x][y];
@@ -32,7 +30,6 @@ public class HealingTurn {
 			vf.setTarget(CommandUnits.squares[x][y]);
 			CommandUnits.storedField[x][y] = vf;
 		}
-		System.out.println(x+" "+y+" "+health);
 		size = availableHealers.size();
 		int tsize, unitId;
 		Unit tlowest;
@@ -69,7 +66,6 @@ public class HealingTurn {
 	public static double healthPerc(Unit unit){
 		double max = unit.maxHealth();
 		double h = unit.health();
-		System.out.println(h/max);
 		return h/max;
 	}
 }

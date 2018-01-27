@@ -27,19 +27,16 @@ public class CommandUnits {
 		validUnits.add(UnitType.Ranger);
 		validUnits.add(UnitType.Knight);
 		validUnits.add(UnitType.Mage);
-		VecUnit temp = gc.myUnits();
+		VecUnit temp = gc.startingMap(Player.planet).getInitial_units();
 		MapLocation loc;
-		int x1, y1, x2, y2;
+		int x, y;
 		for(int i = 0; i<temp.size(); i++){
 			Unit unit = temp.get(i);
+			if(unit.team() == Player.team)continue;
 			loc = unit.location().mapLocation();
-			x1 = loc.getX();
-			y1 = loc.getY();
-			x2 = VectorField.width - 1 - x1;
-			y2 = VectorField.height - 1 - y1;
-			hasEnemy[x1][y2] = true;
-			hasEnemy[x2][y2] = true;
-			hasEnemy[x2][y1] = true;
+			x = loc.getX();
+			y = loc.getY();
+			hasEnemy[x][y] = true;
 		}
 		
 	}

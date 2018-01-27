@@ -222,6 +222,7 @@ public class Rocket {
 
 					if (numOccupiable >= 8) {
 						gc.blueprint(unitId, UnitType.Rocket, dir);
+						Player.trigger = false;
 						return true;
 					}
 
@@ -239,6 +240,7 @@ public class Rocket {
 
 		if (gc.canBlueprint(idealUnitId, UnitType.Rocket, idealDir)) {
 			gc.blueprint(idealUnitId, UnitType.Rocket, idealDir);
+			Player.trigger = false;
 			return true;
 		}
 
