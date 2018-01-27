@@ -46,7 +46,7 @@ public class Kiting {
 				gc.moveRobot(unitId, actual);
 				break;
 			}
-			if(VectorField.terrain[x][y] == 1)closestNonTerrain = actual;
+			if(VectorField.terrain[x][y] == 1 && !(x < 0 || x >= VectorField.width || y < 0 || y >= VectorField.height)) closestNonTerrain = actual;
 
 			if(i == 0 || i==4) continue;
 			
@@ -58,7 +58,7 @@ public class Kiting {
 				gc.moveRobot(unitId, actual);
 				break;
 			}
-			if(VectorField.terrain[x][y] ==1 )closestNonTerrain = actual;
+			if(VectorField.terrain[x][y] ==1 && !(x < 0 || x >= VectorField.width || y < 0 || y >= VectorField.height)) closestNonTerrain = actual;
 		}
 		if(gc.isMoveReady(unitId) && gc.canMove(unitId, closestNonTerrain)) {
 			gc.moveRobot(unitId, closestNonTerrain);
@@ -67,6 +67,7 @@ public class Kiting {
 	}
 	
 	private static boolean isValidSquare(GameController gc, ArrayList<MapLocation> enemies, int x, int y, MapLocation test){
+		if(x<0 || x>=VectorField.width || y<0 || y>=VectorField.height)return false;
 		if(VectorField.terrain[x][y]!=1)return false;
 		try{
 			gc.senseUnitAtLocation(test);

@@ -24,7 +24,6 @@ public class findKarbonite {
 		PlanetMap map = gc.startingMap(planet);
 		currentKarbs = new int[width][height];
 		mapLocations = new MapLocation[width][height];
-		Minesweeper.mineMap = new int[width][height];
 
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
@@ -32,7 +31,6 @@ public class findKarbonite {
 				mapLocations[i][j] = new MapLocation(planet, i, j);
 				currentKarbs[i][j] = (int) map.initialKarboniteAt(mapLocations[i][j]);
 				totalKarb += currentKarbs[i][j];
-				Minesweeper.mineSweep(mapLocations[i][j]);
 				if (VectorField.terrain[i][j] == 1)
 					avaSq++;
 			}
@@ -43,11 +41,13 @@ public class findKarbonite {
 		mWidth = (int) map.getWidth();
 		availMars = new int[mWidth][mHeight];
 		marsLocs = new MapLocation[mWidth][mHeight];
+        Minesweeper.mineMap = new int[mWidth][mHeight];
 		planet = Planet.Mars;
 
 		for (int i = 0; i < mWidth; i++) {
 			for (int j = 0; j < mHeight; j++) {
 				marsLocs[i][j] = new MapLocation(planet, i, j);
+                Minesweeper.mineSweep(marsLocs[i][j]);
 				if (map.isPassableTerrainAt(marsLocs[i][j]) == 1) {
 					availMars[i][j] = 1;
 				} else {

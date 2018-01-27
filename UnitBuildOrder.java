@@ -20,12 +20,12 @@ public class UnitBuildOrder {
 		}
 	}
 
-	public static void deployUnits(GameController gc, Unit factory) {
-		int factoryId = factory.id();
+	public static void deployUnits(GameController gc, Unit structure) {
+		int structureId = structure.id();
 		for (int i = 0; i < dir.length; i++) {
 			try {
-				if (gc.canUnload(factoryId, dir[i])) {
-					gc.unload(factoryId, dir[i]);
+				if (gc.canUnload(structureId, dir[i])) {
+					gc.unload(structureId, dir[i]);
 				}
 			} catch (Exception e) {
 				System.out.println("can't deployUnits");
@@ -52,41 +52,6 @@ public class UnitBuildOrder {
 		//if(perc<KnightPerc)return UnitType.Knight;
 		return UnitType.Healer;
 		//return UnitType.Knight;
-	}
-
-	public static void loadUnits(GameController gc, Unit rocket, ArrayList<Unit> units) {
-		int rocketId = rocket.id();
-		MapLocation rocketLoc = rocket.location().mapLocation();
-		toRocket.setTarget(rocketLoc);
-		Unit[] astros = Factories.getClosest(gc, units, rocket, toRocket);
-
-		for (int i = 0; i < astros.length; i++) {
-			int unitId = astros[i].id();
-			if (gc.canLoad(rocketId, unitId)) {
-				gc.load(rocketId, unitId);
-			} else if (!gc.canLoad(rocketId, unitId)) {
-				int x = 0;
-				int y = 0;
-				for (int ii = 0; ii < findKarbonite.mWidth; ii++) {
-					for (int j = 0; j < findKarbonite.mHeight; j++) {
-						if (findKarbonite.availMars[ii][j] == 1) {
-							x = ii;
-							y = j;
-							findKarbonite.availMars[ii][j] = 0;
-						}
-					}
-				}
-				MapLocation destination = new MapLocation(Planet.Mars, x, y);
-				if (gc.canLaunchRocket(rocketId, destination)) {
-					gc.launchRocket(rocketId, destination);
-					builtRocks.remove(rocket);
-				}
-			}
-
-			else {
-				Factories.sendUnits(gc, astros, rocket, toRocket);
-			}
-		}
 	}
 
 	/*

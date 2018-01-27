@@ -22,7 +22,6 @@ public class Start {
 				spawn = unit.location().mapLocation();
 			}
 		}
-		System.out.println(spawn);
 	}
 	
 	public static int runTurn(GameController gc, ArrayList<Unit> units){
