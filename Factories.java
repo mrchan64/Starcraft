@@ -166,12 +166,9 @@ public class Factories {
 
 		for (int i = 0; i < size; i++) {
 			unit = units.get(i);
-			if (unit.unitType() != UnitType.Worker)
+			if (unit.unitType() != UnitType.Worker || unit.location().isInGarrison())
 				continue;
 
-			if (unit.location().isInGarrison() || unit.location().isInSpace()) {
-				continue;
-			}
 			currloc = unit.location().mapLocation();
 
 			magnitude = toFactory.getMagnitude(currloc);
@@ -246,5 +243,71 @@ public class Factories {
 				break;
 			}
 		}
+	}
+	
+	public static boolean buildFactory(GameController gc, ArrayList<Unit> units) {
+		
+		Unit unit;
+		int unitId;
+		Unit idealUnit = units.get(0);
+		int idealUnitId = idealUnit.id();
+		MapLocation attempt;
+		MapLocation attemptAround;
+		Direction idealDir = Direction.North;
+		Direction[] allDirs = Direction.values();
+		int bestOption = 0;
+		int numOccupiable = 0;
+		
+		int x, y;
+		
+		for(int i = 0; i < units.size(); i++) {
+			unit = units.get(i);
+			unitId = unit.id();
+
+			for(Direction dir : allDirs) {
+				if(dir == Direction.Center) continue;
+				if(gc.canBlueprint(unitId, UnitType.Factory, dir)) {
+					
+					attempt = unit.location().mapLocation().add(dir);
+					for(Direction dir1 : allDirs) {
+						try {
+							if(dir1 == Direction.Center) continue;
+							
+							attemptAround = attempt.add(dir1);
+							x = attemptAround.getX();
+							y = attemptAround.getY();
+							
+							if(VectorField.terrain[x][y] == 1) {
+								numOccupiable++;
+							}
+						}
+						catch(Exception E) {
+							// do nothing
+						}
+					}
+					
+					if(numOccupiable >= 8) {
+						gc.blueprint(unitId, UnitType.Factory, dir);
+						return true;
+					}
+					
+					else if (numOccupiable > bestOption) {
+						idealDir = dir;
+						bestOption = numOccupiable;
+						idealUnit = unit;
+						idealUnitId = idealUnit.id();
+					}
+				}
+				
+				numOccupiable = 0;
+			}
+		}
+
+		if(gc.canBlueprint(idealUnitId, UnitType.Factory, idealDir)) {
+			gc.blueprint(idealUnitId, UnitType.Factory, idealDir);
+			return true;
+		}
+		
+		return false;
 	}
 }

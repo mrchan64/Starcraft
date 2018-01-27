@@ -58,6 +58,49 @@ public class Rocket {
 			}
 		}
 	}
+	
+	public static Unit[] getClosest(GameController gc, ArrayList<Unit> units, VectorField toSpawn) {
+
+		int numRocketUnits = 8 > units.size() ? units.size() : 8;
+
+		int size = (int) units.size();
+		Unit[] closestUnits = new Unit[numRocketUnits];
+		int[] magnitudes = new int[numRocketUnits];
+		Unit unit;
+		Location unitLoc;
+		int magnitude;
+		int last = 0;
+		int place = 0;
+		MapLocation currloc;
+
+		for (int i = 0; i < size; i++) {
+			
+			unit = units.get(i);
+			unitLoc = unit.location();
+			if (unit.unitType() != UnitType.Worker || unitLoc.isInGarrison() || unitLoc.isInSpace())
+				continue;
+			
+			currloc = unit.location().mapLocation();
+
+			magnitude = toSpawn.getMagnitude(currloc);
+
+			for (place = last; place > 0; place--) {
+				if (magnitudes[place - 1] <= magnitude)
+					break;
+				if (place != numRocketUnits) {
+					magnitudes[place] = magnitudes[place - 1];
+					closestUnits[place] = closestUnits[place - 1];
+				}
+			}
+			if (place != numRocketUnits) {
+				closestUnits[place] = unit;
+				magnitudes[place] = magnitude;
+				last = last >= numRocketUnits ? numRocketUnits : last + 1;
+			}
+		}
+		
+		return closestUnits;
+	}
 
 	private static boolean buildRocket(GameController gc, ArrayList<Unit> units) {
 		
@@ -65,6 +108,9 @@ public class Rocket {
 			return false;
 		}
 
+		VectorField toSpawn = new VectorField();
+		toSpawn.setTarget(Start.spawn);
+		
 		Unit unit;
 		int unitId;
 		Unit idealUnit = units.get(0);
@@ -76,18 +122,18 @@ public class Rocket {
 		int bestOption = 0;
 		int numOccupiable = 0;
 		
-		int numRocketUnits = 8 > units.size() ? units.size() : 8;
-		int rocketUnits[] = new int[numRocketUnits];
+		Unit[] rocketUnits = getClosest(gc, units, toSpawn);
 
 		int x, y;
 
-		for (int i = 0; i < units.size(); i++) {
-			unit = units.get(i);
+		for (int i = 0; i < rocketUnits.length; i++) {
+			unit = rocketUnits[i];
 			unitId = unit.id();
 
 			for (Direction dir : allDirs) {
 				if (dir == Direction.Center)
 					continue;
+				
 				if (gc.canBlueprint(unitId, UnitType.Rocket, dir)) {
 
 					attempt = unit.location().mapLocation().add(dir);
@@ -108,7 +154,7 @@ public class Rocket {
 						}
 					}
 
-					if (numOccupiable == 8) {
+					if (numOccupiable >= 8) {
 						gc.blueprint(unitId, UnitType.Rocket, dir);
 						return true;
 					}
