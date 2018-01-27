@@ -9,6 +9,9 @@ public class Rocket {
 	public static int unitId;
 	public static MapLocation unitLoc;
 	public static Unit[] closestUnits;
+	public static ArrayList<Unit> onMars = new ArrayList<>();
+	
+	public static int loaded;
 
 	public static void runTurn(GameController gc, ArrayList<Unit> units) {
 
@@ -22,22 +25,19 @@ public class Rocket {
 			toRocket = new VectorField();
 			rocketLoc = rocket.location().mapLocation();
 			toRocket.setTarget(rocketLoc);
+			
+			closestUnits = Factories.getClosest(gc, Player.availableUnits, rocket, toRocket);
 
-			if (rocket.health() < 200) {
+			Factories.sendUnits(gc, closestUnits, rocket, toRocket);
 
-				closestUnits = Factories.getClosest(gc, Player.availableUnits, rocket, toRocket);
+			for (int i = 0; i < closestUnits.length; i++) {
 
-				Factories.sendUnits(gc, closestUnits, rocket, toRocket);
+				unit = closestUnits[i];
+				for (int j = 0; j < Player.availableUnits.size(); j++) {
 
-				for (int i = 0; i < closestUnits.length; i++) {
-
-					unit = closestUnits[i];
-					for (int j = 0; j < Player.availableUnits.size(); j++) {
-
-						if (Player.availableUnits.get(j).equals(unit)) {
-							Player.availableUnits.remove(unit);
-							j--;
-						}
+					if (unit.equals(Player.availableUnits.get(j))) {
+						Player.availableUnits.remove(unit);
+						j--;
 					}
 				}
 			}
@@ -60,54 +60,74 @@ public class Rocket {
 	}
 	
 	public static void loadUnits(GameController gc, Unit rocket, ArrayList<Unit> units) {
+		
 		int rocketId = rocket.id();
 		MapLocation rocketLoc = rocket.location().mapLocation();
 		toRocket.setTarget(rocketLoc);
 		Unit[] astros = Factories.getClosest(gc, units, rocket, toRocket);
+		MapLocation destination;
 
 		for (int i = 0; i < astros.length; i++) {
+			
 			int unitId = astros[i].id();
 			if (gc.canLoad(rocketId, unitId)) {
 				gc.load(rocketId, unitId);
-			} else if (!gc.canLoad(rocketId, unitId)) {
+				Player.availableUnits.remove(gc.unit(unitId));
+				loaded++;
+				}
+			else if(loaded < 8) {
+				Factories.sendUnits(gc, astros, rocket, toRocket);
+			}
+			else if(loaded >= 8) {
 				int x = 0;
 				int y = 0;
+				int random = (int) Math.floor(Math.random() * 10);
+				int counter = 0;
 				for (int ii = 0; ii < findKarbonite.mWidth; ii++) {
 					for (int j = 0; j < findKarbonite.mHeight; j++) {
+						if(counter != random) {
+							counter++;
+							continue;
+						}
 						if (findKarbonite.availMars[ii][j] == 1) {
 							x = ii;
 							y = j;
 							findKarbonite.availMars[ii][j] = 0;
 						}
+						destination = new MapLocation(Planet.Mars, x, y);
+						if (gc.canLaunchRocket(rocketId, destination)) {
+							gc.launchRocket(rocketId, destination);
+							onMars.add(rocket);
+							UnitBuildOrder.builtRocks.remove(rocket);
+							loaded = 0;
+							break;
+						}
 					}
 				}
-				MapLocation destination = new MapLocation(Planet.Mars, x, y);
-				if (gc.canLaunchRocket(rocketId, destination)) {
-					gc.launchRocket(rocketId, destination);
-					UnitBuildOrder.builtRocks.remove(rocket);
-				}
-			}
-
-			else {
-				Factories.sendUnits(gc, astros, rocket, toRocket);
 			}
 		}
 	}
 
-	
 	public static Unit[] getClosest(GameController gc, ArrayList<Unit> units, VectorField toSpawn) {
 
-		int numRocketUnits = 8 > units.size() ? units.size() : 8;
+		if(units.size() == 0) {
+			return new Unit[0];
+		}
+		
+		int numRocketUnits = 8 >= units.size() ? units.size() : 8;
 
-		int size = (int) units.size();
+		int size = units.size();
 		Unit[] closestUnits = new Unit[numRocketUnits];
 		int[] magnitudes = new int[numRocketUnits];
-		Unit unit;
+		Unit unit = units.get(0);
 		Location unitLoc;
 		int magnitude;
 		int last = 0;
 		int place = 0;
 		MapLocation currloc;
+		
+		closestUnits[0] = units.get(0);
+		magnitudes[0] = toSpawn.getMagnitude(unit.location().mapLocation());
 
 		for (int i = 0; i < size; i++) {
 			
@@ -121,18 +141,25 @@ public class Rocket {
 			magnitude = toSpawn.getMagnitude(currloc);
 
 			for (place = last; place > 0; place--) {
-				if (magnitudes[place - 1] <= magnitude)
+				if(place == numRocketUnits && magnitudes[place - 1] <= magnitude)
 					break;
-				if (place != numRocketUnits) {
+				else if(place == numRocketUnits && magnitudes[place - 1] > magnitude) {
+					magnitudes[place - 1] = magnitude;
+					closestUnits[place - 1] = unit;
+				}
+				else if (magnitudes[place - 1] > magnitude) {
 					magnitudes[place] = magnitudes[place - 1];
 					closestUnits[place] = closestUnits[place - 1];
+					magnitudes[place - 1] = magnitude;
+					closestUnits[place - 1] = unit;
+				}
+				else {
+					closestUnits[place] = unit;
+					magnitudes[place] = magnitude;
+					break;
 				}
 			}
-			if (place != numRocketUnits) {
-				closestUnits[place] = unit;
-				magnitudes[place] = magnitude;
-				last = last >= numRocketUnits ? numRocketUnits : last + 1;
-			}
+			last = last >= numRocketUnits ? numRocketUnits : last + 1;
 		}
 		
 		return closestUnits;
@@ -159,7 +186,7 @@ public class Rocket {
 		int numOccupiable = 0;
 		
 		Unit[] rocketUnits = getClosest(gc, units, toSpawn);
-
+		System.out.println("rockets, rocketUnits: " + rocketUnits.length + ", units: " + units.size());
 		int x, y;
 
 		for (int i = 0; i < rocketUnits.length; i++) {

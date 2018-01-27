@@ -46,6 +46,7 @@ public class Kiting {
 				gc.moveRobot(unitId, actual);
 				break;
 			}
+
 			if(isntTerrain(x,y))closestNonTerrain = actual;
 
 			if(i == 0 || i==4) continue;
@@ -58,7 +59,9 @@ public class Kiting {
 				gc.moveRobot(unitId, actual);
 				break;
 			}
+      
 			if(isntTerrain(x,y))closestNonTerrain = actual;
+
 		}
 		if(gc.isMoveReady(unitId) && gc.canMove(unitId, closestNonTerrain)) {
 			gc.moveRobot(unitId, closestNonTerrain);

@@ -20,12 +20,12 @@ public class UnitBuildOrder {
 		}
 	}
 
-	public static void deployUnits(GameController gc, Unit factory) {
-		int factoryId = factory.id();
+	public static void deployUnits(GameController gc, Unit structure) {
+		int structureId = structure.id();
 		for (int i = 0; i < dir.length; i++) {
 			try {
-				if (gc.canUnload(factoryId, dir[i])) {
-					gc.unload(factoryId, dir[i]);
+				if (gc.canUnload(structureId, dir[i])) {
+					gc.unload(structureId, dir[i]);
 				}
 			} catch (Exception e) {
 				System.out.println("can't deployUnits");

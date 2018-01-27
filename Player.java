@@ -56,10 +56,9 @@ public class Player {
 				type = unit.unitType();
 				health = (int) unit.health();
 
-				if (gc.planet() == Planet.Mars && type == UnitType.Rocket) {
-					UnitBuildOrder.deployUnits(gc, unit);
-				}
-
+				if (unit.location().isInGarrison() || unit.location().isInSpace())
+					continue;
+				
 				else if (type == UnitType.Factory) {
 					numFactories++;
 
@@ -79,7 +78,6 @@ public class Player {
 				}
 
 				else if (type == UnitType.Worker) {
-					// HAVE TO DIFFERENTIATE PLANETS NOW
 					availableUnits.add(unit);
 
 					for (Direction dir : Start.directions) {
@@ -93,7 +91,7 @@ public class Player {
 			}
 
 			CommandUnits.runTurn(gc);
-
+			
 			if (stage >= 2) {
 
 				Rocket.runTurn(gc, availableUnits);
@@ -105,12 +103,10 @@ public class Player {
 
 			if (stage >= 1) {
 
-				if (gc.planet() == Planet.Earth && gc.round() < 675) {
-					Factories.runTurn(gc, availableUnits);
-				}
+				Factories.runTurn(gc, availableUnits);
 
-				if (gc.planet() == Planet.Earth && gc.round() > 500) {
-					if (Start.numWorkers < 3) {
+				if (gc.round() > 100) {
+					if (Start.numWorkers < 8) {
 						UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Worker);
 					}
 				}
@@ -120,8 +116,7 @@ public class Player {
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
 
-				if (gc.round() >= 75 && gc.karbonite() > 100) { // karbonite condition?
-
+				if (gc.round() >= 75 && gc.karbonite() > 100) {
 					stage = 2;
 				}
 			}
@@ -137,12 +132,31 @@ public class Player {
 				else if (numFactories <= findKarbonite.avaSq / 50 || Start.numWorkers <= 2 * numFactories + 8) {
 					Start.runTurn(gc, availableUnits);
 				}
+				
+				if(gc.round() % 50 == 0) System.gc();
 			}
 
 			gc.nextTurn();
 		}
-		
+
 		while(planet == Planet.Mars) {
+			
+			ArrayList<Unit> marsUnits = new ArrayList<>();
+			units = gc.myUnits();
+			
+			for(int i = 0; i < units.size(); i++) {
+				marsUnits.add(units.get(i));
+			}
+			
+			if(Rocket.onMars.size() > 0) {
+				for(Unit rocket : Rocket.onMars) {
+					if(!rocket.location().isInSpace()) {
+						UnitBuildOrder.deployUnits(gc, rocket);
+					}
+				}
+			}
+			
+			Start.runTurn(gc, marsUnits);
 			gc.nextTurn();
 			System.out.println("Currently Round " + gc.round());
 		}
