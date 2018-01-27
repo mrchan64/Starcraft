@@ -38,19 +38,21 @@ public class Upgrades {
 
 	public static void upgradeUnitsSmall(GameController gc) {
 		gc.queueResearch(UnitType.Worker);
+		gc.queueResearch(UnitType.Rocket);
+		gc.queueResearch(UnitType.Healer);
+		gc.queueResearch(UnitType.Healer);
+		gc.queueResearch(UnitType.Ranger);
+		gc.queueResearch(UnitType.Ranger);
 		gc.queueResearch(UnitType.Ranger);
 		gc.queueResearch(UnitType.Rocket);
-		gc.queueResearch(UnitType.Ranger);
-		gc.queueResearch(UnitType.Ranger);
 		gc.queueResearch(UnitType.Rocket);
-		gc.queueResearch(UnitType.Rocket);
+		gc.queueResearch(UnitType.Mage);
+		gc.queueResearch(UnitType.Mage);
+		gc.queueResearch(UnitType.Mage);
+		gc.queueResearch(UnitType.Mage);
 		gc.queueResearch(UnitType.Knight);
 		gc.queueResearch(UnitType.Knight);
 		gc.queueResearch(UnitType.Knight);
-		gc.queueResearch(UnitType.Mage);
-		gc.queueResearch(UnitType.Mage);
-		gc.queueResearch(UnitType.Mage);
-		gc.queueResearch(UnitType.Mage);
 	}
 
 }
