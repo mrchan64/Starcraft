@@ -188,7 +188,6 @@ public class CommandUnits {
 				attackMove(gc, mine, loc.getX(), loc.getY());
 			}
 		}
-		System.out.println("Run Combat Turn took "+(System.currentTimeMillis()-time)+"ms and time left is "+gc.getTimeLeftMs()+"ms");
 	}
 	
 	private static void runEasyTurn(GameController gc){
