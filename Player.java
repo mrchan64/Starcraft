@@ -22,7 +22,8 @@ public class Player {
 	public static UnitType type;
 	public static int health;
 	public static Planet planet;
-	public static long round;
+	public static int lastRoundMined = 0;
+	public static int round;
 	
 	public static boolean trigger = false;
 
@@ -32,7 +33,6 @@ public class Player {
 		planet = gc.planet();
 		team = gc.team();
 		boolean workersOnMars = false;
-		round = gc.round();
 		
 		VectorField.initWalls(gc);
 		findKarbonite.initKarb(gc);
@@ -41,8 +41,7 @@ public class Player {
 		Start.initSpawn(gc);
 
 		while (planet == Planet.Earth) {
-
-			//System.out.println("Currently Round " + round);
+			round  = (int)gc.round();
 			UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 
 			Start.factories = new ArrayList<>();
@@ -91,6 +90,7 @@ public class Player {
 						if (gc.canHarvest(unit.id(), dir)) {
 
 							gc.harvest(unit.id(), dir);
+							lastRoundMined = round;
 							break;
 						}
 					}
@@ -150,7 +150,7 @@ public class Player {
 					stage += Start.runTurn(gc, availableUnits);
 				}
 
-				else {
+				else if(availableUnits.size() > 0) {
 					Start.runTurn(gc, availableUnits);
 				}
 			}

@@ -89,7 +89,10 @@ public class Factories {
 
 	public static void moveAroundUnit(GameController gc, Unit unit, int structureId) {
 
-		ArrayList<MapLocation> possibleLocs = adjacent(gc, gc.unit(structureId).location().mapLocation());
+		ArrayList<MapLocation> possibleLocs;
+		try{
+			possibleLocs = adjacent(gc, gc.unit(structureId).location().mapLocation());
+		}catch(Exception e){possibleLocs = new ArrayList<MapLocation>();}
 		ArrayList<Direction> possibleDirs = new ArrayList<>();
 
 		MapLocation unitLoc = unit.location().mapLocation();
