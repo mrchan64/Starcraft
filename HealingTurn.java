@@ -11,6 +11,7 @@ public class HealingTurn {
 		Unit unit;
 		for(int i = 0; i<size; i++){
 			unit = allUnits.get(i);
+			if(unit.location().isInGarrison() || unit.location().isInSpace()) continue;
 			if(unit.health()<health){
 				health = (int) unit.health();
 				lowestHealth = unit.location().mapLocation();

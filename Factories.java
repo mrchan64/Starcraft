@@ -18,25 +18,19 @@ public class Factories {
 			factory = fac.location().mapLocation();
 			toFactory.setTarget(factory);
 
-			if (fac.health() < 300) {
+			closestUnits = Factories.getClosest(gc, Player.availableUnits, fac, toFactory);
+			sendUnits(gc, closestUnits, fac, toFactory);
 
-				closestUnits = Factories.getClosest(gc, Player.availableUnits, fac, toFactory);
+			for (int i = 0; i < closestUnits.length; i++) {
 
-				Factories.sendUnits(gc, closestUnits, fac, toFactory);
+				unit = closestUnits[i];
+				for (int j = 0; j < Player.availableUnits.size(); j++) {
 
-				for (int i = 0; i < closestUnits.length; i++) {
-
-					unit = closestUnits[i];
-					for (int j = 0; j < Player.availableUnits.size(); j++) {
-
-						if (Player.availableUnits.get(j).equals(unit)) {
-							Player.availableUnits.remove(unit);
-							j--;
-						}
+					if (unit.equals(Player.availableUnits.get(j))) {
+						Player.availableUnits.remove(unit);
 					}
 				}
 			}
-
 		}
 
 		for (int i = 0; i < Player.availableUnits.size(); i++) {
