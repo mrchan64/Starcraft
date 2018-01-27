@@ -20,6 +20,8 @@ public class Factories {
 
 			closestUnits = Factories.getClosest(gc, Player.availableUnits, fac, toFactory);
 			sendUnits(gc, closestUnits, fac, toFactory);
+			
+			System.out.println("available units: " + Player.availableUnits.size());
 
 			for (int i = 0; i < closestUnits.length; i++) {
 
@@ -28,6 +30,7 @@ public class Factories {
 
 					if (unit.equals(Player.availableUnits.get(j))) {
 						Player.availableUnits.remove(unit);
+						j--;
 					}
 				}
 			}
@@ -143,44 +146,62 @@ public class Factories {
 
 	public static Unit[] getClosest(GameController gc, ArrayList<Unit> units, Unit structure, VectorField toFactory) {
 
+		if(units.size() == 0) {
+			return new Unit[0];
+		}
+		
 		int numOpenSpaces = getOpenSpaces(gc, structure.location().mapLocation());
-		int unitsReady = Player.availableUnits.size();
+		int unitsReady = units.size();
 
 		if (numOpenSpaces > unitsReady)
 			numOpenSpaces = unitsReady;
 
-		int size = (int) units.size();
+		int size = units.size();
 		Unit[] closestUnits = new Unit[numOpenSpaces];
 		int[] magnitudes = new int[numOpenSpaces];
-		Unit unit;
+		Unit unit = units.get(0);
+		Location unitLoc;
 		int magnitude;
 		int last = 0;
 		int place = 0;
 		MapLocation currloc;
+		
+		closestUnits[0] = units.get(0);
+		magnitudes[0] = toFactory.getMagnitude(unit.location().mapLocation());
 
 		for (int i = 0; i < size; i++) {
+			
 			unit = units.get(i);
-			if (unit.unitType() != UnitType.Worker || unit.location().isInGarrison())
+			unitLoc = unit.location();
+			if (unit.unitType() != UnitType.Worker || unitLoc.isInGarrison() || unitLoc.isInSpace())
 				continue;
-
-			currloc = unit.location().mapLocation();
+			
+			currloc = unitLoc.mapLocation();
 
 			magnitude = toFactory.getMagnitude(currloc);
 
 			for (place = last; place > 0; place--) {
-				if (magnitudes[place - 1] <= magnitude)
+				if(place == numOpenSpaces && magnitudes[place - 1] <= magnitude)
 					break;
-				if (place != numOpenSpaces) {
+				else if(place == numOpenSpaces && magnitudes[place - 1] > magnitude) {
+					magnitudes[place - 1] = magnitude;
+					closestUnits[place - 1] = unit;
+				}
+				else if (magnitudes[place - 1] > magnitude) {
 					magnitudes[place] = magnitudes[place - 1];
 					closestUnits[place] = closestUnits[place - 1];
+					magnitudes[place - 1] = magnitude;
+					closestUnits[place - 1] = unit;
+				}
+				else {
+					closestUnits[place] = unit;
+					magnitudes[place] = magnitude;
+					break;
 				}
 			}
-			if (place != numOpenSpaces) {
-				closestUnits[place] = unit;
-				magnitudes[place] = magnitude;
-				last = last >= numOpenSpaces ? numOpenSpaces : last + 1;
-			}
+			last = last >= numOpenSpaces ? numOpenSpaces : last + 1;
 		}
+		
 		return closestUnits;
 	}
 

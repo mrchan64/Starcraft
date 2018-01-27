@@ -56,10 +56,9 @@ public class Player {
 				type = unit.unitType();
 				health = (int) unit.health();
 
-				if (gc.planet() == Planet.Mars && type == UnitType.Rocket) {
-					UnitBuildOrder.deployUnits(gc, unit);
-				}
-
+				if (unit.location().isInGarrison() || unit.location().isInSpace())
+					continue;
+				
 				else if (type == UnitType.Factory) {
 					numFactories++;
 
@@ -79,7 +78,6 @@ public class Player {
 				}
 
 				else if (type == UnitType.Worker) {
-					// HAVE TO DIFFERENTIATE PLANETS NOW
 					availableUnits.add(unit);
 
 					for (Direction dir : Start.directions) {
@@ -93,7 +91,7 @@ public class Player {
 			}
 
 			CommandUnits.runTurn(gc);
-
+			
 			if (stage >= 2) {
 
 				Rocket.runTurn(gc, availableUnits);
@@ -108,7 +106,7 @@ public class Player {
 				Factories.runTurn(gc, availableUnits);
 
 				if (gc.round() > 100) {
-					if (Start.numWorkers < 3) {
+					if (Start.numWorkers < 8) {
 						UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Worker);
 					}
 				}
@@ -134,11 +132,13 @@ public class Player {
 				else if (numFactories <= findKarbonite.avaSq / 50 || Start.numWorkers <= 2 * numFactories + 8) {
 					Start.runTurn(gc, availableUnits);
 				}
+				
+				if(gc.round() % 50 == 0) System.gc();
 			}
 
 			gc.nextTurn();
 		}
-		
+
 		while(planet == Planet.Mars) {
 			
 			ArrayList<Unit> marsUnits = new ArrayList<>();
