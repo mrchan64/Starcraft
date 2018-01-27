@@ -145,14 +145,15 @@ public class Player {
 			units = gc.myUnits();
 			
 			for(int i = 0; i < units.size(); i++) {
-				marsUnits.add(units.get(i));
-			}
-			
-			if(Rocket.onMars.size() > 0) {
-				for(Unit rocket : Rocket.onMars) {
-					if(!rocket.location().isInSpace()) {
-						UnitBuildOrder.deployUnits(gc, rocket);
-					}
+				unit = units.get(i);
+				type = unit.unitType();
+				
+				if(type == UnitType.Rocket) {
+					UnitBuildOrder.deployUnits(gc, unit);
+				}
+				
+				else if(type == UnitType.Worker) {
+					marsUnits.add(unit);
 				}
 			}
 			

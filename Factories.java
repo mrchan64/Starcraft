@@ -21,8 +21,6 @@ public class Factories {
 			closestUnits = Factories.getClosest(gc, Player.availableUnits, fac, toFactory);
 			sendUnits(gc, closestUnits, fac, toFactory);
 			
-			System.out.println("available units: " + Player.availableUnits.size());
-
 			for (int i = 0; i < closestUnits.length; i++) {
 
 				unit = closestUnits[i];
@@ -72,7 +70,6 @@ public class Factories {
 			}
 
 			else {
-
 				if (gc.isMoveReady(unitId)) {
 					moveAroundUnit(gc, unit, structureId);
 				}

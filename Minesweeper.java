@@ -7,6 +7,7 @@ public class Minesweeper {
 	public static int[][] densityMap;
 	public static int bestX;
 	public static int bestY;
+	public static int highest;
 
 	public static void mineSweep(MapLocation loc) {
 		int startX = loc.getX();
@@ -33,6 +34,10 @@ public class Minesweeper {
 		}
 		mineMap[startX][startY] = num;
 		density += num;
+		
+		if(num > highest) {
+			highest = num;
+		}
 	}
 
 	public static void denseMap() {
