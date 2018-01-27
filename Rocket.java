@@ -9,9 +9,6 @@ public class Rocket {
 	public static int unitId;
 	public static MapLocation unitLoc;
 	public static Unit[] closestUnits;
-	public static ArrayList<Unit> onMars = new ArrayList<>();
-	
-	public static int loaded;
 
 	public static void runTurn(GameController gc, ArrayList<Unit> units) {
 
@@ -64,39 +61,50 @@ public class Rocket {
 		int rocketId = rocket.id();
 		MapLocation rocketLoc = rocket.location().mapLocation();
 		toRocket.setTarget(rocketLoc);
-		Unit[] astros = Factories.getClosest(gc, units, rocket, toRocket);
+		Unit[] rocketUnits = Factories.getClosest(gc, units, rocket, toRocket);
 		MapLocation destination;
+		Unit unit;
+		int unitId;
+		MapLocation unitLoc;
+		MapLocation rocketLocation = rocket.location().mapLocation();
+		int x = 0, y = 0;
+		boolean locFound = false;
+		boolean adjacent = false;
+		boolean loadable = false;
 
-		for (int i = 0; i < astros.length; i++) {
+		for (int i = 0; i < rocketUnits.length; i++) {
 			
-			int unitId = astros[i].id();
-			if (gc.canLoad(rocketId, unitId)) {
-				gc.load(rocketId, unitId);
-				Player.availableUnits.remove(gc.unit(unitId));
-				loaded++;
-				}
-			else if(loaded < 8) {
-				Factories.sendUnits(gc, astros, rocket, toRocket);
+			unit = rocketUnits[i];
+			unitId = rocketUnits[i].id();
+			unitLoc = unit.location().mapLocation();
+			Player.availableUnits.remove(unit);
+			adjacent = unitLoc.isAdjacentTo(rocketLocation);
+			loadable = gc.canLoad(rocketId, unitId);
+			
+			if (!adjacent) {
+				Factories.sendUnits(gc, rocketUnits, rocket, toRocket);
 			}
-			else if(loaded >= 8) {
-				int x = 0;
-				int y = 0;
+			
+			else if(adjacent && loadable) {
+				gc.load(rocketId, unitId);
+			}
+			else{
+				
 				for (int ii = 0; ii < findKarbonite.mWidth; ii++) {
+					if (locFound) break;
 					for (int j = 0; j < findKarbonite.mHeight; j++) {
 						if (Minesweeper.mineMap[ii][j] == Minesweeper.highest) {
 							x = ii;
 							y = j;
 							Minesweeper.mineMap[ii][j] = 0;
 							Minesweeper.updateMap();
-
-							destination = new MapLocation(Planet.Mars, x, y);
-							if (gc.canLaunchRocket(rocketId, destination)) {
-								gc.launchRocket(rocketId, destination);
-								onMars.add(rocket);
-								UnitBuildOrder.builtRocks.remove(rocket);
-								loaded = 0;
-								break;
-							}
+						}
+						destination = new MapLocation(Planet.Mars, x, y);
+						if (gc.canLaunchRocket(rocketId, destination)) {
+							gc.launchRocket(rocketId, destination);
+							UnitBuildOrder.builtRocks.remove(rocket);
+							locFound = true;
+							break;
 						}
 					}
 				}
@@ -182,7 +190,6 @@ public class Rocket {
 		int numOccupiable = 0;
 		
 		Unit[] rocketUnits = getClosest(gc, units, toSpawn);
-		//System.out.println("rockets, rocketUnits: " + rocketUnits.length + ", units: " + units.size());
 		int x, y;
 
 		for (int i = 0; i < rocketUnits.length; i++) {
@@ -232,7 +239,6 @@ public class Rocket {
 
 		if (gc.canBlueprint(idealUnitId, UnitType.Rocket, idealDir)) {
 			gc.blueprint(idealUnitId, UnitType.Rocket, idealDir);
-			System.out.println("Rocket blueprinted");
 			return true;
 		}
 

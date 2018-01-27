@@ -4,8 +4,11 @@ import bc.*;
 
 public class Kiting {
 	
+	public static int kiteDist = 50;
+	
 	public static boolean kite(GameController gc, Unit unit, Direction ideal){
-		if(unit.unitType() != UnitType.Ranger)return false;
+		//if(unit.unitType() != UnitType.Ranger)return false;
+		if(unit.unitType()==UnitType.Knight)return false;
 		int unitId = unit.id();
 		if(!gc.isMoveReady(unitId))return false;
 		Team team = CommandUnits.team;
@@ -22,13 +25,8 @@ public class Kiting {
 		MapLocation loc;
 		for(int i = 0; i<size; i++){
 			enemy = enemies.get(i);
-			if(enemy.unitType() == UnitType.Ranger){
+			if(CommandUnits.validUnits.contains(enemy.unitType())){
 				enemyUnits.add(enemy.location().mapLocation());
-			}else if(enemy.unitType() == UnitType.Mage){
-				loc = enemy.location().mapLocation();
-				if(loc.distanceSquaredTo(curr) <= enemy.attackRange()+1){
-					enemyUnits.add(loc);
-				}
 			}
 		}
 		if(enemyUnits.size() == 0)return false;
@@ -79,11 +77,7 @@ public class Kiting {
 		Unit enemy;
 		for(MapLocation loc: enemies){
 			enemy = CommandUnits.enemies[loc.getX()][loc.getY()];
-			if(enemy.unitType() == UnitType.Ranger){
-				if(loc.distanceSquaredTo(CommandUnits.squares[x][y])<=enemy.attackRange())return false;
-			}else{
-				if(loc.distanceSquaredTo(CommandUnits.squares[x][y])<=enemy.attackRange()+1)return false;
-			}
+			if(loc.distanceSquaredTo(CommandUnits.squares[x][y])<=kiteDist)return false;
 		}
 		return true;
 	}

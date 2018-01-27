@@ -37,6 +37,10 @@ public class Minesweeper {
 			highest = num;
 		}
 		density += num;
+		
+		if(num > highest) {
+			highest = num;
+		}
 	}
 
 	public static void denseMap() {

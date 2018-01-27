@@ -4,6 +4,7 @@ import bc.*;
 
 public class HealingTurn {
 	public static void runTurn(GameController gc, ArrayList<Unit> availableHealers, VecUnit allUnits){
+		System.out.println("healser "+availableHealers.size());
 		if(availableHealers.size() == 0)return;
 		int size = (int) allUnits.size();
 		double temp;
@@ -12,6 +13,9 @@ public class HealingTurn {
 		Unit unit;
 		for(int i = 0; i<size; i++){
 			unit = allUnits.get(i);
+			if(unit.unitType()==UnitType.Factory)continue;
+			if(unit.unitType()==UnitType.Rocket)continue;
+			if(unit.unitType()==UnitType.Healer)continue;
 			if(unit.location().isInGarrison() || unit.location().isInSpace())continue;
 			temp = healthPerc(unit);
 			if(temp<health){
@@ -19,6 +23,7 @@ public class HealingTurn {
 				lowestHealth = unit.location().mapLocation();
 			}
 		}
+		System.out.println("size: "+size);
 		int x = lowestHealth.getX();
 		int y = lowestHealth.getY();
 		VectorField vf = CommandUnits.storedField[x][y];
@@ -27,6 +32,7 @@ public class HealingTurn {
 			vf.setTarget(CommandUnits.squares[x][y]);
 			CommandUnits.storedField[x][y] = vf;
 		}
+		System.out.println(x+" "+y+" "+health);
 		size = availableHealers.size();
 		int tsize, unitId;
 		Unit tlowest;
@@ -39,15 +45,18 @@ public class HealingTurn {
 			unitId = unit.id();
 			loc = unit.location().mapLocation();
 			surr = gc.senseNearbyUnitsByTeam(loc, unit.attackRange(), CommandUnits.team);
-			if(gc.isHealReady(unit.id())){
+			if(gc.isHealReady(unitId)){
 				tsize = (int) surr.size();
 				tlowest = null;
 				thealth = 2;
 				for(int j = 0; j<tsize; j++){
 					mine = surr.get(j);
-					temp = healthPerc(unit);
+					if(mine.unitType()==UnitType.Factory)continue;
+					if(mine.unitType()==UnitType.Rocket)continue;
+					if(mine.unitType()==UnitType.Healer)continue;
+					temp = healthPerc(mine);
 					if(temp<thealth){
-						thealth = healthPerc(unit);
+						thealth = healthPerc(mine);
 						tlowest = mine;
 					}
 				}
@@ -60,6 +69,7 @@ public class HealingTurn {
 	public static double healthPerc(Unit unit){
 		double max = unit.maxHealth();
 		double h = unit.health();
+		System.out.println(h/max);
 		return h/max;
 	}
 }
