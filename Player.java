@@ -101,8 +101,7 @@ public class Player {
 			
 			if (stage >= 2) {
 
-				if(trigger);
-				Rocket.runTurn(gc, availableUnits);
+				if(trigger)Rocket.runTurn(gc, availableUnits);
 
 				for (int i = 0; i < UnitBuildOrder.builtRocks.size(); i++) {
 					
