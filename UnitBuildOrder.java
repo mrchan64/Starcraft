@@ -6,9 +6,29 @@ public class UnitBuildOrder {
 	public static Direction[] dir = Direction.values();
 	public static ArrayList<Unit> builtFacts = new ArrayList<>();
 
-	public static final int RangerPerc = 5;
-	public static final int MagePerc = 3;
-	public static final int KnightPerc = 2;
+	public static UnitType[] denseUnitOrder = {UnitType.Ranger,
+	                                           UnitType.Ranger,
+	                                           UnitType.Ranger,
+	                                           UnitType.Mage,
+	                                           UnitType.Healer,
+	                                           UnitType.Healer,
+	                                           UnitType.Healer};
+	public static UnitType[] sparseUnitOrder = {UnitType.Ranger,
+	                                            UnitType.Ranger,
+	                                            UnitType.Knight,
+	                                            UnitType.Mage,
+	                                            UnitType.Healer,
+	                                            UnitType.Healer};
+	public static UnitType[] closeUnitOrder = {UnitType.Knight,
+	                                           UnitType.Knight,
+	                                           UnitType.Knight,
+	                                           UnitType.Healer,
+	                                           UnitType.Healer,
+	                                           UnitType.Healer,
+	                                           UnitType.Ranger,
+	                                           UnitType.Ranger};
+	public static UnitType[] order;
+	public static int index = 0;
 	public static ArrayList<Unit> builtRocks = new ArrayList<>();
 	public static VectorField toRocket = new VectorField();
 
@@ -17,6 +37,7 @@ public class UnitBuildOrder {
 		type = typeToBuild();
 		if (gc.canProduceRobot(factoryId, type)) {
 			gc.produceRobot(factoryId, type);
+			index = (index+1)%order.length;
 		}
 	}
 
@@ -41,16 +62,8 @@ public class UnitBuildOrder {
 	}
 
 	private static UnitType typeToBuild() {
-		int perc = (int) (Math.random() * 10);
-		if (perc < RangerPerc)
-			return UnitType.Ranger;
-		perc -= RangerPerc;
-		if (perc < MagePerc)
-			return UnitType.Mage;
-		perc -= MagePerc;
-		//if(perc<KnightPerc)return UnitType.Knight;
-		return UnitType.Healer;
-		//return UnitType.Knight;
+		order = sparseUnitOrder;
+		return order[index];
 	}
 
 	/*
