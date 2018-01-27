@@ -8,22 +8,25 @@ public class findKarbonite{
     public static int totalKarbOnMap;
     public static MapLocation spawn;
     public static int[][] currentKarbs;
+
     public static MapLocation[][] mapLocations;
     
     public static void initKarb(GameController gc) {
     	
-    		karboniteField = new VectorField();
+    	karboniteField = new VectorField();
         int height = VectorField.height;
         int width = VectorField.width;
         Planet planet = VectorField.planet;
         PlanetMap map = gc.startingMap(planet);
         currentKarbs = new int[width][height];
         mapLocations = new MapLocation[width][height];
+        Minesweeper.mineMap = new int[width][height];
         
         for(int i = 0; i < width; i++) {
         		for(int j = 0; j < height; j++) {
         			mapLocations[i][j] = new MapLocation(planet, i, j);
         			currentKarbs[i][j] = (int)map.initialKarboniteAt(mapLocations[i][j]);
+                    Minesweeper.mineSweep(mapLocations[i][j]);
         			
         			if(VectorField.terrain[i][j] == 1) avaSq++;
         		}
