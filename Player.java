@@ -96,8 +96,6 @@ public class Player {
 					availableCombatUnits.add(unit);
 				}
 			}
-
-			CommandUnits.runTurn(gc);
 			
 			if (stage >= 2) {
 
@@ -105,12 +103,12 @@ public class Player {
 
 				for (int i = 0; i < UnitBuildOrder.builtRocks.size(); i++) {
 					
-					if(!workersOnMars) {
+					if(!workersOnMars && Start.rockets.size() < 5) {
 						Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
 						workersOnMars = true;
 					}
 					
-					else {
+					else if(Start.rockets.size() < 5){
 						Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableCombatUnits);
 					}
 				}
@@ -119,6 +117,7 @@ public class Player {
 			if (stage >= 1) {
 
 				Factories.runTurn(gc, availableUnits);
+				CommandUnits.runTurn(gc);
 
 				if (gc.round() > 100) {
 					if (Start.numWorkers < 8) {
@@ -171,9 +170,18 @@ public class Player {
 				
 				else if(type == UnitType.Worker) {
 					marsUnits.add(unit);
+					
+					for (Direction dir : Start.directions) {
+						if (gc.canHarvest(unit.id(), dir)) {
+
+							gc.harvest(unit.id(), dir);
+							break;
+						}
+					}
 				}
 			}
 			
+			CommandUnits.runTurn(gc);
 			Start.runTurn(gc, marsUnits);
 			gc.nextTurn();
 			System.out.println("Currently Round " + gc.round());
