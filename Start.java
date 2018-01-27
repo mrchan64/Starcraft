@@ -9,6 +9,9 @@ public class Start {
 	
 	public static MapLocation spawn;
 	public static int numWorkers;
+
+	public static final int squaresPerWorkerDense = 5;
+	public static final int squaresPerWorkerSparse = 5;
 	
 	public static void initSpawn(GameController gc) {
 		
@@ -38,7 +41,10 @@ public class Start {
 		else {
 			if(Factories.buildFactory(gc, units)) return 1;
 		}
-			
+		
+		if(Player.lastRoundMined > 10){
+			return 0;
+		}
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
 
@@ -93,9 +99,9 @@ public class Start {
 	}
 	
 	public static boolean notEnoughUnits(){
-		if(Minesweeper.isDense)
-			return numWorkers <= 3 * Player.numFactories + 8;
+		if(!Minesweeper.isDense)
+			return (numWorkers <= 3 * Player.numFactories + 8) && (numWorkers < findKarbonite.avaSq/squaresPerWorkerDense) && (Player.round - Player.lastRoundMined < 10);
 		else
-			return numWorkers <= 8 * Player.numFactories + 8;
+			return (numWorkers <= 8 * Player.numFactories + 8) && (numWorkers < findKarbonite.avaSq/squaresPerWorkerSparse) && (Player.round - Player.lastRoundMined < 10);
 	}
 }
