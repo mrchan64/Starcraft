@@ -61,7 +61,7 @@ public class Rocket {
 		int rocketId = rocket.id();
 		MapLocation rocketLoc = rocket.location().mapLocation();
 		toRocket.setTarget(rocketLoc);
-		Unit[] rocketUnits = Factories.getClosest(gc, units, rocket, toRocket);
+		Unit[] rocketUnits = getClosest(gc, units, toRocket);
 		MapLocation destination;
 		Unit unit;
 		int unitId;
@@ -138,7 +138,7 @@ public class Rocket {
 			
 			unit = units.get(i);
 			unitLoc = unit.location();
-			if (unit.unitType() != UnitType.Worker || unitLoc.isInGarrison() || unitLoc.isInSpace())
+			if (unitLoc.isInGarrison() || unitLoc.isInSpace())
 				continue;
 			
 			currloc = unit.location().mapLocation();

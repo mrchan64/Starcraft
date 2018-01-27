@@ -47,11 +47,13 @@ public class UnitBuildOrder {
 	}
 
 	public static void deployUnits(GameController gc, Unit structure) {
+
 		int structureId = structure.id();
 		for (int i = 0; i < dir.length; i++) {
 			if(dir[i] == Direction.Center) continue;
 			
 			if (gc.canUnload(structureId, dir[i])) {
+
 				gc.unload(structureId, dir[i]);
 				i--;
 			}
