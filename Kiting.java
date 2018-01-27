@@ -59,7 +59,7 @@ public class Kiting {
 				gc.moveRobot(unitId, actual);
 				break;
 			}
-      
+
 			if(isntTerrain(x,y))closestNonTerrain = actual;
 
 		}

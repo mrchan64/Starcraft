@@ -42,7 +42,7 @@ public class Minesweeper {
 		isDense = false;
 	}
 
-	public static void addNeighbors(MapLocation loc) {
+	/*public static void addNeighbors(MapLocation loc) {
 		int startX = loc.getX();
 		int startY = loc.getY();
 
@@ -63,13 +63,13 @@ public class Minesweeper {
 				// do nothing
 			}
 		}
-		densityMap[x][y] = num;
-	}
+		densityMap[startX][startY] = num;
+	}*/
 
 	public static void bestSquare() {
 		int max = 0;
-		for (int x = 0; x < densityMap[0].length; x++) {
-			for (int y = 0; y < densityMap.length; y++) {
+		for (int x = 0; x < findKarbonite.mWidth; x++) {
+			for (int y = 0; y < findKarbonite.mHeight; y++) {
 				if (densityMap[x][y] > max) {
 					max = densityMap[x][y];
 					bestX = x;
