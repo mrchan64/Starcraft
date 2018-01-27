@@ -22,6 +22,8 @@ public class Player {
 	public static UnitType type;
 	public static int health;
 	public static Planet planet;
+	
+	public static boolean trigger = false;
 
 	public static void main(String[] args) {
 
@@ -99,6 +101,7 @@ public class Player {
 			
 			if (stage >= 2) {
 
+				if(trigger);
 				Rocket.runTurn(gc, availableUnits);
 
 				for (int i = 0; i < UnitBuildOrder.builtRocks.size(); i++) {
@@ -130,7 +133,7 @@ public class Player {
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
 
-				if (gc.round() >= 75 && gc.karbonite() > 100) {
+				if (numFactories > 3) {
 					stage = 2;
 				}
 			}
@@ -143,7 +146,7 @@ public class Player {
 					stage += Start.runTurn(gc, availableUnits);
 				}
 
-				else if (numFactories <= findKarbonite.avaSq / 50 || Start.numWorkers <= 2 * numFactories + 8) {
+				else {
 					Start.runTurn(gc, availableUnits);
 				}
 				

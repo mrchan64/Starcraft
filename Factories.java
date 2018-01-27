@@ -300,6 +300,7 @@ public class Factories {
 					
 					if(numOccupiable >= 8) {
 						gc.blueprint(unitId, UnitType.Factory, dir);
+						Player.trigger = true;
 						return true;
 					}
 					
@@ -317,6 +318,7 @@ public class Factories {
 
 		if(gc.canBlueprint(idealUnitId, UnitType.Factory, idealDir)) {
 			gc.blueprint(idealUnitId, UnitType.Factory, idealDir);
+			Player.trigger = true;
 			return true;
 		}
 		

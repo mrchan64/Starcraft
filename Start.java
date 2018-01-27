@@ -31,7 +31,7 @@ public class Start {
 		
 		updateNumWorkers(units);
 		
-		if(numWorkers <= 2 * Player.numFactories + 8) {
+		if(notEnoughUnits()) {
 			replicate(gc, units);
 		}
 		
@@ -90,5 +90,12 @@ public class Start {
 				}
 			}
 		}
+	}
+	
+	public static boolean notEnoughUnits(){
+		if(Minesweeper.isDense)
+			return numWorkers <= 3 * Player.numFactories + 8;
+		else
+			return numWorkers <= 8 * Player.numFactories + 8;
 	}
 }
