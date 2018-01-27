@@ -1,5 +1,5 @@
 import bc.*;
-import java.util.*;
+import java.util.ArrayList;
 
 public class findKarbonite {
 
@@ -11,6 +11,7 @@ public class findKarbonite {
 	public static MapLocation[][] mapLocations;
 	public static MapLocation[][] marsLocs;
 	public static int[][] availMars;
+	public static ArrayList<MapLocation> karbLocations;
 
 	public static int mHeight;
 	public static int mWidth;

@@ -10,6 +10,7 @@ public class Player {
 	public static int numFactories = 0;
 
 	public static ArrayList<Unit> availableUnits;
+	public static ArrayList<Unit> availableCombatUnits;
 	public static Team team;
 
 	public static GameController gc;
@@ -27,6 +28,7 @@ public class Player {
 		gc = new GameController();
 		planet = gc.planet();
 		team = gc.team();
+		boolean workersOnMars = false;
 		
 		VectorField.initWalls(gc);
 		findKarbonite.initKarb(gc);
@@ -44,6 +46,7 @@ public class Player {
 			Start.rockets = new ArrayList<>();
 			UnitBuildOrder.builtRocks = new ArrayList<>();
 			availableUnits = new ArrayList<>();
+			availableCombatUnits = new ArrayList<>();
 			numFactories = 0;
 
 			findKarbonite.updateFieldKarb(gc);
@@ -88,6 +91,10 @@ public class Player {
 						}
 					}
 				}
+				
+				else {
+					availableCombatUnits.add(unit);
+				}
 			}
 
 			CommandUnits.runTurn(gc);
@@ -97,7 +104,15 @@ public class Player {
 				Rocket.runTurn(gc, availableUnits);
 
 				for (int i = 0; i < UnitBuildOrder.builtRocks.size(); i++) {
-					Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
+					
+					if(!workersOnMars) {
+						Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
+						workersOnMars = true;
+					}
+					
+					else {
+						Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableCombatUnits);
+					}
 				}
 			}
 
@@ -140,6 +155,8 @@ public class Player {
 		}
 
 		while(planet == Planet.Mars) {
+			
+			findKarbonite.updateFieldKarb(gc);
 			
 			ArrayList<Unit> marsUnits = new ArrayList<>();
 			units = gc.myUnits();
