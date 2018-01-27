@@ -67,6 +67,7 @@ public class Kiting {
 	}
 	
 	private static boolean isValidSquare(GameController gc, ArrayList<MapLocation> enemies, int x, int y, MapLocation test){
+		if(x<0 || x>=VectorField.width || y<0 || y>=VectorField.height)return false;
 		if(VectorField.terrain[x][y]!=1)return false;
 		try{
 			gc.senseUnitAtLocation(test);
