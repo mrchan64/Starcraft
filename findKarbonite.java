@@ -47,7 +47,7 @@ public class findKarbonite {
 		for (int i = 0; i < mWidth; i++) {
 			for (int j = 0; j < mHeight; j++) {
 				marsLocs[i][j] = new MapLocation(planet, i, j);
-                Minesweeper.mineSweep(marsLocs[i][j]);
+                Minesweeper.mineSweep(marsLocs[i][j], map);
 				if (map.isPassableTerrainAt(marsLocs[i][j]) == 1) {
 					availMars[i][j] = 1;
 				} else {

@@ -96,15 +96,16 @@ public class Rocket {
 						if (Minesweeper.mineMap[ii][j] == Minesweeper.highest) {
 							x = ii;
 							y = j;
+
 							Minesweeper.mineMap[ii][j] = 0;
-							Minesweeper.updateMap(x, y);
-						}
-						destination = new MapLocation(Planet.Mars, x, y);
-						if (gc.canLaunchRocket(rocketId, destination)) {
-							gc.launchRocket(rocketId, destination);
-							UnitBuildOrder.builtRocks.remove(rocket);
-							locFound = true;
-							break;
+							destination = new MapLocation(Planet.Mars, x, y);
+							if (gc.canLaunchRocket(rocketId, destination)) {
+								gc.launchRocket(rocketId, destination);
+								UnitBuildOrder.builtRocks.remove(rocket);
+								locFound = true;
+								Minesweeper.updateMap(x, y);
+								break;
+							}
 						}
 					}
 				}
