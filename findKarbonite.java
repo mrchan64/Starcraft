@@ -55,6 +55,14 @@ public class findKarbonite {
 				}
 			}
 		}
+        for (int i = 0; i < mWidth; i++) {
+            for (int j = 0; j < mHeight; j++) {
+                System.out.print(Minesweeper.mineMap[i][j]);
+            }
+            System.out.println();
+        }
+
+
 	}
 
 	public static void getOppositeSpawn(Unit unit) {

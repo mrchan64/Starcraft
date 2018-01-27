@@ -27,8 +27,10 @@ public class Minesweeper {
 				locAround = loc.add(dir);
 				x = locAround.getX();
 				y = locAround.getY();
-				
-				if(VectorField.terrain[x][y] == 1) {
+				if (x < 0 || y < 0 || x == findKarbonite.mWidth || y == findKarbonite.mHeight) {
+					continue;
+				}
+				if(map.isPassableTerrainAt(locAround) == 1) {
 					num++;
 				}
 			}
