@@ -51,6 +51,7 @@ public class CommandUnits {
 		}
 		long time = System.currentTimeMillis();
 		VecUnit units = gc.myUnits();
+		ArrayList<Unit> availableHealers = new ArrayList<Unit>();
 		ArrayList<Unit> availableUnits = new ArrayList<Unit>();
 		ArrayList<Long> availableUnitsrange = new ArrayList<Long>();
 		int size = (int) units.size();
@@ -79,6 +80,7 @@ public class CommandUnits {
 				availableUnitsrange.add(range);
 				availableUnits.add(unit);
 			}
+			if(unitType == UnitType.Healer)availableHealers.add(unit);
 		}
 		if(size!=0){
 			centerMassX /= size;
@@ -86,6 +88,7 @@ public class CommandUnits {
 			centerMass = new MapLocation(VectorField.planet, centerMassX, centerMassY);
 		}else
 			return;
+		HealingTurn.runTurn(gc, availableHealers, units);
 		//update enemies and prioritize them
 		int esize;
 		ArrayList<MapLocation> priorityEnemies = new ArrayList<MapLocation>();
@@ -338,6 +341,9 @@ public class CommandUnits {
 		}
 		//Ranger has range minimum;
 		Direction dir = vf.getDirection(unit.location().mapLocation());
+		
+		if(Kiting.kite(gc, unit, dir))return;
+			
 		if(unitType == UnitType.Ranger && unit.location().mapLocation().distanceSquaredTo(squares[x][y])<=unit.rangerCannotAttackRange()){
 			dir = bc.bcDirectionOpposite(dir);
 		}

@@ -7,7 +7,7 @@ public class UnitBuildOrder {
 	public static ArrayList<Unit> builtFacts = new ArrayList<>();
 
 	public static final int RangerPerc = 5;
-	public static final int MagePerc = 2;
+	public static final int MagePerc = 3;
 	public static final int KnightPerc = 2;
 	public static ArrayList<Unit> builtRocks = new ArrayList<>();
 	public static VectorField toRocket = new VectorField();
@@ -49,10 +49,9 @@ public class UnitBuildOrder {
 		if (perc < MagePerc)
 			return UnitType.Mage;
 		perc -= MagePerc;
-		if (perc < KnightPerc)
-			return UnitType.Knight;
-		// return UnitType.Healer;
-		return UnitType.Knight;
+		//if(perc<KnightPerc)return UnitType.Knight;
+		return UnitType.Healer;
+		//return UnitType.Knight;
 	}
 
 	public static void loadUnits(GameController gc, Unit rocket, ArrayList<Unit> units) {
