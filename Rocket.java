@@ -88,7 +88,6 @@ public class Rocket {
 			else if(adjacent && loadable) {
 				gc.load(rocketId, unitId);
 			}
-			
 			else{
 				
 				for (int ii = 0; ii < findKarbonite.mWidth; ii++) {
@@ -98,6 +97,7 @@ public class Rocket {
 							x = ii;
 							y = j;
 							Minesweeper.mineMap[ii][j] = 0;
+							Minesweeper.updateMap();
 						}
 						destination = new MapLocation(Planet.Mars, x, y);
 						if (gc.canLaunchRocket(rocketId, destination)) {
