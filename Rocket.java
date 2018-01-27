@@ -61,7 +61,7 @@ public class Rocket {
 		int rocketId = rocket.id();
 		MapLocation rocketLoc = rocket.location().mapLocation();
 		toRocket.setTarget(rocketLoc);
-		Unit[] rocketUnits = Factories.getClosest(gc, units, rocket, toRocket);
+		Unit[] rocketUnits = getClosest(gc, units, toRocket);
 		MapLocation destination;
 		Unit unit;
 		int unitId;
@@ -139,7 +139,7 @@ public class Rocket {
 			
 			unit = units.get(i);
 			unitLoc = unit.location();
-			if (unit.unitType() != UnitType.Worker || unitLoc.isInGarrison() || unitLoc.isInSpace())
+			if (unitLoc.isInGarrison() || unitLoc.isInSpace())
 				continue;
 			
 			currloc = unit.location().mapLocation();
@@ -224,6 +224,7 @@ public class Rocket {
 
 					if (numOccupiable >= 8) {
 						gc.blueprint(unitId, UnitType.Rocket, dir);
+						Player.trigger = false;
 						return true;
 					}
 
@@ -241,6 +242,7 @@ public class Rocket {
 
 		if (gc.canBlueprint(idealUnitId, UnitType.Rocket, idealDir)) {
 			gc.blueprint(idealUnitId, UnitType.Rocket, idealDir);
+			Player.trigger = false;
 			return true;
 		}
 
