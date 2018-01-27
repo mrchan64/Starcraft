@@ -46,7 +46,8 @@ public class Kiting {
 				gc.moveRobot(unitId, actual);
 				break;
 			}
-			if(VectorField.terrain[x][y] == 1 && !(x < 0 || x >= VectorField.width || y < 0 || y >= VectorField.height)) closestNonTerrain = actual;
+
+			if(isntTerrain(x,y))closestNonTerrain = actual;
 
 			if(i == 0 || i==4) continue;
 			
@@ -58,7 +59,9 @@ public class Kiting {
 				gc.moveRobot(unitId, actual);
 				break;
 			}
-			if(VectorField.terrain[x][y] ==1 && !(x < 0 || x >= VectorField.width || y < 0 || y >= VectorField.height)) closestNonTerrain = actual;
+
+			if(isntTerrain(x,y))closestNonTerrain = actual;
+
 		}
 		if(gc.isMoveReady(unitId) && gc.canMove(unitId, closestNonTerrain)) {
 			gc.moveRobot(unitId, closestNonTerrain);
@@ -83,6 +86,11 @@ public class Kiting {
 			}
 		}
 		return true;
+	}
+	
+	private static boolean isntTerrain(int x, int y){
+		if(x<0 || x>=VectorField.width || y<0 || y>=VectorField.height)return false;
+		return VectorField.terrain[x][y]==1;
 	}
 	
 }

@@ -6,14 +6,16 @@ public class HealingTurn {
 	public static void runTurn(GameController gc, ArrayList<Unit> availableHealers, VecUnit allUnits){
 		if(availableHealers.size() == 0)return;
 		int size = (int) allUnits.size();
+		double temp;
 		MapLocation lowestHealth = null;
-		int health = Integer.MAX_VALUE;
+		double health = 2;
 		Unit unit;
 		for(int i = 0; i<size; i++){
 			unit = allUnits.get(i);
-			if(unit.location().isInGarrison() || unit.location().isInSpace()) continue;
-			if(unit.health()<health){
-				health = (int) unit.health();
+			if(unit.location().isInGarrison() || unit.location().isInSpace())continue;
+			temp = healthPerc(unit);
+			if(temp<health){
+				health = temp;
 				lowestHealth = unit.location().mapLocation();
 			}
 		}
@@ -26,12 +28,12 @@ public class HealingTurn {
 			CommandUnits.storedField[x][y] = vf;
 		}
 		size = availableHealers.size();
-		MapLocation loc;
 		int tsize, unitId;
 		Unit tlowest;
-		int thealth;
+		double thealth;
 		VecUnit surr;
 		Unit mine;
+		MapLocation loc;
 		for(int i = 0; i<size; i++){
 			unit = availableHealers.get(i);
 			unitId = unit.id();
@@ -40,11 +42,12 @@ public class HealingTurn {
 			if(gc.isHealReady(unit.id())){
 				tsize = (int) surr.size();
 				tlowest = null;
-				thealth = Integer.MAX_VALUE;
+				thealth = 2;
 				for(int j = 0; j<tsize; j++){
 					mine = surr.get(j);
-					if(mine.health()<thealth){
-						thealth = (int) mine.health();
+					temp = healthPerc(unit);
+					if(temp<thealth){
+						thealth = healthPerc(unit);
 						tlowest = mine;
 					}
 				}
@@ -52,5 +55,11 @@ public class HealingTurn {
 			}
 			Factories.moveToClosestDirection(gc, unit, vf.getDirection(loc));
 		}
+	}
+	
+	public static double healthPerc(Unit unit){
+		double max = unit.maxHealth();
+		double h = unit.health();
+		return h/max;
 	}
 }
