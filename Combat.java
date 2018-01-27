@@ -73,9 +73,9 @@ public class Combat {
 		Unit enemy;
 
 		world = new int[VectorField.width][VectorField.height];
-		enemies = gc.senseNearbyUnitsByTeam(center, 
-			radius, 
-			Player.eTeam);
+		//enemies = gc.senseNearbyUnitsByTeam(center, 
+			//radius, 
+			//Player.eTeam);
 		
 		for(int i = 0; i < enemies.size(); i++){
 			enemy = enemies.get(i);

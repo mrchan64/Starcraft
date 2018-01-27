@@ -25,15 +25,14 @@ public class Player {
 	public static void main(String[] args) {
 
 		gc = new GameController();
+		planet = gc.planet();
+		team = gc.team();
+		
 		VectorField.initWalls(gc);
 		findKarbonite.initKarb(gc);
 		Upgrades.upgradeUnitsSmall(gc);
 		CommandUnits.initCommand(gc);
 		Start.initSpawn(gc);
-		
-		planet = gc.planet();
-		
-		team = gc.team();
 
 		while (planet == Planet.Earth) {
 
@@ -87,14 +86,10 @@ public class Player {
 						if (gc.canHarvest(unit.id(), dir)) {
 
 							gc.harvest(unit.id(), dir);
-
 							break;
 						}
 					}
 				}
-
-				else
-					continue;
 			}
 
 			CommandUnits.runTurn(gc);
@@ -146,6 +141,10 @@ public class Player {
 
 			gc.nextTurn();
 		}
+		
+		while(planet == Planet.Mars) {
+			gc.nextTurn();
+			System.out.println("Currently Round " + gc.round());
+		}
 	}
-
 }
