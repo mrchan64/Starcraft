@@ -334,9 +334,6 @@ public class CommandUnits {
 		int id = unit.id();
 		if(enemies[x][y]!=null){
 			int enemyId = enemies[x][y].id();
-			if(unitType == UnitType.Knight){
-				System.out.println("Im a knight and im attacking a "+enemies[x][y].unitType());
-			}
 			//if(unitType == UnitType.Ranger && gc.isBeginSnipeReady(id) && gc.canBeginSnipe(id, squares[x][y])) gc.beginSnipe(id, squares[x][y]);
 			//if(unitType == UnitType.Mage && gc.isBlinkReady(id) && gc.is)range = unit.abilityRange(); Blink code need fix
 			if(unitType == UnitType.Knight && gc.isJavelinReady(id) && gc.canJavelin(id, enemyId))gc.javelin(id, enemyId);

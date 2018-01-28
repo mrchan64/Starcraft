@@ -85,11 +85,9 @@ public class Kiting {
 		for(MapLocation loc: enemies){
 			enemy = CommandUnits.enemies[loc.getX()][loc.getY()];
 			if(loc.distanceSquaredTo(CommandUnits.squares[x][y])<=kiteDist+modifier){
-				System.out.println("invalid");
 				return false;
 			}
 		}
-		System.out.println("valid");
 		return true;
 	}
 	
