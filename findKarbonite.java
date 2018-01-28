@@ -6,6 +6,10 @@ public class findKarbonite {
 	static VectorField karboniteField;
 	public static int avaSq;
     public static int accSq = 1;
+    public static int accKarb = 0;
+    public static int accTotalKarb = 0;
+
+
 	public static int totalKarb;
     public static MapLocation spawn;
 	public static int[][] currentKarbs;
@@ -90,6 +94,9 @@ public class findKarbonite {
             if (unit.location().isInGarrison() || unit.location().isInSpace()) {
                 continue;
             }
+            if (karbsOnMars.size() == 0) {
+            	return;
+            }
             MapLocation unitLoc = unit.location().mapLocation();
             int min = 1000;
             int index = 0;
@@ -115,6 +122,9 @@ public class findKarbonite {
                     min = magnitude;
                     index = j;
                 }
+            }
+            if (karbsOnMars.size() == 0) {
+            	return;
             }
             miners.set(index, miners.get(index)+1);
             Factories.moveToClosestDirection(gc, unit, karbsOnMars.get(index).getDirection(unitLoc));
@@ -184,16 +194,23 @@ public class findKarbonite {
         while(step(map)) {
 
         }
-       // printNumSquares();
+       // System.out.println("first check");
+        //printNumSquares();
     }  
 
     public static void findAccSq2(PlanetMap map, MapLocation startingLoc) {
+    	accSq = 0;
+    	accKarb = 0;
+    	accTotalKarb = 0;
     	working.add(startingLoc);
         bfsSquares = new MapLocation[VectorField.width][VectorField.height];
         checked = new boolean[VectorField.width][VectorField.height];
         while(step(map)) {
 
         }
+       //System.out.println("check at 150");
+        //printNumSquares();
+
     }
 
 
@@ -218,6 +235,12 @@ public class findKarbonite {
                     checked[x][y]= true;
                     accSq++;
                     working.add(locAround);
+
+                    int numKarb = (int) map.initialKarboniteAt(loc);
+                 	if (numKarb > 0) {
+                 		accTotalKarb += numKarb;
+                 		accKarb++;
+                 	}
                 }
             }
             catch(Exception E) {
@@ -262,5 +285,7 @@ public class findKarbonite {
     public static void printNumSquares() {
         System.out.println("available: "+avaSq);
         System.out.println("access: "+ accSq);
+        System.out.println("totalKarb: "+accTotalKarb);
+        System.out.println("accessKarb: "+ accKarb);
     }
 }

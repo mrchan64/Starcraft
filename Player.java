@@ -148,7 +148,7 @@ public class Player {
 				if (accSquare && round > 150) {
 
 					for (int i = 0; i < units.size(); i++) {
-						if (!units.get(i).location().isInGarrison() || !units.get(i).location().isInSpace()) {
+						if (!units.get(i).location().isInGarrison() && !units.get(i).location().isInSpace()) {
 							startingLoc = units.get(i).location().mapLocation();
 							break;
 						}	

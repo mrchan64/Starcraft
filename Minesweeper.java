@@ -12,8 +12,8 @@ public class Minesweeper {
 
 
 	public static void calcOpen() {
-		for (int i = 0; i < Vector.width; i++) {
-			for (int j = 0; j < Vector.height; j++) {
+		for (int i = 0; i < VectorField.width; i++) {
+			for (int j = 0; j < VectorField.height; j++) {
 				switch (mineMap[i][j]) {
 					case 0: spaces[0] = spaces[0]++;
 							break;
