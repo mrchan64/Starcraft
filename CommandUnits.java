@@ -120,7 +120,6 @@ public class CommandUnits {
 				}
 			}
 		}
-		
 		//TODO what to do when there are no enemies
 		
 		//assign units that can attack priority enemies
