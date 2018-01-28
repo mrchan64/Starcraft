@@ -41,6 +41,10 @@ public class Start {
 		}else{
 			maxWorkers = findKarbonite.accSq / squaresPerWorkerSparse;
 		}
+
+		if (maxWorkers > findKarbonite.accKarb/2) {
+			maxWorkers = findKarbonite.accKarb/2 + 1;
+		}
 	}
 	
 	public static void runTurn(GameController gc, ArrayList<Unit> units){
@@ -138,6 +142,9 @@ public class Start {
 	}
 	
 	public static boolean notEnoughUnits(){
+		if (numWorkers > minWorkers && numWorkers > maxWorkers) {
+			return false;
+		}
 		if(!karbDepleted()){
 			if(!Minesweeper.isDense)
 				return (numWorkers <= 3 * Player.numFactories + 11) && (numWorkers < findKarbonite.accSq/squaresPerWorkerDense) || (numWorkers<minWorkers);

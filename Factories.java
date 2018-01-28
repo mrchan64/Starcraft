@@ -413,7 +413,10 @@ public class Factories {
 	}
 	
 	public static void buildFactory(GameController gc, ArrayList<Unit> units, MapLocation spawn) {
-		
+		if (units.size() == 0) {
+			return;
+		}
+
 		Unit unit;
 		int unitId;
 		int size = units.size();
