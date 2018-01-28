@@ -41,9 +41,8 @@ public class Player {
 		Start.initSpawn(gc);
 
 		while (planet == Planet.Earth) {
-			
-			round = (int)gc.round();
-			System.out.println("Currently round "+round);
+
+			round  = (int)gc.round();
 
 			Start.factories = new ArrayList<>();
 			UnitBuildOrder.builtFacts = new ArrayList<>();
@@ -170,11 +169,12 @@ public class Player {
 			round = (int)gc.round();
 			
 			ArrayList<Unit> marsUnits = new ArrayList<>();
+
+			findKarbonite.updateAsters(gc, round);
+
 			units = gc.myUnits();
 			
 			for(int i = 0; i < units.size(); i++) {
-				
-				findKarbonite.updateAsters(gc, round);
 				
 				unit = units.get(i);
 				type = unit.unitType();
@@ -185,15 +185,11 @@ public class Player {
 				
 				else if(type == UnitType.Worker) {
 					marsUnits.add(unit);
-					
-					for (Direction dir : Start.directions) {
-						if (gc.canHarvest(unit.id(), dir)) {
-
-							gc.harvest(unit.id(), dir);
-							break;
-						}
-					}
 				}
+			}
+			findKarbonite.optimizeKarb(gc, marsUnits);
+			for (int i = 0; i < findKarbonite.miners.size(); i++) {
+				findKarbonite.miners.set(i, 0);
 			}
 			
 			CommandUnits.runTurn(gc);
