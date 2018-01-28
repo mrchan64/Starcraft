@@ -333,7 +333,7 @@ public class CommandUnits {
 			if(gc.isAttackReady(id) && gc.canAttack(id, enemyId)) gc.attack(id, enemyId);
 		}
 		
-		if(Player.round<150){
+		if(Player.round<100){
 			Factories.moveToClosestDirection(gc, unit, Direction.Center);
 			return;
 		}

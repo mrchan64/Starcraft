@@ -9,9 +9,12 @@ public class Factories {
 	public static int unitId;
 	public static MapLocation unitLoc;
 	public static Unit[] closestUnits;
+	public static boolean isClose;
 
 	public static void runTurn(GameController gc, ArrayList<Unit> units) {
-
+		
+		detectClose(gc);
+		
 		for (Unit fac : Start.factories) {
 
 			toFactory = new VectorField();
@@ -327,5 +330,17 @@ public class Factories {
 		}
 		
 		return false;
+	}
+	
+	private static void detectClose(GameController gc){
+		isClose = false;
+		Team t = Team.Red;
+		if(Player.team==Team.Red)t = Team.Blue;
+		for(Unit unit: UnitBuildOrder.builtFacts){
+			try{
+				gc.senseNearbyUnitsByTeam(unit.location().mapLocation(), 25, t);
+				isClose = true;
+			}catch(Exception e){}
+		}
 	}
 }
