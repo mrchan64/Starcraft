@@ -1,5 +1,6 @@
 import bc.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Start {
 
@@ -105,11 +106,15 @@ public class Start {
 	
 	private static void replicate(GameController gc, ArrayList<Unit> units) {
 		
+		Random generator = new Random();
 		Unit unit;
 		int unitId;
+		int size = units.size();
+		int startPoint = generator.nextInt(size);
 		
-		for(int i = 0; i < units.size(); i++) {
-			unit = units.get(i);
+		for(int i = 0; i < size; i++) {
+			
+			unit = units.get((i + startPoint) % size);
 			unitId = unit.id();
 			
 			for(Direction dir : Direction.values()) {

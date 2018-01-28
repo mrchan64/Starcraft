@@ -1,5 +1,6 @@
 import bc.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class UnitBuildOrder {
 	public static VecUnitID unitsMaking;
@@ -48,15 +49,21 @@ public class UnitBuildOrder {
 	}
 
 	public static void deployUnits(GameController gc, Unit structure) {
-
+		
+		Random generator = new Random();
+		int startPoint = generator.nextInt(dir.length);
 		int structureId = structure.id();
+		int index;
+		
 		for (int i = 0; i < dir.length; i++) {
-			if (dir[i] == Direction.Center)
+			
+			index = (i + startPoint) % dir.length;
+			if (dir[index] == Direction.Center)
 				continue;
 
-			if (gc.canUnload(structureId, dir[i])) {
+			if (gc.canUnload(structureId, dir[index])) {
 
-				gc.unload(structureId, dir[i]);
+				gc.unload(structureId, dir[index]);
 				i--;
 			}
 		}
