@@ -198,10 +198,14 @@ public class Factories {
 			}
 	
 			else {
-				Unit structure = gc.senseUnitAtLocation(structureLoc);
-				int health = (int)structure.health();
-				rangeToCheck = (int)(((325 - health) / numAdjacent / 5) * ((325 - health) / numAdjacent / 5));
-				numInRange = getNumInRange(units, structureLoc, rangeToCheck);
+				try{
+					Unit structure = gc.senseUnitAtLocation(structureLoc);
+					int health = (int)structure.health();
+					rangeToCheck = (int)(((325 - health) / numAdjacent / 5) * ((325 - health) / numAdjacent / 5));
+					numInRange = getNumInRange(units, structureLoc, rangeToCheck);
+				}catch(Exception e){
+					numInRange = 8;
+				}
 			}
 		}
 		

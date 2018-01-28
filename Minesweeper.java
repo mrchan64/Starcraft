@@ -2,6 +2,7 @@ import bc.*;
 
 public class Minesweeper {
 	public static int[][] mineMap;
+	public static int[][] earthMap;
 	public static int density;
 	public static boolean isDense;
 	public static int[][] densityMap;
@@ -15,7 +16,7 @@ public class Minesweeper {
 	public static void calcOpen() {
 		for (int i = 0; i < VectorField.width; i++) {
 			for (int j = 0; j < VectorField.height; j++) {
-				switch (mineMap[i][j]) {
+				switch (earthMap[i][j]) {
 					case 1:
 					case 2:
 					case 3:
@@ -34,14 +35,13 @@ public class Minesweeper {
 	}
 
 	public static void determineOpen() {
+		if(Player.planet == Planet.Mars)return;
 		calcOpen();
-		System.out.println("op "+openSpaces+" notop "+notOpenSpaces);
 		isDense = openSpaces>notOpenSpaces;
 	}
 
 	public static void mineSweep(MapLocation loc, PlanetMap map) {
 		if (map.isPassableTerrainAt(loc) == 0) {
-			mineMap[loc.getX()][loc.getY()] = 0;
 			return;
 		}
 		int startX = loc.getX();
@@ -68,11 +68,15 @@ public class Minesweeper {
 				// do nothing
 			}
 		}
-		mineMap[startX][startY] = num;
-		if (num > highest) {
-			highest = num;
+		if(map.getPlanet() == Planet.Earth){
+			density += num;
+			if (num > highest) {
+				highest = num;
+			}
+			earthMap[startX][startY] = num;
+		}else{
+			mineMap[startX][startY] = num;
 		}
-		density += num;
 	}
 
 	public static void denseMap() {

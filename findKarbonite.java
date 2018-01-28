@@ -80,6 +80,18 @@ public class findKarbonite {
 				}
 			}
 		}
+		if(Player.planet == Planet.Mars)return;
+		
+		PlanetMap emap = gc.startingMap(Player.planet);
+		Minesweeper.earthMap = new int[VectorField.width][VectorField.height];
+		MapLocation temp;
+		for (int i = 0; i < VectorField.width; i++) {
+			for (int j = 0; j < VectorField.height; j++) {
+				temp = new MapLocation(Player.planet, i, j);
+                Minesweeper.mineSweep(temp, emap);
+			}
+		}
+		
 		Minesweeper.denseMap();
        /* for (int i = 0; i < mWidth; i++) {
             for (int j = 0; j < mHeight; j++) {

@@ -139,11 +139,7 @@ public class Player {
 					Rocket.runFirstTurn(gc, availableUnits);
 				}
 
-				if (round > 100 && Start.numWorkers < 8) {
-					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Worker);
-				}
-
-				if ((round - lastRoundMined <= 15 || round < 150 || Rocket.sentFirst) && ((double) units.size() < (double) (findKarbonite.accSq * 0.7)) && stage < 2) {
+				if ((round - lastRoundMined <= 15 || round < 150 || Rocket.sentFirst || Start.numWorkers <= 2) && ((double) units.size() < (double) (findKarbonite.accSq * 0.7)) && stage < 2) {
 
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
