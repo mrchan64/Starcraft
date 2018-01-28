@@ -74,7 +74,7 @@ public class CommandUnits {
 				//if(unitType == UnitType.Ranger && gc.isBeginSnipeReady(id))range = unit.abilityRange();
 				//else if(unitType == UnitType.Mage && gc.isBlinkReady(id))range = unit.abilityRange();
 				/*else */if(unitType == UnitType.Knight && gc.isJavelinReady(id))range = unit.abilityRange();
-				else if(gc.isAttackReady(id)) range = unit.attackRange();
+				else if(unitType == UnitType.Knight || gc.isAttackReady(id)) range = unit.attackRange();
 				availableUnitsrange.add(range);
 				availableUnits.add(unit);
 			}
@@ -211,19 +211,19 @@ public class CommandUnits {
 		int p2 = 7;
 		UnitType unitType = enemies[x1][y1].unitType();
 		if(unitType == UnitType.Healer)p1 = 0;
-		else if(unitType == UnitType.Ranger)p1 = 1;
-		else if(unitType == UnitType.Mage)p1 = 2;
-		else if(unitType == UnitType.Knight)p1 = 3;
-		else if(unitType == UnitType.Factory)p1 = 4;
-		else if(unitType == UnitType.Rocket)p1 = 5;
+		else if(unitType == UnitType.Factory)p1 = 1;
+		else if(unitType == UnitType.Rocket)p1 = 2;
+		else if(unitType == UnitType.Ranger)p1 = 3;
+		else if(unitType == UnitType.Mage)p1 = 4;
+		else if(unitType == UnitType.Knight)p1 = 5;
 		else if(unitType == UnitType.Worker)p1 = 6;
 		unitType = enemies[x2][y2].unitType();
 		if(unitType == UnitType.Healer)p1 = 0;
-		else if(unitType == UnitType.Ranger)p1 = 1;
-		else if(unitType == UnitType.Mage)p1 = 2;
-		else if(unitType == UnitType.Knight)p1 = 3;
-		else if(unitType == UnitType.Factory)p1 = 4;
-		else if(unitType == UnitType.Rocket)p1 = 5;
+		else if(unitType == UnitType.Factory)p1 = 1;
+		else if(unitType == UnitType.Rocket)p1 = 2;
+		else if(unitType == UnitType.Ranger)p1 = 3;
+		else if(unitType == UnitType.Mage)p1 = 4;
+		else if(unitType == UnitType.Knight)p1 = 5;
 		else if(unitType == UnitType.Worker)p1 = 6;
 		return p1 <= p2;
 	}
