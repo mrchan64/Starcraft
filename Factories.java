@@ -11,16 +11,26 @@ public class Factories {
 	public static MapLocation unitLoc;
 	public static Unit[] closestUnits;
 	public static boolean isClose;
+	
+	static int x, y;
 
 	public static void runTurn(GameController gc, ArrayList<Unit> units) {
 		
 		detectClose(gc);
-		
+
+		if(Start.factories.size() == 0) return;
 		for (Unit fac : Start.factories) {
 
-			toFactory = new VectorField();
 			factory = fac.location().mapLocation();
-			toFactory.setTarget(factory);
+			x = factory.getX();
+			y = factory.getY();
+			
+			if(CommandUnits.storedField[x][y] == null) {
+				CommandUnits.storedField[x][y] = new VectorField();
+				CommandUnits.storedField[x][y].setTarget(factory);
+			}
+
+			toFactory = CommandUnits.storedField[x][y];
 
 			closestUnits = Factories.getClosest(gc, Player.availableUnits, factory, toFactory, true);
 			sendUnits(gc, closestUnits, fac, toFactory);
@@ -165,7 +175,7 @@ public class Factories {
 		int unitsReady = units.size();
 		
 		int numOpenSpaces = getOpenSpaces(gc, structureLoc);
-		
+
 		int numAdjacent = 0;
 		int numInRange;
 		int rangeToCheck;
@@ -191,8 +201,8 @@ public class Factories {
 			else {
 				Unit structure = gc.senseUnitAtLocation(structureLoc);
 				int health = (int)structure.health();
-				rangeToCheck = (int)(((300 - health) / numAdjacent / 5) * ((300 - health) / numAdjacent / 5));
-				numInRange = (int)(gc.senseNearbyUnitsByTeam(structureLoc, rangeToCheck, Player.team).size());
+				rangeToCheck = (int)(((325 - health) / numAdjacent / 5) * ((325 - health) / numAdjacent / 5));
+				numInRange = getNumInRange(units, structureLoc, rangeToCheck);
 			}
 		}
 		
@@ -241,6 +251,27 @@ public class Factories {
 		}
 		
 		return closestUnits;
+	}
+	
+	public static int getNumInRange(ArrayList<Unit> units, MapLocation structureLoc, int range) {
+		
+		int x = structureLoc.getX();
+		int y = structureLoc.getY();
+		int magnitudeToCheck = (int)Math.sqrt(range);
+		int inRange = 0;
+		
+		if(CommandUnits.storedField[x][y] == null) {
+			CommandUnits.storedField[x][y] = new VectorField();
+			CommandUnits.storedField[x][y].setTarget(structureLoc);
+		}
+
+		toFactory = CommandUnits.storedField[x][y];
+		
+		for(Unit unit : units) {
+			if(toFactory.getMagnitude(unit.location().mapLocation()) <= magnitudeToCheck) inRange++;
+		}
+		
+		return inRange;
 	}
 
 	public static int getOpenSpaces(GameController gc, MapLocation loc) {
@@ -302,7 +333,6 @@ public class Factories {
 		
 		Unit unit;
 		int unitId;
-		int size = units.size();
 		Unit idealUnit = units.get(0);
 		int idealUnitId = idealUnit.id();
 		MapLocation attempt;
@@ -311,16 +341,22 @@ public class Factories {
 		Direction[] allDirs = Direction.values();
 		int bestOption = 0;
 		int numOccupiable = 0;
-		VectorField toSpawn = new VectorField();
-		toSpawn.setTarget(spawn);
+		int x = spawn.getX();
+		int y = spawn.getY();
+		
+		if(CommandUnits.storedField[x][y] == null) {
+			CommandUnits.storedField[x][y] = new VectorField();
+			CommandUnits.storedField[x][y].setTarget(spawn);
+		}
+		
+		VectorField toSpawn = CommandUnits.storedField[x][y];
+		
 		Unit[] closestUnits = getClosest(gc, units, spawn, toSpawn, false);
 		
 		if(closestUnits.length == 0) {
 			Start.spawnsDone++;
 			return;
 		}
-		
-		int x, y;
 		
 		for(int i = 0; i < closestUnits.length; i++) {
 			unit = closestUnits[i];

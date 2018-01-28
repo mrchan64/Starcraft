@@ -75,7 +75,7 @@ public class Player {
 				else if (type == UnitType.Factory) {
 					numFactories++;
 
-					if (health < 300) {
+					if (health < unit.maxHealth()) {
 						Start.factories.add(unit);
 					} else {
 						UnitBuildOrder.builtFacts.add(unit);
@@ -83,7 +83,7 @@ public class Player {
 				}
 
 				else if (type == UnitType.Rocket) {
-					if (health < 200) {
+					if (health < unit.maxHealth()) {
 						Start.rockets.add(unit);
 					} else if (unit.location().isOnMap()) {
 						UnitBuildOrder.builtRocks.add(unit);
@@ -131,18 +131,15 @@ public class Player {
 					stage = 2;
 				}
 
-				if (!Rocket.sentFirst && (round >= 150 && round - lastRoundMined > 15)) {
+				if (!Rocket.sentFirst && (round >= 150)) {
 					Rocket.runFirstTurn(gc, availableUnits);
 				}
-
-				Factories.runTurn(gc, availableUnits);
 
 				if (round > 100 && Start.numWorkers < 8) {
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Worker);
 				}
 
-
-				if ((round<150 || Rocket.sentFirst) && ((double) units.size() < (double) (findKarbonite.accSq * 0.7)) && stage < 2) {
+				if ((round - lastRoundMined <= 15 || round < 150 || Rocket.sentFirst) && ((double) units.size() < (double) (findKarbonite.accSq * 0.7)) && stage < 2) {
 
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
@@ -165,9 +162,11 @@ public class Player {
 				
 				CommandUnits.runTurn(gc);
 
-				Start.updateNumWorkers(availableUnits);
-
 				if(availableUnits.size() > 0) {
+					
+					Factories.runTurn(gc, availableUnits);
+					Start.updateNumWorkers(availableUnits);
+					
 					for(int i = 0; i < findKarbonite.spawns.size(); i++) {
 						
 						Start.runTurn(gc, availableUnits);

@@ -21,9 +21,16 @@ public class Rocket {
 
 		for (Unit rocket : Start.rockets) {
 
-			toRocket = new VectorField();
 			rocketLoc = rocket.location().mapLocation();
-			toRocket.setTarget(rocketLoc);
+			int x = rocketLoc.getX();
+			int y = rocketLoc.getY();
+			
+			if(CommandUnits.storedField[x][y] == null) {
+				CommandUnits.storedField[x][y] = new VectorField();
+				CommandUnits.storedField[x][y].setTarget(rocketLoc);
+			}
+
+			toRocket = CommandUnits.storedField[x][y];
 			
 			closestUnits = Factories.getClosest(gc, Player.availableUnits, rocketLoc, toRocket, true);
 			Factories.sendUnits(gc, closestUnits, rocket, toRocket);
@@ -308,8 +315,16 @@ public class Rocket {
 			return false;
 		}
 
-		VectorField toSpawn = new VectorField();
-		toSpawn.setTarget(findKarbonite.spawns.get(0));
+		MapLocation spawn = findKarbonite.spawns.get(0);
+		int x = spawn.getX();
+		int y = spawn.getY();
+		
+		if(CommandUnits.storedField[x][y] == null) {
+			CommandUnits.storedField[x][y] = new VectorField();
+			CommandUnits.storedField[x][y].setTarget(spawn);
+		}
+
+		VectorField toSpawn = CommandUnits.storedField[x][y];
 		
 		Unit unit;
 		int unitId;
@@ -323,7 +338,6 @@ public class Rocket {
 		int numOccupiable = 0;
 		
 		Unit[] rocketUnits = getClosest(gc, units, toSpawn);
-		int x, y;
 
 		for (int i = 0; i < rocketUnits.length; i++) {
 			unit = rocketUnits[i];
