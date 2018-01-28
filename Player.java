@@ -44,7 +44,6 @@ public class Player {
 			System.out.println("stage: "+stage);
 			round  = (int)gc.round();
 			System.out.println("Currently round "+round);
-			UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 
 			Start.factories = new ArrayList<>();
 			UnitBuildOrder.builtFacts = new ArrayList<>();
@@ -144,7 +143,8 @@ public class Player {
 						UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Worker);
 				}
 
-				if (gc.karbonite() > 175 && stage < 2) {
+
+				if ((round<150 || Rocket.sentFirst) && stage < 2) {
 
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
