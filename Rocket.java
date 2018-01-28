@@ -14,7 +14,7 @@ public class Rocket {
 
 	public static void runTurn(GameController gc, ArrayList<Unit> units) {
 
-		if (Start.rockets.size() == 0) {
+		if (Start.rockets.size() == 0 || gc.karbonite() > 150) {
 			buildRocket(gc, units);
 			return;
 		}
@@ -25,7 +25,7 @@ public class Rocket {
 			rocketLoc = rocket.location().mapLocation();
 			toRocket.setTarget(rocketLoc);
 			
-			closestUnits = Factories.getClosest(gc, Player.availableUnits, rocket, toRocket);
+			closestUnits = Factories.getClosest(gc, Player.availableUnits, rocketLoc, toRocket, true);
 			Factories.sendUnits(gc, closestUnits, rocket, toRocket);
 
 			for (int i = 0; i < closestUnits.length; i++) {
@@ -309,7 +309,7 @@ public class Rocket {
 		}
 
 		VectorField toSpawn = new VectorField();
-		toSpawn.setTarget(Start.spawn);
+		toSpawn.setTarget(findKarbonite.spawns.get(0));
 		
 		Unit unit;
 		int unitId;
@@ -355,7 +355,6 @@ public class Rocket {
 
 					if (numOccupiable >= 8) {
 						gc.blueprint(unitId, UnitType.Rocket, dir);
-						Player.trigger = false;
 						return true;
 					}
 
@@ -373,7 +372,6 @@ public class Rocket {
 
 		if (gc.canBlueprint(idealUnitId, UnitType.Rocket, idealDir)) {
 			gc.blueprint(idealUnitId, UnitType.Rocket, idealDir);
-			Player.trigger = false;
 			return true;
 		}
 
