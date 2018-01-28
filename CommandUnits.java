@@ -74,7 +74,7 @@ public class CommandUnits {
 				//if(unitType == UnitType.Ranger && gc.isBeginSnipeReady(id))range = unit.abilityRange();
 				//else if(unitType == UnitType.Mage && gc.isBlinkReady(id))range = unit.abilityRange();
 				/*else */if(unitType == UnitType.Knight && gc.isJavelinReady(id))range = unit.abilityRange();
-				else if(gc.isAttackReady(id)) range = unit.attackRange();
+				else if(unitType == UnitType.Knight || gc.isAttackReady(id)) range = unit.attackRange();
 				availableUnitsrange.add(range);
 				availableUnits.add(unit);
 			}
@@ -211,20 +211,20 @@ public class CommandUnits {
 		int p2 = 7;
 		UnitType unitType = enemies[x1][y1].unitType();
 		if(unitType == UnitType.Healer)p1 = 0;
-		else if(unitType == UnitType.Ranger)p1 = 1;
-		else if(unitType == UnitType.Mage)p1 = 2;
-		else if(unitType == UnitType.Knight)p1 = 3;
-		else if(unitType == UnitType.Factory)p1 = 4;
-		else if(unitType == UnitType.Rocket)p1 = 5;
+		else if(unitType == UnitType.Factory)p1 = 1;
+		else if(unitType == UnitType.Rocket)p1 = 2;
+		else if(unitType == UnitType.Ranger)p1 = 3;
+		else if(unitType == UnitType.Mage)p1 = 4;
+		else if(unitType == UnitType.Knight)p1 = 5;
 		else if(unitType == UnitType.Worker)p1 = 6;
 		unitType = enemies[x2][y2].unitType();
-		if(unitType == UnitType.Healer)p1 = 0;
-		else if(unitType == UnitType.Ranger)p1 = 1;
-		else if(unitType == UnitType.Mage)p1 = 2;
-		else if(unitType == UnitType.Knight)p1 = 3;
-		else if(unitType == UnitType.Factory)p1 = 4;
-		else if(unitType == UnitType.Rocket)p1 = 5;
-		else if(unitType == UnitType.Worker)p1 = 6;
+		if(unitType == UnitType.Healer)p2 = 0;
+		else if(unitType == UnitType.Factory)p2 = 1;
+		else if(unitType == UnitType.Rocket)p2 = 2;
+		else if(unitType == UnitType.Ranger)p2 = 3;
+		else if(unitType == UnitType.Mage)p2 = 4;
+		else if(unitType == UnitType.Knight)p2 = 5;
+		else if(unitType == UnitType.Worker)p2 = 6;
 		return p1 <= p2;
 	}
 	
@@ -334,6 +334,9 @@ public class CommandUnits {
 		int id = unit.id();
 		if(enemies[x][y]!=null){
 			int enemyId = enemies[x][y].id();
+			if(unitType == UnitType.Knight){
+				System.out.println("Im a knight and im attacking a "+enemies[x][y].unitType());
+			}
 			//if(unitType == UnitType.Ranger && gc.isBeginSnipeReady(id) && gc.canBeginSnipe(id, squares[x][y])) gc.beginSnipe(id, squares[x][y]);
 			//if(unitType == UnitType.Mage && gc.isBlinkReady(id) && gc.is)range = unit.abilityRange(); Blink code need fix
 			if(unitType == UnitType.Knight && gc.isJavelinReady(id) && gc.canJavelin(id, enemyId))gc.javelin(id, enemyId);
@@ -352,14 +355,46 @@ public class CommandUnits {
 			storedField[x][y] = vf;
 		}
 		//Ranger has range minimum;
-		Direction dir = vf.getDirection(unit.location().mapLocation());
+		MapLocation loc = unit.location().mapLocation();
+		Direction dir = vf.getDirection(loc);
 		
 		if(Kiting.kite(gc, unit, dir))return;
 			
-		if(unitType == UnitType.Ranger && unit.location().mapLocation().distanceSquaredTo(squares[x][y])<=unit.rangerCannotAttackRange()){
+		if(unitType == UnitType.Ranger && loc.distanceSquaredTo(squares[x][y])<=unit.rangerCannotAttackRange()){
 			dir = bc.bcDirectionOpposite(dir);
 		}
+		if(unitType == UnitType.Knight && loc.isAdjacentTo(squares[x][y])){
+			moveKnightClosest(gc, unit, dir);
+			return;
+		}
 		Factories.moveToClosestDirection(gc, unit, dir);
+	}
+	
+	public static void moveKnightClosest(GameController gc, Unit unit, Direction ideal){
+		Direction actual = ideal;
+		MapLocation loc = unit.location().mapLocation();
+		MapLocation target = loc.add(ideal);
+		int index = Start.linearSearch(Start.directions, ideal);
+		int unitId = unit.id();
+
+		for (int i = 0; i < 4; i++) {
+
+			actual = Start.directions[(index + i) % 8];
+			if(!loc.add(actual).isAdjacentTo(target))return;
+			if (gc.canMove(unitId, actual) && gc.isMoveReady(unitId)) {
+				gc.moveRobot(unitId, actual);
+				break;
+			}
+
+			if (i == 0)
+				continue;
+
+			actual = Start.directions[(index - i + 8) % 8];
+			if (gc.canMove(unitId, actual) && gc.isMoveReady(unitId)) {
+				gc.moveRobot(unitId, actual);
+				break;
+			}
+		}
 	}
 	
 	public static void resetStoredField(){

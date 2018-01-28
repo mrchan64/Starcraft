@@ -5,6 +5,7 @@ import bc.*;
 public class Kiting {
 	
 	public static int kiteDist = 50;
+	public static int modifier = 0;
 	
 	public static boolean kite(GameController gc, Unit unit, Direction ideal){
 		//if(unit.unitType() != UnitType.Ranger)return false;
@@ -30,6 +31,12 @@ public class Kiting {
 			}
 		}
 		if(enemyUnits.size() == 0)return false;
+		
+		if(unit.unitType()==UnitType.Healer)modifier = 8;
+		else modifier = 1;
+		
+		if(CommandUnits.combatUnitSize > 15)modifier -= 1;
+		
 		Direction actual = Direction.Center;
 		int index = Start.linearSearch(Start.directions, ideal);
 		int x, y;
@@ -77,8 +84,12 @@ public class Kiting {
 		Unit enemy;
 		for(MapLocation loc: enemies){
 			enemy = CommandUnits.enemies[loc.getX()][loc.getY()];
-			if(loc.distanceSquaredTo(CommandUnits.squares[x][y])<=kiteDist)return false;
+			if(loc.distanceSquaredTo(CommandUnits.squares[x][y])<=kiteDist+modifier){
+				System.out.println("invalid");
+				return false;
+			}
 		}
+		System.out.println("valid");
 		return true;
 	}
 	

@@ -25,6 +25,11 @@ public class UnitBuildOrder {
 		UnitType.Healer};
 	public static UnitType[] closeUnitOrder = { 
 		UnitType.Knight, 
+		UnitType.Knight, 
+		UnitType.Knight, 
+		UnitType.Knight,
+		UnitType.Ranger, 
+		UnitType.Knight, 
 		UnitType.Healer};
 	public static UnitType[] order;
 	public static int index = 0;
@@ -81,7 +86,7 @@ public class UnitBuildOrder {
 		if(Minesweeper.isDense || index >= sparseUnitOrder.length*3){
 			order = sparseUnitOrder;
 		}
-		else order = denseUnitOrder;
+		else order = closeUnitOrder;
 		/*if(Factories.isClose){
 			order = closeUnitOrder;
 			return order[closeIndex];

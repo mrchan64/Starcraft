@@ -45,7 +45,6 @@ public class VectorField {
 			}
 		}
 		largeMap = Math.pow((findKarbonite.avaSq*4+4),4)>500000000;
-		System.out.println("This be large yarr");
 	}
 	
 	public void setTargets(ArrayList<MapLocation> start){
