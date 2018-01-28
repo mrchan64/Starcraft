@@ -7,6 +7,7 @@ public class Start {
 	public static Direction[] directions = Direction.values();
 	public static ArrayList<Unit> factories = new ArrayList<>();
 	public static ArrayList<Unit> rockets = new ArrayList<>();
+	public static Random generator = new Random();
 	
 	public static MapLocation spawn;
 	public static int numWorkers;
@@ -106,7 +107,8 @@ public class Start {
 	
 	private static void replicate(GameController gc, ArrayList<Unit> units) {
 		
-		Random generator = new Random();
+		if(units.size() == 0) return;
+		
 		Unit unit;
 		int unitId;
 		int size = units.size();

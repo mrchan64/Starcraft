@@ -39,13 +39,6 @@ public class Rocket {
 				}
 			}
 		}
-		
-		/*for(Unit builtRocket : UnitBuildOrder.builtRocks) {
-			//sEND COMBAT UNITS TO THESE ROCKETS
-			// also make sure that builtRocks is actually correct
-			System.out.println("combat rocket");
-			loadCombatUnits(gc, builtRocket, Player.availableCombatUnits);
-		}*/
 
 		for (int i = 0; i < Player.availableUnits.size(); i++) {
 
@@ -63,7 +56,6 @@ public class Rocket {
 		}
 	}
 	
-	// ONLY CALL THIS METHOD IF Start.rockets.size() <= 1
 	public static void runFirstTurn(GameController gc, ArrayList<Unit> units) {
 
 		if(Start.rockets.size() == 0 && UnitBuildOrder.builtRocks.size() == 0) {
@@ -90,7 +82,6 @@ public class Rocket {
 		MapLocation rocketLocation = rocket.location().mapLocation();
 		boolean adjacent = false;
 		int numAdjacent = units.size();
-		int numLoaded = 0;
 
 		for (int i = 0; i < rocketUnits.length; i++) {
 			
@@ -111,7 +102,6 @@ public class Rocket {
 				unitId = rocketUnits[i].id();
 				if(gc.canLoad(rocketId, unitId)) {
 					gc.load(rocketId, unitId);
-					numLoaded++;
 				}
 			}
 		}
@@ -203,18 +193,19 @@ public class Rocket {
 		if(units.size() == 0) {
 			return new Unit[0];
 		}
-		
+
 		int numRocketUnits = 8 >= units.size() ? units.size() : 8;
 
 		int size = units.size();
-		Unit[] closestUnits = new Unit[numRocketUnits];
-		int[] magnitudes = new int[numRocketUnits];
 		Unit unit = units.get(0);
-		Location unitLoc;
+		Location unitLoc = unit.location();
+		MapLocation currloc = unitLoc.mapLocation();
 		int magnitude;
 		int last = 0;
 		int place = 0;
-		MapLocation currloc;
+
+		Unit[] closestUnits = new Unit[numRocketUnits];
+		int[] magnitudes = new int[numRocketUnits];
 		
 		closestUnits[0] = units.get(0);
 		magnitudes[0] = toSpawn.getMagnitude(unit.location().mapLocation());
