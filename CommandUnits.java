@@ -1,6 +1,8 @@
 import bc.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class CommandUnits {
 	
@@ -366,6 +368,61 @@ public class CommandUnits {
 		storedField = new VectorField[VectorField.width][VectorField.height];
 		System.gc();
 	}
+	
+	private static void snipe(GameController gc, ArrayList<Unit> rangers,ArrayList<Unit> targets ){
+		int last = 0;
+		int count = 0;
+		Unit target;
+		int required = 0;
+		
+		Collections.sort(targets, new compareSnipe());
+		//target factories
+		for(int i = 0; i < targets.size(); i++){
+			target = targets.get(i);
+			required = (int) target.health() / rangers.get(0).damage();
+			if(rangers.size() > required){
+
+				for(int j = last; j < rangers.size(); j++){
+					gc.beginSnipe(rangers.get(i).id(), target.location().mapLocation());
+					count++;
+					if(count == required){
+						last = j;
+						break;
+					}
+				}
+
+			}else{
+				break;
+			}
+
+		}
+	}
+	
+	 public static class compareSnipe implements Comparator<Unit>{
+		public int compare(Unit first, Unit second){
+			UnitType unitType = first.unitType();
+			int p1 = 0;
+			int p2 = 0;
+			
+			if(unitType == UnitType.Factory)p1 = 0;
+			else if(unitType == UnitType.Rocket)p1 = 1;
+			else if(unitType == UnitType.Healer)p1 = 2;
+			else if(unitType == UnitType.Mage)p1 = 3;
+			else if(unitType == UnitType.Ranger)p1 = 4;
+			else if(unitType == UnitType.Knight)p1 = 5;
+			else if(unitType == UnitType.Worker)p1 = 6;
+			unitType = second.unitType();
+			if(unitType == UnitType.Factory)p2 = 0;
+			else if(unitType == UnitType.Rocket)p2 = 1;
+			else if(unitType == UnitType.Healer)p2 = 2;
+			else if(unitType == UnitType.Mage)p2 = 3;
+			else if(unitType == UnitType.Ranger)p2 = 4;
+			else if(unitType == UnitType.Knight)p2 = 5;
+			else if(unitType == UnitType.Worker)p2 = 6;
+			return p1 - p2;
+		}
+	}
+
 	
 	
 }
