@@ -39,6 +39,7 @@ public class HealingTurn {
 		VecUnit surr;
 		Unit mine;
 		MapLocation loc;
+		Direction dir;
 		for(int i = 0; i<size; i++){
 			unit = availableHealers.get(i);
 			unitId = unit.id();
@@ -61,7 +62,8 @@ public class HealingTurn {
 				}
 				if(tlowest != null && gc.canHeal(unitId, tlowest.id()))gc.heal(unitId, tlowest.id());
 			}
-			Factories.moveToClosestDirection(gc, unit, vf.getDirection(loc));
+			dir = vf.getDirection(loc);
+			if(!Kiting.kite(gc, unit, dir))Factories.moveToClosestDirection(gc, unit, dir);
 		}
 	}
 	
