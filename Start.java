@@ -31,13 +31,6 @@ public class Start {
 				findKarbonite.spawns.add(unit.location().mapLocation());
 			}
 		}
-		
-		if(Minesweeper.isDense) {
-			maxWorkers = findKarbonite.avaSq / SQUARES_PER_WORKER_DENSE;
-		}
-		else {
-			maxWorkers = findKarbonite.avaSq / SQUARES_PER_WORKER_SPARSE;
-		}
 	}
 	
 	public static int runTurn(GameController gc, ArrayList<Unit> units){
@@ -56,7 +49,7 @@ public class Start {
 		}
 
 		if(Player.round - Player.lastRoundMined > 10){
-			return 0;
+			//return 0;
 		}
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
