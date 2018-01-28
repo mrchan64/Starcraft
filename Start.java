@@ -13,6 +13,7 @@ public class Start {
 
 	public static final int squaresPerWorkerDense = 70;
 	public static final int squaresPerWorkerSparse = 6;
+	public static final int minWorkers = 11;
 	
 	public static VectorField toHome;
 	
@@ -123,14 +124,14 @@ public class Start {
 	public static boolean notEnoughUnits(){
 		if(!karbDepleted()){
 			if(!Minesweeper.isDense)
-				return (numWorkers <= 3 * Player.numFactories + 11) && (numWorkers < findKarbonite.accSq/squaresPerWorkerDense);
+				return (numWorkers <= 3 * Player.numFactories + 11) && (numWorkers < findKarbonite.accSq/squaresPerWorkerDense) || (numWorkers<minWorkers);
 			else
-				return (numWorkers <= 8 * Player.numFactories + 12) && (numWorkers < findKarbonite.accSq/squaresPerWorkerSparse);
+				return (numWorkers <= 8 * Player.numFactories + 12) && (numWorkers < findKarbonite.accSq/squaresPerWorkerSparse) || (numWorkers<minWorkers);
 		}else{
 			if(!Minesweeper.isDense)
-				return (numWorkers <= Player.numFactories + 6) && (numWorkers < findKarbonite.accSq/squaresPerWorkerDense);
+				return (numWorkers <= Player.numFactories + 6) && (numWorkers < findKarbonite.accSq/squaresPerWorkerDense) || (numWorkers<minWorkers);
 			else
-				return (numWorkers <= Player.numFactories + 8) && (numWorkers < findKarbonite.accSq/squaresPerWorkerSparse);
+				return (numWorkers <= Player.numFactories + 8) && (numWorkers < findKarbonite.accSq/squaresPerWorkerSparse) || (numWorkers<minWorkers);
 		}
 	}
 	
