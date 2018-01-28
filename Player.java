@@ -32,7 +32,7 @@ public class Player {
 	public static MapLocation startingLoc;
 
 	public static void main(String[] args) {
-		System.out.println("Currently using Version Branch52");
+		System.out.println("Currently using Version Catch24");
 		gc = new GameController();
 		planet = gc.planet();
 		team = gc.team();
@@ -48,9 +48,9 @@ public class Player {
 		else Upgrades.upgradeUnitsSmall(gc);
 		
 		while (planet == Planet.Earth) {
-			//try{
+			try{
 			round  = (int)gc.round();
-			System.out.println("Currently Round "+round);
+			//System.out.println("Currently Round "+round);
 
 			Start.factories = new ArrayList<>();
 			UnitBuildOrder.builtFacts = new ArrayList<>();
@@ -200,12 +200,12 @@ public class Player {
 			if(round%25==0){
 				System.gc();
 			}
-			//}catch(Exception e){}
+			}catch(Exception e){}
 			gc.nextTurn();
 		}
 
 		while(planet == Planet.Mars) {
-			//try{
+			try{
 			round = (int)gc.round();
 			
 			ArrayList<Unit> marsUnits = new ArrayList<>();
@@ -235,7 +235,7 @@ public class Player {
 			CommandUnits.runTurn(gc);
 			Start.runTurn(gc, marsUnits);
 			if(round%25==0)System.gc();
-			//}catch(Exception e){}
+			}catch(Exception e){}
 			gc.nextTurn();
 			//System.out.println("Currently Round " + round);
 		}
