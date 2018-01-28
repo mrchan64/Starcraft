@@ -37,7 +37,6 @@ public class Factories {
 		for (int i = 0; i < Player.availableUnits.size(); i++) {
 
 			unit = Player.availableUnits.get(i);
-			System.out.println(unit.location().isOnPlanet(Planet.Earth) + " : " + unit.unitType());
 			unitId = unit.id();
 
 			if (unit.location().isInGarrison() || unit.location().isInSpace()) {

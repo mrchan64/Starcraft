@@ -42,6 +42,7 @@ public class Player {
 
 		while (planet == Planet.Earth) {
 			round  = (int)gc.round();
+			System.out.println("Currently round "+round);
 			UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 
 			Start.factories = new ArrayList<>();
@@ -101,9 +102,6 @@ public class Player {
 				}
 			}
 			
-			System.out.println("stage: " + stage);
-			System.out.println("numWorkers: " + Start.numWorkers);
-			
 			if (stage >= 2) {
 
 				if(trigger)Rocket.runTurn(gc, availableUnits);
@@ -136,13 +134,12 @@ public class Player {
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
 
-				if (numFactories > 3 || round > 300) {
+				/*if (numFactories > 3 || round > 300) {
 					stage = 2;
-				}
+				}*/
 			}
 
 			if (stage >= 0) {
-
 				CommandUnits.runTurn(gc);
 				Start.updateNumWorkers(availableUnits);
 
