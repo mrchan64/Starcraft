@@ -41,10 +41,12 @@ public class Player {
 		Start.initSpawn(gc);
 		findKarbonite.initKarb(gc);
 		Start.updateMaxWorkers();
-		Upgrades.upgradeUnitsSmall(gc);
 		CommandUnits.initCommand(gc);
 		System.out.println("Currently running on a "+(VectorField.largeMap?"large":"small")+" map and running "+(Minesweeper.isDense?"Knight":"Ranged")+" code");
 
+		if(Minesweeper.isDense) Upgrades.upgradeKnights(gc);
+		else Upgrades.upgradeUnitsSmall(gc);
+		
 		while (planet == Planet.Earth) {
 			//try{
 			round  = (int)gc.round();

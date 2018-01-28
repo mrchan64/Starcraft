@@ -83,10 +83,10 @@ public class UnitBuildOrder {
 	}
 
 	private static UnitType typeToBuild() {
-		if(Minesweeper.isDense || index >= sparseUnitOrder.length*3){
-			order = sparseUnitOrder;
+		if(Minesweeper.isDense || index < sparseUnitOrder.length*3){
+			order = closeUnitOrder;
 		}
-		else order = closeUnitOrder;
+		else order = sparseUnitOrder;
 		/*if(Factories.isClose){
 			order = closeUnitOrder;
 			return order[closeIndex];
