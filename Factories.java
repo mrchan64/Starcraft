@@ -1,6 +1,5 @@
 import bc.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Factories {
 
@@ -375,7 +374,7 @@ public class Factories {
 							x = attemptAround.getX();
 							y = attemptAround.getY();
 							
-							if(VectorField.terrain[x][y] == 1) {
+							if(VectorField.terrain[x][y] == 1 && !occupiedByStructure(gc, attemptAround)) {
 								numOccupiable++;
 							}
 						}
@@ -409,9 +408,8 @@ public class Factories {
 		}
 	}
 	
-	public static void buildFactory(GameController gc, ArrayList<Unit> units) {
+	public static void buildFactory(GameController gc, ArrayList<Unit> units, MapLocation spawn) {
 		
-		Random generator = new Random();
 		Unit unit;
 		int unitId;
 		int size = units.size();
@@ -423,12 +421,25 @@ public class Factories {
 		Direction[] allDirs = Direction.values();
 		int bestOption = 0;
 		int numOccupiable = 0;
-		int startPoint = generator.nextInt(size);
+		int x = spawn.getX();
+		int y = spawn.getY();
 		
-		int x, y;
+		if(CommandUnits.storedField[x][y] == null) {
+			CommandUnits.storedField[x][y] = new VectorField();
+			CommandUnits.storedField[x][y].setTarget(spawn);
+		}
+		
+		VectorField toSpawn = CommandUnits.storedField[x][y];
+		
+		Unit[] closestUnits = getClosest(gc, units, spawn, toSpawn, false);
+		
+		if(closestUnits.length == 0) {
+			Start.spawnsDone++;
+			return;
+		}
 		
 		for(int i = 0; i < size; i++) {
-			unit = units.get((i + startPoint) % size);
+			unit = closestUnits[i];
 			unitId = unit.id();
 
 			for(Direction dir : allDirs) {
@@ -444,7 +455,7 @@ public class Factories {
 							x = attemptAround.getX();
 							y = attemptAround.getY();
 							
-							if(VectorField.terrain[x][y] == 1) {
+							if(VectorField.terrain[x][y] == 1 && !occupiedByStructure(gc, attemptAround)) {
 								numOccupiable++;
 							}
 						}
@@ -452,12 +463,13 @@ public class Factories {
 							// do nothing
 						}
 					}
-					
+
 					if(numOccupiable > 7) {
 						gc.blueprint(unitId, UnitType.Factory, dir);
+						Start.spawnsDone++;
 						return;
 					}
-					
+
 					else if (numOccupiable > bestOption) {
 						idealDir = dir;
 						bestOption = numOccupiable;
@@ -465,14 +477,28 @@ public class Factories {
 						idealUnitId = idealUnit.id();
 					}
 				}
-				
+
 				numOccupiable = 0;
 			}
 		}
 
 		if(gc.canBlueprint(idealUnitId, UnitType.Factory, idealDir)) {
 			gc.blueprint(idealUnitId, UnitType.Factory, idealDir);
+			Start.spawnsDone++;
 		}
+	}
+	
+	public static boolean occupiedByStructure(GameController gc, MapLocation loc) {
+		
+		if(gc.isOccupiable(loc) == 1) return false;
+		
+		Unit blocker = gc.senseUnitAtLocation(loc);
+			
+		if(blocker.unitType() != UnitType.Rocket && blocker.unitType() != UnitType.Factory) {
+			return false;
+		}
+
+		return true;
 	}
 	
 	private static void detectClose(GameController gc){
