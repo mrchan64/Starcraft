@@ -105,9 +105,16 @@ public class Start {
 	}
 	
 	public static boolean notEnoughUnits(){
-		if(!Minesweeper.isDense)
-			return (numWorkers <= 3 * Player.numFactories + 8) && (numWorkers < findKarbonite.accSq/squaresPerWorkerDense);
-		else
-			return (numWorkers <= 8 * Player.numFactories + 8) && (numWorkers < findKarbonite.accSq/squaresPerWorkerSparse);
+		if(Player.round - Player.lastRoundMined < 20 || Player.round < 70){
+			if(!Minesweeper.isDense)
+				return (numWorkers <= 3 * Player.numFactories + 11) && (numWorkers < findKarbonite.accSq/squaresPerWorkerDense);
+			else
+				return (numWorkers <= 8 * Player.numFactories + 12) && (numWorkers < findKarbonite.accSq/squaresPerWorkerSparse);
+		}else{
+			if(!Minesweeper.isDense)
+				return (numWorkers <= Player.numFactories + 6) && (numWorkers < findKarbonite.accSq/squaresPerWorkerDense);
+			else
+				return (numWorkers <= Player.numFactories + 8) && (numWorkers < findKarbonite.accSq/squaresPerWorkerSparse);
+		}
 	}
 }
