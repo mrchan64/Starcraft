@@ -32,7 +32,7 @@ public class Player {
 	public static MapLocation startingLoc;
 
 	public static void main(String[] args) {
-		//System.out.println("Currently using Version Branch52");
+		System.out.println("Currently using Version Branch52");
 		gc = new GameController();
 		planet = gc.planet();
 		team = gc.team();
@@ -43,11 +43,14 @@ public class Player {
 		CommandUnits.initCommand(gc);
 		Start.initSpawn(gc);
 		
-		Runtime rt = Runtime.getRuntime();
+		//Runtime rt = Runtime.getRuntime();
+		
+		System.out.println("Currently running on a "+(VectorField.largeMap?"large":"small")+" map and running "+(Minesweeper.isDense?"Knight":"Ranged")+" code");
 
 		while (planet == Planet.Earth) {
 			//try{
 			round  = (int)gc.round();
+			System.out.println("Currently Round "+round);
 
 			Start.factories = new ArrayList<>();
 			UnitBuildOrder.builtFacts = new ArrayList<>();
