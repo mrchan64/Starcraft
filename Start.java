@@ -62,7 +62,7 @@ public class Start {
 			}
 			
 			else{
-				Factories.buildFactory(gc, units);
+				Factories.buildFactory(gc, units, findKarbonite.spawns.get(spawnsDone % findKarbonite.spawns.size()));
 			}
 		}
 

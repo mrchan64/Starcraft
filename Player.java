@@ -73,8 +73,9 @@ public class Player {
 					continue;
 				
 				else if (type == UnitType.Factory) {
+					
 					numFactories++;
-
+					
 					if (health < unit.maxHealth()) {
 						Start.factories.add(unit);
 					} else {
@@ -83,6 +84,7 @@ public class Player {
 				}
 
 				else if (type == UnitType.Rocket) {
+					
 					if (health < unit.maxHealth()) {
 						Start.rockets.add(unit);
 					} else if (unit.location().isOnMap()) {

@@ -359,7 +359,7 @@ public class Rocket {
 							x = attemptAround.getX();
 							y = attemptAround.getY();
 
-							if (VectorField.terrain[x][y] == 1) {
+							if (VectorField.terrain[x][y] == 1 && !Factories.occupiedByStructure(gc, attemptAround)) {
 								numOccupiable++;
 							}
 						} catch (Exception E) {
