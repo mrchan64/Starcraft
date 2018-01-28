@@ -6,7 +6,7 @@ public class UnitBuildOrder {
 	public static Direction[] dir = Direction.values();
 	public static ArrayList<Unit> builtFacts = new ArrayList<>();
 
-	public static UnitType[] denseUnitOrder = { 
+	public static UnitType[] sparseUnitOrder = { 
 		UnitType.Ranger,
 		UnitType.Ranger, 
 		UnitType.Ranger, 
@@ -14,7 +14,7 @@ public class UnitBuildOrder {
 		UnitType.Healer,
 		UnitType.Healer, 
 		UnitType.Healer };
-	public static UnitType[] sparseUnitOrder = { 
+	public static UnitType[] denseUnitOrder = { 
 		UnitType.Knight, 
 		UnitType.Healer, 
 		UnitType.Knight, 
@@ -36,7 +36,7 @@ public class UnitBuildOrder {
 		int factoryId = factory.id();
 		type = typeToBuild();
 
-		if (Start.notEnoughUnits() && Start.numWorkers < Start.maxWorkers) {
+		if (Start.notEnoughUnits() && Start.numWorkers < Start.maxWorkers && Player.round >= 140) {
 			if(Math.random() > .6)type = UnitType.Worker;
 		}
 

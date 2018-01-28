@@ -39,9 +39,10 @@ public class Player {
 		Upgrades.upgradeUnitsSmall(gc);
 		CommandUnits.initCommand(gc);
 		Start.initSpawn(gc);
+		
+		Runtime rt = Runtime.getRuntime();
 
 		while (planet == Planet.Earth) {
-			System.out.println("stage: "+stage);
 			round  = (int)gc.round();
 			System.out.println("Currently round "+round);
 
@@ -162,6 +163,13 @@ public class Player {
 					Start.runTurn(gc, availableUnits);
 				}
 			}
+			//long time = System.currentTimeMillis();
+			//System.out.println("Total: "+rt.totalMemory()+" Free: "+rt.freeMemory());
+			//System.out.println("rt takes "+(System.currentTimeMillis()-time));
+			if(round%25==0){
+				CommandUnits.resetStoredField();
+				System.gc();
+			}
 			gc.nextTurn();
 		}
 
@@ -198,6 +206,7 @@ public class Player {
 			
 			CommandUnits.runTurn(gc);
 			Start.runTurn(gc, marsUnits);
+			if(round%25==0)System.gc();
 			gc.nextTurn();
 			//System.out.println("Currently Round " + round);
 		}

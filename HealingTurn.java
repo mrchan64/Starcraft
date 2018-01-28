@@ -22,7 +22,10 @@ public class HealingTurn {
 				lowestHealth = unit.location().mapLocation();
 			}
 		}
-
+		if(lowestHealth==null){
+			System.out.println("Kite Healing Error???");
+			return ;
+		}
 		int x = lowestHealth.getX();
 		int y = lowestHealth.getY();
 		VectorField vf = CommandUnits.storedField[x][y];

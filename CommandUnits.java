@@ -360,5 +360,10 @@ public class CommandUnits {
 		Factories.moveToClosestDirection(gc, unit, dir);
 	}
 	
+	public static void resetStoredField(){
+		storedField = new VectorField[VectorField.width][VectorField.height];
+		System.gc();
+	}
+	
 	
 }
