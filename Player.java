@@ -35,11 +35,12 @@ public class Player {
 	public static MapLocation startingLoc;
 
 	public static void main(String[] args) {
-		System.out.println("Currently using Version Branch52");
+		System.out.println("Currently using Version Catch24");
 		gc = new GameController();
 		planet = gc.planet();
 		team = gc.team();
 		
+		CommandUnits.setEspawn(gc);
 		VectorField.initWalls(gc);
 		Start.initSpawn(gc);
 		findKarbonite.initKarb(gc);
@@ -142,6 +143,10 @@ public class Player {
 
 				if (!Rocket.sentFirst && (round >= 150)) {
 					Rocket.runFirstTurn(gc, availableUnits);
+				}
+				
+				if(Rocket.sentFirst && (units.size()<numFactories * 3)){
+					stage = 2;
 				}
 
 				if ((round - lastRoundMined <= 15 || round < 150 || Rocket.sentFirst || Start.numWorkers <= 2) && ((double) units.size() < (double) (findKarbonite.accSq * 0.7)) && stage < 2) {

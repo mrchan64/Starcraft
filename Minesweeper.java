@@ -37,7 +37,7 @@ public class Minesweeper {
 	public static void determineOpen() {
 		if(Player.planet == Planet.Mars)return;
 		calcOpen();
-		isDense = openSpaces>notOpenSpaces;
+		isDense = (openSpaces>notOpenSpaces) && findKarbonite.distanceFromEnemy();
 	}
 
 	public static void mineSweep(MapLocation loc, PlanetMap map) {

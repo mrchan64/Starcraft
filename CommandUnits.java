@@ -22,6 +22,8 @@ public class CommandUnits {
 
 	static MapLocation enemyLoc;
 	
+	static ArrayList<MapLocation> espawn;
+	
 	public static void initCommand(GameController gc){
 		storedField = new VectorField[VectorField.width][VectorField.height];
 		enemies = new Unit[VectorField.width][VectorField.height];
@@ -44,6 +46,15 @@ public class CommandUnits {
 			hasEnemy[x][y] = true;
 		}
 		
+	}
+	
+	public static void setEspawn(GameController gc){
+		espawn = new ArrayList<MapLocation>();
+		VecUnit temp = gc.startingMap(Player.planet).getInitial_units();
+		for(int i = 0; i<temp.size(); i++){
+			Unit unit = temp.get(i);
+			espawn.add(unit.location().mapLocation());
+		}
 	}
 
 	public static void runTurn(GameController gc){
