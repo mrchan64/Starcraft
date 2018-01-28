@@ -26,13 +26,13 @@ public class Player {
 	public static int round;
 	
 	public static boolean trigger = false;
+	public static boolean workersOnMars = false;
 
 	public static void main(String[] args) {
 
 		gc = new GameController();
 		planet = gc.planet();
 		team = gc.team();
-		boolean workersOnMars = false;
 		
 		VectorField.initWalls(gc);
 		findKarbonite.initKarb(gc);
@@ -101,21 +101,18 @@ public class Player {
 				}
 			}
 			
-			System.out.println("stage: " + stage);
-			System.out.println("numWorkers: " + Start.numWorkers);
-			
 			if (stage >= 2) {
 
-				if(trigger)Rocket.runTurn(gc, availableUnits);
+				Rocket.runTurn(gc, availableUnits);
 
 				for (int i = 0; i < UnitBuildOrder.builtRocks.size(); i++) {
 					
-					if(!workersOnMars && Start.rockets.size() < 5) {
+					if(!workersOnMars) {
 						Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
 						workersOnMars = true;
 					}
 
-					else if(Start.rockets.size() < 5){
+					else {
 						Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableCombatUnits);
 					}
 				}
@@ -125,10 +122,8 @@ public class Player {
 
 				Factories.runTurn(gc, availableUnits);
 
-				if (round > 100) {
-					if (Start.numWorkers < 8) {
+				if (round > 100 && Start.numWorkers < 8) {
 						UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Worker);
-					}
 				}
 
 				if (gc.karbonite() > 100) {
@@ -136,7 +131,7 @@ public class Player {
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
 
-				if (numFactories > 3 || round > 300) {
+				if (numFactories > 3 || round > 100) {
 					stage = 2;
 				}
 			}
@@ -159,12 +154,15 @@ public class Player {
 
 		while(planet == Planet.Mars) {
 			
-			findKarbonite.updateFieldKarb(gc);
+			round = (int)gc.round();
 			
 			ArrayList<Unit> marsUnits = new ArrayList<>();
 			units = gc.myUnits();
 			
 			for(int i = 0; i < units.size(); i++) {
+				
+				findKarbonite.updateAsters(gc, round);
+				
 				unit = units.get(i);
 				type = unit.unitType();
 				

@@ -15,9 +15,13 @@ public class findKarbonite {
 
 	public static int mHeight;
 	public static int mWidth;
+	
+	public static AsteroidPattern marsAsters;
+	public static ArrayList<MapLocation> marsKarb;
 
 	public static void initKarb(GameController gc) {
 
+		marsAsters = gc.asteroidPattern();
 		karboniteField = new VectorField();
 		int height = VectorField.height;
 		int width = VectorField.width;
@@ -62,10 +66,27 @@ public class findKarbonite {
             }
             System.out.println();
         }
-
-
 	}
 
+	public static void updateAsters(GameController gc, int round) {
+		
+		if(marsAsters.hasAsteroid(round)) {
+			System.out.println("1 " + marsKarb == null);
+			System.out.println("2 " + marsAsters == null);
+			System.out.println("3 " + marsAsters.asteroid(round) == null);
+			marsKarb.add(
+					marsAsters.asteroid(round)
+					.getLocation());
+		}
+		else {
+			return;
+		}
+		
+		karboniteField = new VectorField();
+		karboniteField.setTargets(marsKarb);
+		updateFieldKarb(gc);
+	}
+	
 	public static void getOppositeSpawn(Unit unit) {
 
 		spawn = unit.location().mapLocation();
