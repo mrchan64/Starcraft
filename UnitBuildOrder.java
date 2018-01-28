@@ -17,12 +17,11 @@ public class UnitBuildOrder {
 		UnitType.Healer };
 	public static UnitType[] denseUnitOrder = { 
 		UnitType.Knight, 
-		UnitType.Healer, 
-		UnitType.Knight, 
 		UnitType.Ranger,
-		UnitType.Healer, 
 		UnitType.Ranger, 
+		UnitType.Ranger,
 		UnitType.Mage,
+		UnitType.Healer,
 		UnitType.Healer};
 	public static UnitType[] closeUnitOrder = { 
 		UnitType.Knight, 
@@ -43,7 +42,7 @@ public class UnitBuildOrder {
 
 		if (gc.canProduceRobot(factoryId, type)) {
 			gc.produceRobot(factoryId, type);
-			/*if(!Factories.isClose)*/index = (index + 1) % order.length;
+			/*if(!Factories.isClose)*/index++;
 			//else closeIndex = (closeIndex + 1) % order.length;
 		}
 	}
@@ -54,6 +53,7 @@ public class UnitBuildOrder {
 		int startPoint = generator.nextInt(dir.length);
 		int structureId = structure.id();
 		int index;
+		if(CommandUnits.combatUnitSize > 10)return;
 		
 		for (int i = 0; i < dir.length; i++) {
 			
@@ -78,14 +78,17 @@ public class UnitBuildOrder {
 	}
 
 	private static UnitType typeToBuild() {
-		if(Minesweeper.isDense)order = sparseUnitOrder;
+		if(Minesweeper.isDense || index >= sparseUnitOrder.length*3){
+			System.out.println("Building Sparse "+index);
+			order = sparseUnitOrder;
+		}
 		else order = denseUnitOrder;
 		/*if(Factories.isClose){
 			order = closeUnitOrder;
 			return order[closeIndex];
 		}
 		else{*/
-			return order[index];
+			return order[index%order.length];
 		//}
 	}
 

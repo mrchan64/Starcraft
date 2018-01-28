@@ -60,6 +60,7 @@ public class Player {
 			findKarbonite.updateFieldKarb(gc);
 
 			units = gc.myUnits();
+			ArrayList<Unit> workers = new ArrayList<Unit>();
 
 			for (int i = 0; i < units.size(); i++) {
 
@@ -90,15 +91,7 @@ public class Player {
 
 				else if (type == UnitType.Worker) {
 					availableUnits.add(unit);
-
-					for (Direction dir : Start.directions) {
-						if (gc.canHarvest(unit.id(), dir)) {
-
-							gc.harvest(unit.id(), dir);
-							lastRoundMined = round;
-							break;
-						}
-					}
+					workers.add(unit);
 				}
 				
 				else {
@@ -148,7 +141,7 @@ public class Player {
 				}
 
 
-				if ((round<150 || Rocket.sentFirst) && ((double) units.size() < (double) (findKarbonite.accSq * 0.8)) && stage < 2) {
+				if ((round<150 || Rocket.sentFirst) && ((double) units.size() < (double) (findKarbonite.accSq * 0.7)) && stage < 2) {
 
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
@@ -157,7 +150,7 @@ public class Player {
 
 					for (int i = 0; i < units.size(); i++) {
 						if (!units.get(i).location().isInGarrison() || !units.get(i).location().isInSpace()) {
-							startingLoc = units.get(0).location().mapLocation();
+							startingLoc = units.get(i).location().mapLocation();
 							break;
 						}	
 					}
@@ -178,12 +171,26 @@ public class Player {
 				else if(availableUnits.size() > 0) {
 					Start.runTurn(gc, availableUnits);
 				}
+				
+				for(Unit worker : workers){
+					for (Direction dir : Start.directions) {
+						if (gc.canHarvest(worker.id(), dir)) {
+
+							gc.harvest(worker.id(), dir);
+							lastRoundMined = round;
+							break;
+						}
+					}
+				}
 			}
 			//long time = System.currentTimeMillis();
 			//System.out.println("Total: "+rt.totalMemory()+" Free: "+rt.freeMemory());
 			//System.out.println("rt takes "+(System.currentTimeMillis()-time));
-			if(round%25==0){
+			if(VectorField.largeMap){
 				CommandUnits.resetStoredField();
+				System.gc();
+			}
+			if(round%25==0){
 				System.gc();
 			}
 			//}catch(Exception e){}

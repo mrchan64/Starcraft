@@ -16,6 +16,7 @@ public class CommandUnits {
 	
 	static int radius;
 	static MapLocation center;
+	static int combatUnitSize = 0;
 	
 	public static void initCommand(GameController gc){
 		storedField = new VectorField[VectorField.width][VectorField.height];
@@ -85,6 +86,7 @@ public class CommandUnits {
 			centerMass = new MapLocation(VectorField.planet, centerMassX, centerMassY);
 		}else
 			return;
+		combatUnitSize = availableUnits.size();
 		HealingTurn.runTurn(gc, availableHealers, units);
 		//update enemies and prioritize them
 		int esize;
@@ -338,7 +340,7 @@ public class CommandUnits {
 			if(gc.isAttackReady(id) && gc.canAttack(id, enemyId)) gc.attack(id, enemyId);
 		}
 		
-		if(Player.round<100){
+		if(Player.round<100 && unit.unitType() != UnitType.Knight){
 			Factories.moveToClosestDirection(gc, unit, Direction.Center);
 			return;
 		}
