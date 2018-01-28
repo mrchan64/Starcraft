@@ -55,7 +55,6 @@ public class findKarbonite {
 			}
 		}
 
-        Start.initSpawn(gc);
         findAccSq(map);
 
 		map = gc.startingMap(Planet.Mars);
