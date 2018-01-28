@@ -42,7 +42,7 @@ public class UnitBuildOrder {
 		type = typeToBuild();
 
 		if (Start.notEnoughUnits() && Start.numWorkers < Start.maxWorkers && Player.round >= 140) {
-			if(Math.random() > .6)type = UnitType.Worker;
+			if(Math.random() > 0.3)type = UnitType.Worker;
 		}
 
 		if (gc.canProduceRobot(factoryId, type)) {
