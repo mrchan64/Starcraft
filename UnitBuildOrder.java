@@ -42,8 +42,8 @@ public class UnitBuildOrder {
 
 		if (gc.canProduceRobot(factoryId, type)) {
 			gc.produceRobot(factoryId, type);
-			if(!Factories.isClose)index = (index + 1) % order.length;
-			else closeIndex = (closeIndex + 1) % order.length;
+			/*if(!Factories.isClose)*/index = (index + 1) % order.length;
+			//else closeIndex = (closeIndex + 1) % order.length;
 		}
 	}
 
@@ -73,13 +73,13 @@ public class UnitBuildOrder {
 	private static UnitType typeToBuild() {
 		if(Minesweeper.isDense)order = sparseUnitOrder;
 		else order = denseUnitOrder;
-		if(Factories.isClose){
+		/*if(Factories.isClose){
 			order = closeUnitOrder;
 			return order[closeIndex];
 		}
-		else{
+		else{*/
 			return order[index];
-		}
+		//}
 	}
 
 	/*

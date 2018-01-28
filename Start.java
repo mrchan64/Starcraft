@@ -51,13 +51,12 @@ public class Start {
 			if(Factories.buildFactory(gc, units)) return 1;
 		}
 
-		if(karbDepleted()){
+		if(karbDepleted() && Player.planet == Planet.Earth){
 			Direction ideal;
 			MapLocation loc;
 			System.out.println("GOING HOME");
 			for(int i = 0; i < size; i++) {
 				unit = units.get(i);
-
 				loc = unit.location().mapLocation();
 				if(toHome.getMagnitude(loc) > 100){
 					ideal = Direction.Center;

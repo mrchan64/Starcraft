@@ -134,7 +134,7 @@ public class Player {
 					stage = 2;
 				}
 
-				if (!Rocket.sentFirst) {
+				if (!Rocket.sentFirst && round > 150) {
 					Rocket.runFirstTurn(gc, availableUnits);
 				}
 
