@@ -41,6 +41,7 @@ public class Player {
 		Start.initSpawn(gc);
 
 		while (planet == Planet.Earth) {
+			System.out.println("stage: "+stage);
 			round  = (int)gc.round();
 			UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 
@@ -103,6 +104,14 @@ public class Player {
 			
 			if (stage >= 2) {
 
+				if (round > 749) {
+					for (Unit rocket : UnitBuildOrder.builtRocks) {
+						int rocketID = (int)rocket.id();
+						Rocket.launchRocket(gc, rocketID);
+					}
+
+				}
+
 				Rocket.runTurn(gc, availableUnits);
 
 				for (int i = 0; i < UnitBuildOrder.builtRocks.size(); i++) {
@@ -113,7 +122,7 @@ public class Player {
 					}
 
 					else {
-						Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableCombatUnits);
+						Rocket.loadCombatUnits(gc, UnitBuildOrder.builtRocks.get(i), availableCombatUnits);
 					}
 				}
 			}
@@ -123,7 +132,7 @@ public class Player {
 				if (round > 500) {
 					stage = 2;
 				}
-				
+
 				if (!Rocket.sentFirst) {
 					Rocket.runFirstTurn(gc, availableUnits);
 				}
@@ -134,7 +143,7 @@ public class Player {
 						UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Worker);
 				}
 
-				if (gc.karbonite() > 150 && stage != 2) {
+				if (gc.karbonite() > 175 && stage < 2) {
 
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}

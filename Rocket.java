@@ -40,12 +40,12 @@ public class Rocket {
 			}
 		}
 		
-		for(Unit builtRocket : UnitBuildOrder.builtRocks) {
+		/*for(Unit builtRocket : UnitBuildOrder.builtRocks) {
 			//sEND COMBAT UNITS TO THESE ROCKETS
 			// also make sure that builtRocks is actually correct
 			System.out.println("combat rocket");
 			loadCombatUnits(gc, builtRocket, Player.availableCombatUnits);
-		}
+		}*/
 
 		for (int i = 0; i < Player.availableUnits.size(); i++) {
 
@@ -165,10 +165,7 @@ public class Rocket {
 		}
 
 		VecUnitID sizeInRocket = rocket.structureGarrison();
-		System.out.println("num units: " + units.size());
-		System.out.println("num in rocket " + sizeInRocket.size());
 		if(sizeInRocket.size() > 7 || units.size() == 0) {
-			System.out.println("launch rockets");
 			sentFirst = true;
 			launchRocket(gc, rocketId);
 			Player.workersOnMars = true;
@@ -191,7 +188,6 @@ public class Rocket {
 					Minesweeper.mineMap[ii][j] = 0;
 					destination = new MapLocation(Planet.Mars, x, y);
 					if (gc.canLaunchRocket(rocketId, destination)) {
-						System.out.println("actually launch");
 						gc.launchRocket(rocketId, destination);
 						UnitBuildOrder.builtRocks.remove(gc.unit(rocketId));
 						Minesweeper.updateMap(x, y);
