@@ -57,7 +57,6 @@ public class Start {
 		if(karbDepleted() && Player.planet == Planet.Earth){
 			Direction ideal;
 			MapLocation loc;
-			System.out.println("GOING HOME");
 			for(int i = 0; i < size; i++) {
 				unit = units.get(i);
 				loc = unit.location().mapLocation();
