@@ -79,7 +79,6 @@ public class UnitBuildOrder {
 
 	private static UnitType typeToBuild() {
 		if(Minesweeper.isDense || index >= sparseUnitOrder.length*3){
-			System.out.println("Building Sparse "+index);
 			order = sparseUnitOrder;
 		}
 		else order = denseUnitOrder;
