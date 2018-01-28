@@ -7,7 +7,7 @@ public class UnitBuildOrder {
 	public static Direction[] dir = Direction.values();
 	public static ArrayList<Unit> builtFacts = new ArrayList<>();
 
-	public static UnitType[] denseUnitOrder = { 
+	public static UnitType[] sparseUnitOrder = { 
 		UnitType.Ranger,
 		UnitType.Ranger, 
 		UnitType.Ranger, 
@@ -15,14 +15,13 @@ public class UnitBuildOrder {
 		UnitType.Healer,
 		UnitType.Healer, 
 		UnitType.Healer };
-	public static UnitType[] sparseUnitOrder = { 
-		UnitType.Knight, 
-		UnitType.Healer, 
+	public static UnitType[] denseUnitOrder = { 
 		UnitType.Knight, 
 		UnitType.Ranger,
-		UnitType.Healer, 
 		UnitType.Ranger, 
+		UnitType.Ranger,
 		UnitType.Mage,
+		UnitType.Healer,
 		UnitType.Healer};
 	public static UnitType[] closeUnitOrder = { 
 		UnitType.Knight, 
@@ -37,13 +36,13 @@ public class UnitBuildOrder {
 		int factoryId = factory.id();
 		type = typeToBuild();
 
-		if (Start.notEnoughUnits() && Start.numWorkers < Start.maxWorkers) {
+		if (Start.notEnoughUnits() && Start.numWorkers < Start.maxWorkers && Player.round >= 140) {
 			if(Math.random() > .6)type = UnitType.Worker;
 		}
 
 		if (gc.canProduceRobot(factoryId, type)) {
 			gc.produceRobot(factoryId, type);
-			/*if(!Factories.isClose)*/index = (index + 1) % order.length;
+			/*if(!Factories.isClose)*/index++;
 			//else closeIndex = (closeIndex + 1) % order.length;
 		}
 	}
@@ -54,6 +53,7 @@ public class UnitBuildOrder {
 		int startPoint = generator.nextInt(dir.length);
 		int structureId = structure.id();
 		int index;
+		if(CommandUnits.combatUnitSize > 10)return;
 		
 		for (int i = 0; i < dir.length; i++) {
 			
@@ -78,14 +78,16 @@ public class UnitBuildOrder {
 	}
 
 	private static UnitType typeToBuild() {
-		if(Minesweeper.isDense)order = sparseUnitOrder;
+		if(Minesweeper.isDense || index >= sparseUnitOrder.length*3){
+			order = sparseUnitOrder;
+		}
 		else order = denseUnitOrder;
 		/*if(Factories.isClose){
 			order = closeUnitOrder;
 			return order[closeIndex];
 		}
 		else{*/
-			return order[index];
+			return order[index%order.length];
 		//}
 	}
 

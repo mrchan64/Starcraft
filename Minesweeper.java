@@ -8,6 +8,44 @@ public class Minesweeper {
 	public static int bestX;
 	public static int bestY;
 	public static int highest = 0;
+	public static int[] spaces = new int[9];
+
+
+	public static void calcOpen() {
+		for (int i = 0; i < Vector.width; i++) {
+			for (int j = 0; j < Vector.height; j++) {
+				switch (mineMap[i][j]) {
+					case 0: spaces[0] = spaces[0]++;
+							break;
+					case 1: spaces[1] = spaces[1]++;
+							break;
+					case 2: spaces[2] = spaces[2]++;
+							break;
+					case 3: spaces[3] = spaces[3]++;
+							break;
+					case 4: spaces[4] = spaces[4]++;
+							break;
+					case 5: spaces[5] = spaces[5]++;
+							break;
+					case 6: spaces[6] = spaces[6]++;
+							break;
+					case 7: spaces[7] = spaces[7]++;
+							break;
+					case 8: spaces[8] = spaces[8]++;
+							break;
+					default: break;
+				}
+			}
+		}
+	}
+
+	public static void determineOpen() {
+		calcOpen();
+		if (spaces[8] + spaces[7] +spaces[6]+ spaces[5]+spaces[4] > spaces[3] + spaces[2] + spaces[1]+ spaces[0]) {
+			isDense = true;
+		}
+		isDense = false;
+	}
 
 	public static void mineSweep(MapLocation loc, PlanetMap map) {
 		if (map.isPassableTerrainAt(loc) == 0) {
@@ -46,10 +84,11 @@ public class Minesweeper {
 	}
 
 	public static void denseMap() {
-		if (density/findKarbonite.avaSq > 5) {
+		/*if (density/findKarbonite.avaSq > 5) {
 			isDense = true;
 		}
-		isDense = false;
+		isDense = false;*/
+		determineOpen();
 	}
 
 	public static void updateMap(int x, int y) {

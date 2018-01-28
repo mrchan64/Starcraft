@@ -12,10 +12,13 @@ public class VectorField {
 	static int width;
 	static int height;
 	static Planet planet;
+	
+	static boolean largeMap;
 
 	Direction[] directions = Direction.values();
 	
 	public VectorField(){
+		if(largeMap)return;
 		squares = new MapLocation[width][height];
 		dirs = new Direction[width][height];
 		magnitude = new int[width][height];
@@ -41,6 +44,8 @@ public class VectorField {
 				terrain[i][j] = (int)pm.isPassableTerrainAt(new MapLocation(mine, i, j));
 			}
 		}
+		largeMap = Math.pow((findKarbonite.avaSq*4+4),4)>500000000;
+		System.out.println("This be large yarr");
 	}
 	
 	public void setTargets(ArrayList<MapLocation> start){
@@ -49,28 +54,31 @@ public class VectorField {
 		for(int i = 0; i<l;i++){
 			MapLocation ml = start.get(i);
 			done.add(ml);
+			if(largeMap)continue;
 			int x = ml.getX();
 			int y = ml.getY();
 			magnitude[x][y] = 0;
 			checked[x][y] = true;
 		}
+		if(largeMap)return;
 		for(int i = 0; i<l;i++){
 			MapLocation ml = done.get(i);
-			addNeighbors(ml);
+			if(!largeMap)addNeighbors(ml);
 		}
 	}
 	
 	public void setTarget(MapLocation start){
 		done = new ArrayList<MapLocation>();
 		done.add(start);
+		if(largeMap)return;
 		int x = start.getX();
 		int y = start.getY();
 		magnitude[x][y] = 0;
 		addNeighbors(start);
-		
 	}
 	
 	public Direction getDirection(MapLocation check){
+		if(largeMap)return simpleDir(check);
 		int x = check.getX();
 		int y = check.getY();
 		populateTo(x, y);
@@ -78,6 +86,7 @@ public class VectorField {
 	}
 	
 	public int getMagnitude(MapLocation check){
+		if(largeMap)return simpleMag(check);
 		int x = check.getX();
 		int y = check.getY();
 		populateTo(x, y);
@@ -154,6 +163,32 @@ public class VectorField {
 		int diff2 = (ind2-ind1+8)%8;
 		if(diff1<diff2)return diff1;
 		return diff2;
+	}
+	
+	private Direction simpleDir(MapLocation ml){
+		int distance = Integer.MAX_VALUE;
+		Direction dir = Direction.Center;
+		int dist;
+		for(MapLocation target : done){
+			dist = (int) ml.distanceSquaredTo(target);
+			if(dist<distance){
+				distance = dist;
+				dir = ml.directionTo(target);
+			}
+		}
+		return dir;
+	}
+	
+	private int simpleMag(MapLocation ml){
+		int distance = Integer.MAX_VALUE;
+		int dist;
+		for(MapLocation target : done){
+			dist = (int) ml.distanceSquaredTo(target);
+			if(dist<distance){
+				distance = dist;
+			}
+		}
+		return distance;
 	}
 	
 	public String toString(){

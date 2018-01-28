@@ -15,7 +15,7 @@ public class Start {
 
 	public static final int squaresPerWorkerDense = 70;
 	public static final int squaresPerWorkerSparse = 6;
-	public static final int minWorkers = 11;
+	public static final int minWorkers = 9;
 	
 	public static VectorField toHome;
 	
