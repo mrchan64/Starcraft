@@ -88,7 +88,7 @@ public class Rocket {
 		toRocket.setTarget(rocketLoc);
 		Unit[] rocketUnits = getClosest(gc, units, toRocket);
 		int max = rocketUnits.length;
-		int numPossible = 0;
+		int numPossible = max;
 		Unit unit;
 		int unitId;
 		MapLocation unitLoc;
@@ -106,8 +106,10 @@ public class Rocket {
 			adjacent = unitLoc.isAdjacentTo(rocketLocation);
 			
 			if (!adjacent) {
-				Factories.moveToClosestDirection(gc, unit, toRocket.getDirection(unitLoc));
+
 				if(toRocket.getDirection(unitLoc) == Direction.Center) numPossible--;
+
+				Factories.moveToClosestDirection(gc, unit, toRocket.getDirection(unitLoc));
 				numAdjacent--;
 			}
 		}
@@ -122,6 +124,8 @@ public class Rocket {
 		}
 
 		sizeInRocket = rocket.structureGarrison();
+		
+		System.out.println("max: " + max + ", size in rocket: " + sizeInRocket.size() + ", numPossible: " + numPossible);
 		if(sizeInRocket.size() == max || units.size() == 0 || numPossible == 0) {
 			if(gc.orbitPattern().duration(Player.round) <= Player.closestLaunchTime + 25 || rocket.health() < 200) {
 				launchRocket(gc, rocketId);
@@ -166,8 +170,9 @@ public class Rocket {
 			adjacent = unitLoc.isAdjacentTo(rocketLocation);
 
 			if (!adjacent) {
-				Factories.moveToClosestDirection(gc, unit, toRocket.getDirection(unitLoc));
+
 				if(toRocket.getDirection(unitLoc) == Direction.Center) numPossible--;
+				Factories.moveToClosestDirection(gc, unit, toRocket.getDirection(unitLoc));
 				numAdjacent--;
 			}
 		}
