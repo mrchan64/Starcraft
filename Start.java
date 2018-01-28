@@ -11,13 +11,17 @@ public class Start {
 	public static int numWorkers;
 	public static int maxWorkers;
 
-	public static final int SQUARES_PER_WORKER_DENSE = 5;
-	public static final int SQUARES_PER_WORKER_SPARSE = 10;
+	public static final int squaresPerWorkerDense = 70;
+	public static final int squaresPerWorkerSparse = 6;
 	
 	public static void initSpawn(GameController gc) {
 		
 		Unit unit;
-		
+		if(Minesweeper.isDense){
+			maxWorkers = findKarbonite.accSq / squaresPerWorkerDense;
+		}else{
+			maxWorkers = findKarbonite.accSq / squaresPerWorkerSparse;
+		}
 		VecUnit units = gc.startingMap(Player.planet).getInitial_units();
 		for(int i = 0; i < units.size(); i++) {
 			
@@ -26,13 +30,6 @@ public class Start {
 				spawn = unit.location().mapLocation();
 				findKarbonite.spawns.add(unit.location().mapLocation());
 			}
-		}
-		
-		if(Minesweeper.isDense) {
-			maxWorkers = findKarbonite.avaSq / SQUARES_PER_WORKER_DENSE;
-		}
-		else {
-			maxWorkers = findKarbonite.avaSq / SQUARES_PER_WORKER_SPARSE;
 		}
 	}
 	
@@ -47,11 +44,13 @@ public class Start {
 			
 			replicate(gc, units);
 		}
-		
-		else {
+		if(gc.karbonite() >= 200 && Player.planet == Planet.Earth){
 			if(Factories.buildFactory(gc, units)) return 1;
 		}
-		
+
+		if(Player.round - Player.lastRoundMined > 10){
+			//return 0;
+		}
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
 
@@ -106,9 +105,16 @@ public class Start {
 	}
 	
 	public static boolean notEnoughUnits(){
-		if(!Minesweeper.isDense)
-			return (numWorkers <= 3 * Player.numFactories + 8);
-		else
-			return (numWorkers <= 8 * Player.numFactories + 8);
+		if(Player.round - Player.lastRoundMined < 20 || Player.round < 70){
+			if(!Minesweeper.isDense)
+				return (numWorkers <= 3 * Player.numFactories + 11) && (numWorkers < findKarbonite.accSq/squaresPerWorkerDense);
+			else
+				return (numWorkers <= 8 * Player.numFactories + 12) && (numWorkers < findKarbonite.accSq/squaresPerWorkerSparse);
+		}else{
+			if(!Minesweeper.isDense)
+				return (numWorkers <= Player.numFactories + 6) && (numWorkers < findKarbonite.accSq/squaresPerWorkerDense);
+			else
+				return (numWorkers <= Player.numFactories + 8) && (numWorkers < findKarbonite.accSq/squaresPerWorkerSparse);
+		}
 	}
 }

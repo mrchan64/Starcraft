@@ -15,12 +15,14 @@ public class UnitBuildOrder {
 		UnitType.Healer, 
 		UnitType.Healer };
 	public static UnitType[] sparseUnitOrder = { 
+		UnitType.Knight, 
+		UnitType.Healer, 
+		UnitType.Knight, 
 		UnitType.Ranger,
 		UnitType.Healer, 
 		UnitType.Ranger, 
-		UnitType.Knight, 
 		UnitType.Mage,
-		UnitType.Healer };
+		UnitType.Healer};
 	public static UnitType[] closeUnitOrder = { 
 		UnitType.Knight,
 		UnitType.Knight, 
@@ -32,6 +34,7 @@ public class UnitBuildOrder {
 		UnitType.Ranger };
 	public static UnitType[] order;
 	public static int index = 0;
+	public static int closeIndex = 0;
 	public static ArrayList<Unit> builtRocks = new ArrayList<>();
 	public static VectorField toRocket = new VectorField();
 
@@ -39,13 +42,14 @@ public class UnitBuildOrder {
 		int factoryId = factory.id();
 		type = typeToBuild();
 
-		if (gc.round() > 100 && Start.numWorkers < 8) {
-			type = UnitType.Worker;
+		if (Start.notEnoughUnits() && Start.numWorkers < Start.maxWorkers) {
+			if(Math.random() > .6)type = UnitType.Worker;
 		}
 
 		if (gc.canProduceRobot(factoryId, type)) {
 			gc.produceRobot(factoryId, type);
-			index = (index + 1) % order.length;
+			if(!Factories.isClose)index = (index + 1) % order.length;
+			else closeIndex = (closeIndex + 1) % order.length;
 		}
 	}
 
@@ -73,8 +77,15 @@ public class UnitBuildOrder {
 	}
 
 	private static UnitType typeToBuild() {
-		order = sparseUnitOrder;
-		return order[index];
+		if(Minesweeper.isDense)order = sparseUnitOrder;
+		else order = denseUnitOrder;
+		if(Factories.isClose){
+			order = closeUnitOrder;
+			return order[closeIndex];
+		}
+		else{
+			return order[index];
+		}
 	}
 
 	/*

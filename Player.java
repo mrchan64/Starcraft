@@ -42,6 +42,7 @@ public class Player {
 
 		while (planet == Planet.Earth) {
 			round  = (int)gc.round();
+			System.out.println("Currently round "+round);
 			UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 
 			Start.factories = new ArrayList<>();
@@ -141,7 +142,6 @@ public class Player {
 			}
 
 			if (stage >= 0) {
-
 				CommandUnits.runTurn(gc);
 				Start.updateNumWorkers(availableUnits);
 
