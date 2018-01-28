@@ -24,14 +24,8 @@ public class UnitBuildOrder {
 		UnitType.Mage,
 		UnitType.Healer};
 	public static UnitType[] closeUnitOrder = { 
-		UnitType.Knight,
 		UnitType.Knight, 
-		UnitType.Knight, 
-		UnitType.Healer, 
-		UnitType.Healer,
-		UnitType.Healer, 
-		UnitType.Ranger, 
-		UnitType.Ranger };
+		UnitType.Healer};
 	public static UnitType[] order;
 	public static int index = 0;
 	public static int closeIndex = 0;

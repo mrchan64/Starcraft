@@ -14,8 +14,10 @@ public class Start {
 	public static final int squaresPerWorkerDense = 70;
 	public static final int squaresPerWorkerSparse = 6;
 	
+	public static VectorField toHome;
+	
 	public static void initSpawn(GameController gc) {
-		
+		toHome = new VectorField();
 		Unit unit;
 		if(Minesweeper.isDense){
 			maxWorkers = findKarbonite.accSq / squaresPerWorkerDense;
@@ -31,6 +33,7 @@ public class Start {
 				findKarbonite.spawns.add(unit.location().mapLocation());
 			}
 		}
+		toHome.setTargets(findKarbonite.spawns);
 	}
 	
 	public static int runTurn(GameController gc, ArrayList<Unit> units){
@@ -48,13 +51,27 @@ public class Start {
 			if(Factories.buildFactory(gc, units)) return 1;
 		}
 
-		if(Player.round - Player.lastRoundMined > 10){
-			//return 0;
-		}
-		for(int i = 0; i < size; i++) {
-			unit = units.get(i);
+		if(karbDepleted()){
+			Direction ideal;
+			MapLocation loc;
+			System.out.println("GOING HOME");
+			for(int i = 0; i < size; i++) {
+				unit = units.get(i);
 
-			goForKarbonite(gc, unit);
+				loc = unit.location().mapLocation();
+				if(toHome.getMagnitude(loc) > 100){
+					ideal = Direction.Center;
+				}else{
+					ideal = toHome.getDirection(loc);
+				}
+				Factories.moveToClosestDirection(gc, unit, ideal);
+			}
+		}else{
+			for(int i = 0; i < size; i++) {
+				unit = units.get(i);
+	
+				goForKarbonite(gc, unit);
+			}
 		}
 
 		return 0;
@@ -105,7 +122,7 @@ public class Start {
 	}
 	
 	public static boolean notEnoughUnits(){
-		if(Player.round - Player.lastRoundMined < 20 || Player.round < 70){
+		if(!karbDepleted()){
 			if(!Minesweeper.isDense)
 				return (numWorkers <= 3 * Player.numFactories + 11) && (numWorkers < findKarbonite.accSq/squaresPerWorkerDense);
 			else
@@ -116,5 +133,9 @@ public class Start {
 			else
 				return (numWorkers <= Player.numFactories + 8) && (numWorkers < findKarbonite.accSq/squaresPerWorkerSparse);
 		}
+	}
+	
+	public static boolean karbDepleted(){
+		return Player.round - Player.lastRoundMined > 30 && Player.round > 70;
 	}
 }

@@ -121,6 +121,11 @@ public class CommandUnits {
 			}
 		}
 		//TODO what to do when there are no enemies
+		if(priorityEnemies.size() == 0){
+			for(Unit mine:availableUnits){
+				Factories.moveToClosestDirection(gc, mine, Direction.Center);
+			}
+		}
 		
 		//assign units that can attack priority enemies
 		ArrayList<ArrayList<Unit>> assignedToEnemy = new ArrayList<ArrayList<Unit>>();
