@@ -18,7 +18,7 @@ public class findKarbonite {
 	public static int mWidth;
 	
 	public static AsteroidPattern marsAsters;
-	public static ArrayList<MapLocation> marsKarb;
+	public static ArrayList<MapLocation> marsKarb = new ArrayList<MapLocation>();
 
 
     public static MapLocation[][] bfsSquares;
@@ -82,12 +82,7 @@ public class findKarbonite {
 	public static void updateAsters(GameController gc, int round) {
 		
 		if(marsAsters.hasAsteroid(round)) {
-			System.out.println("1 " + marsKarb == null);
-			System.out.println("2 " + marsAsters == null);
-			System.out.println("3 " + marsAsters.asteroid(round) == null);
-			marsKarb.add(
-					marsAsters.asteroid(round)
-					.getLocation());
+			marsKarb.add(marsAsters.asteroid(round).getLocation());
 		}
 		else {
 			return;

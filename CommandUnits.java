@@ -120,7 +120,7 @@ public class CommandUnits {
 				}
 			}
 		}
-		System.out.println(priorityEnemies.size());
+		//System.out.println(priorityEnemies.size());
 		//TODO what to do when there are no enemies
 		
 		//assign units that can attack priority enemies

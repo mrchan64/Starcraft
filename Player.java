@@ -120,6 +120,11 @@ public class Player {
 
 			if (stage >= 1) {
 
+				if (!Rocket.sentFirst) {
+					System.out.println("rocket first turn");
+					Rocket.runFirstTurn(gc, availableUnits);
+				}
+
 				Factories.runTurn(gc, availableUnits);
 
 				if (round > 100 && Start.numWorkers < 8) {
@@ -131,7 +136,7 @@ public class Player {
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
 
-				if (numFactories > 3 || round > 100) {
+				if (round > 550) {
 					stage = 2;
 				}
 			}

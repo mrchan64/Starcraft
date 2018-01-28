@@ -9,6 +9,7 @@ public class Rocket {
 	public static int unitId;
 	public static MapLocation unitLoc;
 	public static Unit[] closestUnits;
+	public static boolean sentFirst = false;
 
 	public static void runTurn(GameController gc, ArrayList<Unit> units) {
 
@@ -62,22 +63,18 @@ public class Rocket {
 	
 	// ONLY CALL THIS METHOD IF Start.rockets.size() <= 1
 	public static void runFirstTurn(GameController gc, ArrayList<Unit> units) {
-		
-		if(Start.rockets.size() == 0) {
+
+		if(Start.rockets.size() == 0 && UnitBuildOrder.builtRocks.size() == 0) {
 			buildRocket(gc, units);
 			return;
 		}
-		
-		else {
-			
-			toRocket = new VectorField();
-			rocketLoc = Start.rockets.get(0).location().mapLocation();
-			toRocket.setTarget(rocketLoc);
-			
-			for(Unit unit : units) {
-				Factories.moveToClosestDirection(gc, unit, toRocket.getDirection(unit.location().mapLocation()));
-			}
+
+		if (UnitBuildOrder.builtRocks.size() > 0) {
+			loadUnits(gc, UnitBuildOrder.builtRocks.get(0), units);
+			return;
 		}
+		
+		runTurn(gc, units);
 	}
 	
 	public static void loadUnits(GameController gc, Unit rocket, ArrayList<Unit> units) {
@@ -107,7 +104,6 @@ public class Rocket {
 				numAdjacent--;
 			}
 		}
-		
 		if(numAdjacent >= units.size() - 1) {
 			for(int i = 0; i < rocketUnits.length; i++) {
 				
@@ -117,10 +113,13 @@ public class Rocket {
 					numLoaded++;
 				}
 			}
-			if(numLoaded >= numAdjacent) {
-				launchRocket(gc, rocketId);
-				Player.workersOnMars = true;
-			}
+		}
+
+		VecUnitID sizeInRocket = rocket.structureGarrison();
+		if(sizeInRocket.size() > 7 || units.size() == 0) {
+			sentFirst = true;
+			launchRocket(gc, rocketId);
+			Player.workersOnMars = true;
 		}
 	}
 	
