@@ -1,5 +1,6 @@
 import bc.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Factories {
 
@@ -266,8 +267,10 @@ public class Factories {
 	
 	public static boolean buildFactory(GameController gc, ArrayList<Unit> units) {
 		
+		Random generator = new Random();
 		Unit unit;
 		int unitId;
+		int size = units.size();
 		Unit idealUnit = units.get(0);
 		int idealUnitId = idealUnit.id();
 		MapLocation attempt;
@@ -276,11 +279,12 @@ public class Factories {
 		Direction[] allDirs = Direction.values();
 		int bestOption = 0;
 		int numOccupiable = 0;
+		int startPoint = generator.nextInt(size);
 		
 		int x, y;
 		
-		for(int i = 0; i < units.size(); i++) {
-			unit = units.get(i);
+		for(int i = 0; i < size; i++) {
+			unit = units.get((i + startPoint) % size);
 			unitId = unit.id();
 
 			for(Direction dir : allDirs) {
