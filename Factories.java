@@ -60,9 +60,6 @@ public class Factories {
 		for (int i = 0; i < units.length; i++) {
 
 			unit = units[i];
-			if (unit == null)
-				continue;
-
 			unitId = unit.id();
 			currLoc = unit.location().mapLocation();
 
@@ -91,7 +88,10 @@ public class Factories {
 		ArrayList<MapLocation> possibleLocs;
 		try{
 			possibleLocs = adjacent(gc, gc.unit(structureId).location().mapLocation());
-		}catch(Exception e){possibleLocs = new ArrayList<MapLocation>();}
+		}
+		catch(Exception e){
+			possibleLocs = new ArrayList<MapLocation>();
+		}
 		ArrayList<Direction> possibleDirs = new ArrayList<>();
 
 		MapLocation unitLoc = unit.location().mapLocation();

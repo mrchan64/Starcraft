@@ -24,7 +24,6 @@ public class Rocket {
 			toRocket.setTarget(rocketLoc);
 			
 			closestUnits = Factories.getClosest(gc, Player.availableUnits, rocket, toRocket);
-
 			Factories.sendUnits(gc, closestUnits, rocket, toRocket);
 
 			for (int i = 0; i < closestUnits.length; i++) {
@@ -38,6 +37,11 @@ public class Rocket {
 					}
 				}
 			}
+		}
+		
+		for(Unit builtRocket : UnitBuildOrder.builtRocks) {
+			//sEND COMBAT UNITS TO THESE ROCKETS
+			// also make sure that builtRocks is actually correct
 		}
 
 		for (int i = 0; i < Player.availableUnits.size(); i++) {
@@ -56,21 +60,39 @@ public class Rocket {
 		}
 	}
 	
+	// ONLY CALL THIS METHOD IF Start.rockets.size() <= 1
+	public static void runFirstTurn(GameController gc, ArrayList<Unit> units) {
+		
+		if(Start.rockets.size() == 0) {
+			buildRocket(gc, units);
+			return;
+		}
+		
+		else {
+			
+			toRocket = new VectorField();
+			rocketLoc = Start.rockets.get(0).location().mapLocation();
+			toRocket.setTarget(rocketLoc);
+			
+			for(Unit unit : units) {
+				Factories.moveToClosestDirection(gc, unit, toRocket.getDirection(unit.location().mapLocation()));
+			}
+		}
+	}
+	
 	public static void loadUnits(GameController gc, Unit rocket, ArrayList<Unit> units) {
 		
 		int rocketId = rocket.id();
 		MapLocation rocketLoc = rocket.location().mapLocation();
 		toRocket.setTarget(rocketLoc);
 		Unit[] rocketUnits = getClosest(gc, units, toRocket);
-		MapLocation destination;
 		Unit unit;
 		int unitId;
 		MapLocation unitLoc;
 		MapLocation rocketLocation = rocket.location().mapLocation();
-		int x = 0, y = 0;
-		boolean locFound = false;
 		boolean adjacent = false;
-		boolean loadable = false;
+		int numAdjacent = units.size();
+		int numLoaded = 0;
 
 		for (int i = 0; i < rocketUnits.length; i++) {
 			
@@ -79,36 +101,49 @@ public class Rocket {
 			unitLoc = unit.location().mapLocation();
 			Player.availableUnits.remove(unit);
 			adjacent = unitLoc.isAdjacentTo(rocketLocation);
-			loadable = gc.canLoad(rocketId, unitId);
 			
 			if (!adjacent) {
 				Factories.moveToClosestDirection(gc, unit, toRocket.getDirection(unitLoc));
+				numAdjacent--;
 			}
-			
-			else if(loadable) {
-				gc.load(rocketId, unitId);
+		}
+		
+		if(numAdjacent >= units.size() - 1) {
+			for(int i = 0; i < rocketUnits.length; i++) {
+				
+				unitId = rocketUnits[i].id();
+				if(gc.canLoad(rocketId, unitId)) {
+					gc.load(rocketId, unitId);
+					numLoaded++;
+				}
 			}
-			
-			else{
-				int startX = (int) Math.floor(Math.random() *findKarbonite.mWidth/2);
-				int startY = (int) Math.floor(Math.random() *findKarbonite.mWidth/2);
-				for (int ii = startX; ii < findKarbonite.mWidth; ii++) {
-					if (locFound) break;
-					for (int j = startY; j < findKarbonite.mHeight; j++) {
-						if (Minesweeper.mineMap[ii][j] == Minesweeper.highest) {
-							x = ii;
-							y = j;
+			if(numLoaded >= numAdjacent) {
+				launchRocket(gc, rocketId);
+				Player.workersOnMars = true;
+			}
+		}
+	}
+	
+	public static void launchRocket(GameController gc, int rocketId) {
+		
+		int startX = (int) Math.floor(Math.random() *findKarbonite.mWidth/2);
+		int startY = (int) Math.floor(Math.random() *findKarbonite.mWidth/2);
+		MapLocation destination;
+		int x, y;
+		
+		for (int ii = startX; ii < findKarbonite.mWidth; ii++) {
+			for (int j = startY; j < findKarbonite.mHeight; j++) {
+				if (Minesweeper.mineMap[ii][j] == Minesweeper.highest) {
+					x = ii;
+					y = j;
 
-							Minesweeper.mineMap[ii][j] = 0;
-							destination = new MapLocation(Planet.Mars, x, y);
-							if (gc.canLaunchRocket(rocketId, destination)) {
-								gc.launchRocket(rocketId, destination);
-								UnitBuildOrder.builtRocks.remove(rocket);
-								locFound = true;
-								Minesweeper.updateMap(x, y);
-								break;
-							}
-						}
+					Minesweeper.mineMap[ii][j] = 0;
+					destination = new MapLocation(Planet.Mars, x, y);
+					if (gc.canLaunchRocket(rocketId, destination)) {
+						gc.launchRocket(rocketId, destination);
+						UnitBuildOrder.builtRocks.remove(gc.unit(rocketId));
+						Minesweeper.updateMap(x, y);
+						return;
 					}
 				}
 			}

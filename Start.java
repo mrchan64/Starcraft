@@ -31,6 +31,13 @@ public class Start {
 				findKarbonite.spawns.add(unit.location().mapLocation());
 			}
 		}
+		
+		if(Minesweeper.isDense) {
+			maxWorkers = findKarbonite.avaSq / SQUARES_PER_WORKER_DENSE;
+		}
+		else {
+			maxWorkers = findKarbonite.avaSq / SQUARES_PER_WORKER_SPARSE;
+		}
 	}
 	
 	public static int runTurn(GameController gc, ArrayList<Unit> units){
@@ -41,12 +48,13 @@ public class Start {
 		updateNumWorkers(units);
 		
 		if(notEnoughUnits()) {
+			
 			replicate(gc, units);
 		}
 		if(gc.karbonite() >= 200 && Player.planet == Planet.Earth){
 			if(Factories.buildFactory(gc, units)) return 1;
 		}
-		
+
 		if(Player.round - Player.lastRoundMined > 10){
 			return 0;
 		}
