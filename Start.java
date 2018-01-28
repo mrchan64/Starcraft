@@ -72,11 +72,11 @@ public class Start {
 			for(int i = 0; i < size; i++) {
 				unit = units.get(i);
 				loc = unit.location().mapLocation();
-				if(toHome.getMagnitude(loc) > 100){
+				//if(toHome.getMagnitude(loc) > 100){
 					ideal = Direction.Center;
-				}else{
+				/*}else{
 					ideal = toHome.getDirection(loc);
-				}
+				}*/
 				Factories.moveToClosestDirection(gc, unit, ideal);
 			}
 		}else{

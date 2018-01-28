@@ -442,7 +442,7 @@ public class Factories {
 			return;
 		}
 		
-		for(int i = 0; i < size; i++) {
+		for(int i = 0; i < closestUnits.length; i++) {
 			unit = closestUnits[i];
 			unitId = unit.id();
 

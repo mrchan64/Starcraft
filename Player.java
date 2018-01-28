@@ -120,7 +120,6 @@ public class Player {
 					if(!workersOnMars) {
 						if(Rocket.fighterLoaded) Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
 						else Rocket.loadClosestFighter(gc, UnitBuildOrder.builtRocks.get(i));
-						workersOnMars = true;
 					}
 
 					else {
@@ -141,6 +140,9 @@ public class Player {
 
 				if ((round - lastRoundMined <= 15 || round < 150 || Rocket.sentFirst || Start.numWorkers <= 2) && ((double) units.size() < (double) (findKarbonite.accSq * 0.7)) && stage < 2) {
 
+					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
+				}
+				if (stage == 2 && CommandUnits.combatUnitSize / (UnitBuildOrder.builtRocks.size()+1)<8 ){
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
 
