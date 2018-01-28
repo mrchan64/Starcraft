@@ -185,6 +185,15 @@ public class findKarbonite {
        // printNumSquares();
     }  
 
+    public static void findAccSq2(PlanetMap map, MapLocation startingLoc) {
+    	working.add(startingLoc);
+        bfsSquares = new MapLocation[VectorField.width][VectorField.height];
+        checked = new boolean[VectorField.width][VectorField.height];
+        while(step(map)) {
+
+        }
+    }
+
 
     private static void addNeighbors(MapLocation loc, PlanetMap map){
         int startX = loc.getX();

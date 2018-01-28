@@ -28,6 +28,9 @@ public class Player {
 	public static boolean trigger = false;
 	public static boolean workersOnMars = false;
 
+	public static boolean accSquare = true;
+	public static MapLocation startingLoc;
+
 	public static void main(String[] args) {
 
 		gc = new GameController();
@@ -143,9 +146,22 @@ public class Player {
 				}
 
 
-				if ((round<150 || Rocket.sentFirst) && stage < 2) {
+				if ((round<150 || Rocket.sentFirst) && ((double) units.size() < (double) (findKarbonite.accSq * 0.8)) && stage < 2) {
 
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
+				}
+
+				if (accSquare && round > 150) {
+
+					for (int i = 0; i < units.size(); i++) {
+						if (!units.get(i).location().isInGarrison() || !units.get(i).location().isInSpace()) {
+							startingLoc = units.get(0).location().mapLocation();
+							break;
+						}	
+					}
+
+					findKarbonite.findAccSq2(gc.startingMap(Planet.Earth), startingLoc);
+					accSquare = false;
 				}
 			}
 
