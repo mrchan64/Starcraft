@@ -380,7 +380,7 @@ public class CommandUnits {
 		for (int i = 0; i < 4; i++) {
 
 			actual = Start.directions[(index + i) % 8];
-			if(!loc.add(actual).isAdjacentTo(target))return;
+			if(i!=0 && !loc.add(actual).isAdjacentTo(target))return;
 			if (gc.canMove(unitId, actual) && gc.isMoveReady(unitId)) {
 				gc.moveRobot(unitId, actual);
 				break;

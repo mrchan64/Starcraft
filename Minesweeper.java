@@ -8,31 +8,25 @@ public class Minesweeper {
 	public static int bestX;
 	public static int bestY;
 	public static int highest = 0;
-	public static int[] spaces = new int[9];
+	public static int openSpaces = 0;
+	public static int notOpenSpaces = 0;
 
 
 	public static void calcOpen() {
 		for (int i = 0; i < VectorField.width; i++) {
 			for (int j = 0; j < VectorField.height; j++) {
 				switch (mineMap[i][j]) {
-					case 0: spaces[0] = spaces[0]++;
-							break;
-					case 1: spaces[1] = spaces[1]++;
-							break;
-					case 2: spaces[2] = spaces[2]++;
-							break;
-					case 3: spaces[3] = spaces[3]++;
-							break;
-					case 4: spaces[4] = spaces[4]++;
-							break;
-					case 5: spaces[5] = spaces[5]++;
-							break;
-					case 6: spaces[6] = spaces[6]++;
-							break;
-					case 7: spaces[7] = spaces[7]++;
-							break;
-					case 8: spaces[8] = spaces[8]++;
-							break;
+					case 1:
+					case 2:
+					case 3:
+					case 4:
+						notOpenSpaces++;
+						break;
+					case 5:
+					case 6:
+					case 7:
+					case 8:
+						openSpaces++;
 					default: break;
 				}
 			}
@@ -41,10 +35,8 @@ public class Minesweeper {
 
 	public static void determineOpen() {
 		calcOpen();
-		if (spaces[8] + spaces[7] +spaces[6]+ spaces[5]+spaces[4] > spaces[3] + spaces[2] + spaces[1]+ spaces[0]) {
-			isDense = true;
-		}
-		isDense = false;
+		System.out.println("op "+openSpaces+" notop "+notOpenSpaces);
+		isDense = openSpaces>notOpenSpaces;
 	}
 
 	public static void mineSweep(MapLocation loc, PlanetMap map) {

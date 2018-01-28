@@ -80,6 +80,7 @@ public class findKarbonite {
 				}
 			}
 		}
+		Minesweeper.denseMap();
        /* for (int i = 0; i < mWidth; i++) {
             for (int j = 0; j < mHeight; j++) {
                 System.out.print(Minesweeper.mineMap[i][j]);
