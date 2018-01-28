@@ -140,7 +140,8 @@ public class Rocket {
 		for(int i = 0; i < max; i++) {
 			rocketUnits[i] = oldRocketUnits[i];
 		}
-		System.out.println("numworkers going to rocket: " + max);
+		
+		int numPossible = max;
 
 		for (int i = 0; i < rocketUnits.length; i++) {
 
@@ -152,6 +153,7 @@ public class Rocket {
 
 			if (!adjacent) {
 				Factories.moveToClosestDirection(gc, unit, toRocket.getDirection(unitLoc));
+				if(toRocket.getDirection(unitLoc) == Direction.Center) numPossible--;
 				numAdjacent--;
 			}
 		}
@@ -167,7 +169,7 @@ public class Rocket {
 		}
 
 		sizeInRocket = rocket.structureGarrison();
-		if(sizeInRocket.size() > max) {
+		if(sizeInRocket.size() > max || numPossible == 0) {
 			sentFirst = true;
 			launchRocket(gc, rocketId);
 			Player.workersOnMars = true;
@@ -175,8 +177,6 @@ public class Rocket {
 	}
 	
 	public static void loadClosestFighter(GameController gc, Unit rocket) {
-		
-		System.out.println("called loadclosestfighter");
 		
 		Unit closestFighter = null;
 		Unit currFighter;
@@ -201,7 +201,10 @@ public class Rocket {
 			}
 		}
 		
-		if(closestFighter == null) return;
+		if(closestFighter == null) {
+			fighterLoaded = true;
+			return;
+		}
 
 		fighterId = closestFighter.id();
 		fighterLoc = closestFighter.location();
@@ -212,7 +215,6 @@ public class Rocket {
 		if(gc.canLoad(rocketId, fighterId)) {
 			gc.load(rocketId, fighterId);
 			fighterLoaded = true;
-			System.out.println("!!!FIGHTER LOADED!!!");
 		}
 	}
 
