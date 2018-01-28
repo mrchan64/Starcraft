@@ -115,7 +115,7 @@ public class findKarbonite {
         while(step(map)) {
 
         }
-       // printNumSquares();
+        printNumSquares();
     }  
 
 

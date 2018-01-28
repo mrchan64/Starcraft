@@ -4,7 +4,6 @@ public class Minesweeper {
 	public static int[][] mineMap;
 	public static int density;
 	public static boolean isDense;
-	public static int[][] densityMap;
 	public static int bestX;
 	public static int bestY;
 	public static int highest = 0;
@@ -54,24 +53,24 @@ public class Minesweeper {
 
 	public static void updateMap(int x, int y) {
 		if (y - 1 >= 0) {
-			mineMap[x][y-1] -= 1;
+			mineMap[x][y-1] = 0;
 			if (x-1 >=0) {
-				mineMap[x-1][y-1] -= 1;
-				mineMap[x-1][y] -= 1;
+				mineMap[x-1][y-1] = 0;
+				mineMap[x-1][y] = 0;
 			}
 			if (x+1 < findKarbonite.mWidth) {
-				mineMap[x+1][y-1] -= 1;
-				mineMap[x+1][y] -= 1;
+				mineMap[x+1][y-1] = 0;
+				mineMap[x+1][y] = 0;
 			}
 		}
 
 		if (y+1 < findKarbonite.mHeight) {
-			mineMap[x][y+1] -= 1;
+			mineMap[x][y+1] = 0;
 			if (x-1 >=0) {
-				mineMap[x-1][y+1] -= 1;
+				mineMap[x-1][y+1] = 0;
 			}
 			if (x+1 < findKarbonite.mWidth) {
-				mineMap[x+1][y+1] -= 1;
+				mineMap[x+1][y+1] = 0;
 			}
 		}
 		highest = 0;
@@ -109,7 +108,7 @@ public class Minesweeper {
 		densityMap[startX][startY] = num;
 	}*/
 
-	public static void bestSquare() {
+	/*public static void bestSquare() {
 		int max = 0;
 		for (int x = 0; x < findKarbonite.mWidth; x++) {
 			for (int y = 0; y < findKarbonite.mHeight; y++) {
@@ -121,5 +120,7 @@ public class Minesweeper {
 			}
 		}
 		densityMap[bestX][bestY] = 0;
-	}
+	}*/
+
+
 }
