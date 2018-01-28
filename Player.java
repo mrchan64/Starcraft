@@ -25,6 +25,9 @@ public class Player {
 	public static int lastRoundMined = 0;
 	public static int round;
 	public static int spawnsDone = 0;
+	public static int closestLaunchTime = 100000;
+	public static int currLaunchTime;
+	public static int startMax;
 	
 	public static boolean workersOnMars = false;
 
@@ -51,6 +54,9 @@ public class Player {
 			//try{
 			round  = (int)gc.round();
 			System.out.println("Currently Round "+round);
+			
+			currLaunchTime = (int)gc.orbitPattern().duration(round);
+			if(currLaunchTime < closestLaunchTime) closestLaunchTime = currLaunchTime;
 
 			Start.factories = new ArrayList<>();
 			UnitBuildOrder.builtFacts = new ArrayList<>();
@@ -169,11 +175,14 @@ public class Player {
 					Factories.runTurn(gc, availableUnits);
 					Start.updateNumWorkers(availableUnits);
 					
-					for(int i = 0; i < findKarbonite.spawns.size(); i++) {
-						
+					startMax = findKarbonite.spawns.size();
+					if(findKarbonite.accSq < 400) startMax = 1;
+					
+					for(int i = 0; i < startMax; i++) {
+
 						Start.runTurn(gc, availableUnits);
 	
-						if(Start.spawnsDone == findKarbonite.spawns.size()) {
+						if(Start.spawnsDone == startMax) {
 							stage = stage > 1 ? stage : 1;
 						}
 					}

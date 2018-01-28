@@ -82,16 +82,20 @@ public class Rocket {
 	}
 
 	public static void loadCombatUnits(GameController gc, Unit rocket, ArrayList<Unit> units) {
+		
 		int rocketId = rocket.id();
 		MapLocation rocketLoc = rocket.location().mapLocation();
 		toRocket.setTarget(rocketLoc);
 		Unit[] rocketUnits = getClosest(gc, units, toRocket);
+		int max = rocketUnits.length;
+		int numPossible = 0;
 		Unit unit;
 		int unitId;
 		MapLocation unitLoc;
 		MapLocation rocketLocation = rocket.location().mapLocation();
 		boolean adjacent = false;
 		int numAdjacent = units.size();
+		VecUnitID sizeInRocket = rocket.structureGarrison();
 
 		for (int i = 0; i < rocketUnits.length; i++) {
 			
@@ -103,6 +107,7 @@ public class Rocket {
 			
 			if (!adjacent) {
 				Factories.moveToClosestDirection(gc, unit, toRocket.getDirection(unitLoc));
+				if(toRocket.getDirection(unitLoc) == Direction.Center) numPossible--;
 				numAdjacent--;
 			}
 		}
@@ -116,10 +121,12 @@ public class Rocket {
 			}
 		}
 
-		VecUnitID sizeInRocket = rocket.structureGarrison();
-		if(sizeInRocket.size() > 7 || units.size() == 0) {
-			sentFirst = true;
-			launchRocket(gc, rocketId);
+		sizeInRocket = rocket.structureGarrison();
+		if(sizeInRocket.size() == max || units.size() == 0 || numPossible == 0) {
+			if(gc.orbitPattern().duration(Player.round) <= Player.closestLaunchTime + 25 || rocket.health() < 200) {
+				launchRocket(gc, rocketId);
+				sentFirst = true;
+			}
 		}
 	}
 	
@@ -177,9 +184,11 @@ public class Rocket {
 
 		sizeInRocket = rocket.structureGarrison();
 		if(sizeInRocket.size() > max || numPossible == 0) {
-			sentFirst = true;
-			launchRocket(gc, rocketId);
-			Player.workersOnMars = true;
+			if(gc.orbitPattern().duration(Player.round) <= Player.closestLaunchTime + 25 || rocket.health() < 200) {
+				launchRocket(gc, rocketId);
+				sentFirst = true;
+				Player.workersOnMars = true;
+			}
 		}
 	}
 	
@@ -193,7 +202,7 @@ public class Rocket {
 		int rocketId = rocket.id();
 		
 		int magnitude;
-		int closestMagnitude = 1000;
+		int closestMagnitude = 100000;
 		
 		toRocket.setTarget(rocketLocation.mapLocation());
 		
