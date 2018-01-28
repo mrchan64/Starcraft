@@ -10,6 +10,7 @@ public class Rocket {
 	public static MapLocation unitLoc;
 	public static Unit[] closestUnits;
 	public static boolean sentFirst = false;
+	public static boolean fighterLoaded = false;
 
 	public static void runTurn(GameController gc, ArrayList<Unit> units) {
 
@@ -64,7 +65,9 @@ public class Rocket {
 		}
 
 		if (UnitBuildOrder.builtRocks.size() > 0) {
-			loadUnits(gc, UnitBuildOrder.builtRocks.get(0), units);
+			if(fighterLoaded) loadUnits(gc, UnitBuildOrder.builtRocks.get(0), units);
+			else loadClosestFighter(gc,UnitBuildOrder.builtRocks.get(0));
+
 			return;
 		}
 		
@@ -107,61 +110,112 @@ public class Rocket {
 		}
 
 		VecUnitID sizeInRocket = rocket.structureGarrison();
-		System.out.println("num units: " + units.size());
-		System.out.println("num in rocket " + sizeInRocket.size());
 		if(sizeInRocket.size() > 7 || units.size() == 0) {
-			System.out.println("launch rockets");
 			sentFirst = true;
 			launchRocket(gc, rocketId);
 		}
 	}
 	
 	public static void loadUnits(GameController gc, Unit rocket, ArrayList<Unit> units) {
-		
+
 		int rocketId = rocket.id();
 		MapLocation rocketLoc = rocket.location().mapLocation();
 		toRocket.setTarget(rocketLoc);
-		Unit[] rocketUnits = getClosest(gc, units, toRocket);
+		Unit[] oldRocketUnits = getClosest(gc, units, toRocket);
 		Unit unit;
 		int unitId;
 		MapLocation unitLoc;
 		MapLocation rocketLocation = rocket.location().mapLocation();
 		boolean adjacent = false;
 		int numAdjacent = units.size();
-		int numLoaded = 0;
+		VecUnitID sizeInRocket = rocket.structureGarrison();
+		
+		int max; 
+		
+		if(oldRocketUnits.length == 8) max = 7;
+		else max = oldRocketUnits.length;
+		
+		Unit[] rocketUnits = new Unit[max];
+		
+		for(int i = 0; i < max; i++) {
+			rocketUnits[i] = oldRocketUnits[i];
+		}
+		System.out.println("numworkers going to rocket: " + max);
 
 		for (int i = 0; i < rocketUnits.length; i++) {
-			
+
 			unit = rocketUnits[i];
 			unitId = rocketUnits[i].id();
 			unitLoc = unit.location().mapLocation();
 			Player.availableUnits.remove(unit);
 			adjacent = unitLoc.isAdjacentTo(rocketLocation);
-			
+
 			if (!adjacent) {
 				Factories.moveToClosestDirection(gc, unit, toRocket.getDirection(unitLoc));
 				numAdjacent--;
 			}
 		}
+	
 		if(numAdjacent >= units.size() - 1) {
 			for(int i = 0; i < rocketUnits.length; i++) {
 				
 				unitId = rocketUnits[i].id();
 				if(gc.canLoad(rocketId, unitId)) {
 					gc.load(rocketId, unitId);
-					numLoaded++;
 				}
 			}
 		}
 
-		VecUnitID sizeInRocket = rocket.structureGarrison();
-		if(sizeInRocket.size() > 7 || units.size() == 0) {
+		sizeInRocket = rocket.structureGarrison();
+		if(sizeInRocket.size() > max) {
 			sentFirst = true;
 			launchRocket(gc, rocketId);
 			Player.workersOnMars = true;
 		}
 	}
 	
+	public static void loadClosestFighter(GameController gc, Unit rocket) {
+		
+		System.out.println("called loadclosestfighter");
+		
+		Unit closestFighter = null;
+		Unit currFighter;
+		int fighterId = 0;
+		Location fighterLoc = null;
+		Location rocketLocation = rocket.location();
+		int rocketId = rocket.id();
+		
+		int magnitude;
+		int closestMagnitude = 1000;
+		
+		toRocket.setTarget(rocketLocation.mapLocation());
+		
+		for(Unit combatUnit : Player.availableCombatUnits) {
+			
+			if(combatUnit.unitType() == UnitType.Healer) continue;
+			currFighter = combatUnit;
+			magnitude = toRocket.getMagnitude(currFighter.location().mapLocation());
+			if(magnitude < closestMagnitude) {
+				closestMagnitude = magnitude;
+				closestFighter = combatUnit;
+			}
+		}
+		
+		if(closestFighter == null) return;
+
+		fighterId = closestFighter.id();
+		fighterLoc = closestFighter.location();
+
+		if(!fighterLoc.isAdjacentTo(rocketLocation))
+			Factories.moveToClosestDirection(gc, closestFighter, toRocket.getDirection(fighterLoc.mapLocation()));
+	
+		if(gc.canLoad(rocketId, fighterId)) {
+			gc.load(rocketId, fighterId);
+			fighterLoaded = true;
+			System.out.println("!!!FIGHTER LOADED!!!");
+		}
+	}
+
 	public static void launchRocket(GameController gc, int rocketId) {
 		
 		int startX = (int) Math.floor(Math.random() *findKarbonite.mWidth/2);

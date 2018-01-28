@@ -173,7 +173,12 @@ public class Factories {
 		int numInRange;
 		
 		for(Direction dir : Start.directions) {
-			if(gc.isOccupiable(structureLoc.add(dir)) == 1) numAdjacent++;
+			try {
+				if(gc.isOccupiable(structureLoc.add(dir)) == 1) numAdjacent++;
+			}
+			catch (Exception E) {
+				//do nothing
+			}
 		}
 		
 		if(numAdjacent == 0) {
@@ -328,7 +333,7 @@ public class Factories {
 						}
 					}
 					
-					if(numOccupiable >= 7) {
+					if(numOccupiable > 7) {
 						gc.blueprint(unitId, UnitType.Factory, dir);
 						Player.trigger = true;
 						return true;
