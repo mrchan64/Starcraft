@@ -282,12 +282,15 @@ public class findKarbonite {
         return true;
     }
 
-    private static boolean distanceFromEnemy(MapLocation ourSpawn, MapLocation enemySpawn) {
-    	distFronEnemy.setTarget(enemySpawn);
-    	int distance = distFronEnemy.getMagnitude(ourSpawn);
-
-    	if (distance < 35) {
-    		return true;
+    public static boolean distanceFromEnemy() {
+    	VectorField vf;
+		for(MapLocation eloc : CommandUnits.espawn){
+			vf = new VectorField();
+			vf.setTarget(eloc);
+			for(MapLocation loc : spawns){
+				System.out.println(vf.getDirection(loc));
+    			if(vf.getDirection(loc)!=Direction.Center)return true;
+    		}
     	}
     	return false;
     }

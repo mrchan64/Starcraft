@@ -37,6 +37,7 @@ public class Player {
 		planet = gc.planet();
 		team = gc.team();
 		
+		CommandUnits.setEspawn(gc);
 		VectorField.initWalls(gc);
 		Start.initSpawn(gc);
 		findKarbonite.initKarb(gc);
@@ -48,9 +49,9 @@ public class Player {
 		else Upgrades.upgradeUnitsSmall(gc);
 		
 		while (planet == Planet.Earth) {
-			try{
+			//try{
 			round  = (int)gc.round();
-			//System.out.println("Currently Round "+round);
+			System.out.println("Currently Round "+round);
 
 			Start.factories = new ArrayList<>();
 			UnitBuildOrder.builtFacts = new ArrayList<>();
@@ -137,6 +138,10 @@ public class Player {
 				if (!Rocket.sentFirst && (round >= 150)) {
 					Rocket.runFirstTurn(gc, availableUnits);
 				}
+				
+				if(Rocket.sentFirst && (units.size()<numFactories * 3)){
+					stage = 2;
+				}
 
 				if ((round - lastRoundMined <= 15 || round < 150 || Rocket.sentFirst || Start.numWorkers <= 2) && ((double) units.size() < (double) (findKarbonite.accSq * 0.7)) && stage < 2) {
 
@@ -200,12 +205,12 @@ public class Player {
 			if(round%25==0){
 				System.gc();
 			}
-			}catch(Exception e){}
+			//}catch(Exception e){}
 			gc.nextTurn();
 		}
 
 		while(planet == Planet.Mars) {
-			try{
+			//try{
 			round = (int)gc.round();
 			
 			ArrayList<Unit> marsUnits = new ArrayList<>();
@@ -235,7 +240,7 @@ public class Player {
 			CommandUnits.runTurn(gc);
 			Start.runTurn(gc, marsUnits);
 			if(round%25==0)System.gc();
-			}catch(Exception e){}
+			//}catch(Exception e){}
 			gc.nextTurn();
 			//System.out.println("Currently Round " + round);
 		}
