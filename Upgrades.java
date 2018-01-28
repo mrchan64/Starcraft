@@ -55,4 +55,25 @@ public class Upgrades {
 		gc.queueResearch(UnitType.Knight);
 	}
 
+	//Remember to implement
+	public static void upgradeKnights(GameController gc) {
+		gc.queueResearch(UnitType.Worker);
+		gc.queueResearch(UnitType.Knight);
+		gc.queueResearch(UnitType.Rocket);
+		gc.queueResearch(UnitType.Healer);
+		gc.queueResearch(UnitType.Healer);
+		gc.queueResearch(UnitType.Ranger);
+		gc.queueResearch(UnitType.Ranger);
+		gc.queueResearch(UnitType.Ranger);
+		gc.queueResearch(UnitType.Rocket);
+		gc.queueResearch(UnitType.Rocket);
+		gc.queueResearch(UnitType.Mage);
+		gc.queueResearch(UnitType.Mage);
+		gc.queueResearch(UnitType.Mage);
+		gc.queueResearch(UnitType.Mage);
+		gc.queueResearch(UnitType.Knight);
+		gc.queueResearch(UnitType.Knight);
+	}
+
+
 }
