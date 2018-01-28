@@ -22,7 +22,7 @@ public class Factories {
 			factory = fac.location().mapLocation();
 			toFactory.setTarget(factory);
 
-			closestUnits = Factories.getClosest(gc, Player.availableUnits, fac, toFactory);
+			closestUnits = Factories.getClosest(gc, Player.availableUnits, factory, toFactory, true);
 			sendUnits(gc, closestUnits, fac, toFactory);
 			
 			for (int i = 0; i < closestUnits.length; i++) {
@@ -149,7 +149,7 @@ public class Factories {
 		return adjacentLocs;
 	}
 
-	public static Unit[] getClosest(GameController gc, ArrayList<Unit> units, Unit structure, VectorField toFactory) {
+	public static Unit[] getClosest(GameController gc, ArrayList<Unit> units, MapLocation structureLoc, VectorField toFactory, boolean forFactory) {
 		
 		if(units.size() == 0) {
 			return new Unit[0];
@@ -163,14 +163,12 @@ public class Factories {
 		int last = 0;
 		int place = 0;
 		int unitsReady = units.size();
-		int health = (int)structure.health();
 		
-		MapLocation structureLoc = structure.location().mapLocation();
-		
-		int numOpenSpaces = getOpenSpaces(gc, structure.location().mapLocation());
+		int numOpenSpaces = getOpenSpaces(gc, structureLoc);
 		
 		int numAdjacent = 0;
 		int numInRange;
+		int rangeToCheck;
 		
 		for(Direction dir : Start.directions) {
 			try {
@@ -181,16 +179,27 @@ public class Factories {
 			}
 		}
 		
-		if(numAdjacent == 0) {
+		if(!forFactory) {
 			numInRange = 8;
 		}
+		
 		else {
-			int rangeToCheck = (int)(((300 - health) / numAdjacent / 5) * ((300 - health) / numAdjacent / 5));
-			numInRange = (int)(gc.senseNearbyUnitsByTeam(structureLoc, rangeToCheck, Player.team).size());
+			if(numAdjacent == 0) {
+				numInRange = 8;
+			}
+	
+			else {
+				Unit structure = gc.senseUnitAtLocation(structureLoc);
+				int health = (int)structure.health();
+				rangeToCheck = (int)(((300 - health) / numAdjacent / 5) * ((300 - health) / numAdjacent / 5));
+				numInRange = (int)(gc.senseNearbyUnitsByTeam(structureLoc, rangeToCheck, Player.team).size());
+			}
 		}
-
-		if (numOpenSpaces > unitsReady) numOpenSpaces = unitsReady;
+		
 		if (numOpenSpaces > numInRange) numOpenSpaces = numInRange;
+		if (numOpenSpaces > unitsReady) numOpenSpaces = unitsReady;
+		
+		if(numOpenSpaces == 0) return new Unit[0];
 		
 		Unit[] closestUnits = new Unit[numOpenSpaces];
 		int[] magnitudes = new int[numOpenSpaces];
@@ -289,7 +298,82 @@ public class Factories {
 		}
 	}
 	
-	public static boolean buildFactory(GameController gc, ArrayList<Unit> units) {
+	public static void buildSpawnFactory(GameController gc, ArrayList<Unit> units, MapLocation spawn) {
+		
+		Unit unit;
+		int unitId;
+		int size = units.size();
+		Unit idealUnit = units.get(0);
+		int idealUnitId = idealUnit.id();
+		MapLocation attempt;
+		MapLocation attemptAround;
+		Direction idealDir = Direction.North;
+		Direction[] allDirs = Direction.values();
+		int bestOption = 0;
+		int numOccupiable = 0;
+		VectorField toSpawn = new VectorField();
+		toSpawn.setTarget(spawn);
+		Unit[] closestUnits = getClosest(gc, units, spawn, toSpawn, false);
+		
+		if(closestUnits.length == 0) {
+			Start.spawnsDone++;
+			return;
+		}
+		
+		int x, y;
+		
+		for(int i = 0; i < closestUnits.length; i++) {
+			unit = closestUnits[i];
+			unitId = unit.id();
+
+			for(Direction dir : allDirs) {
+				if(dir == Direction.Center) continue;
+				if(gc.canBlueprint(unitId, UnitType.Factory, dir)) {
+					
+					attempt = unit.location().mapLocation().add(dir);
+					for(Direction dir1 : allDirs) {
+						try {
+							if(dir1 == Direction.Center) continue;
+							
+							attemptAround = attempt.add(dir1);
+							x = attemptAround.getX();
+							y = attemptAround.getY();
+							
+							if(VectorField.terrain[x][y] == 1) {
+								numOccupiable++;
+							}
+						}
+						catch(Exception E) {
+							// do nothing
+						}
+					}
+					
+					if(numOccupiable > 7) {
+						gc.blueprint(unitId, UnitType.Factory, dir);
+						Start.spawnsDone++;
+
+						return;
+					}
+					
+					else if (numOccupiable > bestOption) {
+						idealDir = dir;
+						bestOption = numOccupiable;
+						idealUnit = unit;
+						idealUnitId = idealUnit.id();
+					}
+				}
+				
+				numOccupiable = 0;
+			}
+		}
+
+		if(gc.canBlueprint(idealUnitId, UnitType.Factory, idealDir)) {
+			gc.blueprint(idealUnitId, UnitType.Factory, idealDir);
+			Start.spawnsDone++;
+		}
+	}
+	
+	public static void buildFactory(GameController gc, ArrayList<Unit> units) {
 		
 		Random generator = new Random();
 		Unit unit;
@@ -335,8 +419,7 @@ public class Factories {
 					
 					if(numOccupiable > 7) {
 						gc.blueprint(unitId, UnitType.Factory, dir);
-						Player.trigger = true;
-						return true;
+						return;
 					}
 					
 					else if (numOccupiable > bestOption) {
@@ -353,11 +436,7 @@ public class Factories {
 
 		if(gc.canBlueprint(idealUnitId, UnitType.Factory, idealDir)) {
 			gc.blueprint(idealUnitId, UnitType.Factory, idealDir);
-			Player.trigger = true;
-			return true;
 		}
-		
-		return false;
 	}
 	
 	private static void detectClose(GameController gc){

@@ -9,9 +9,9 @@ public class Start {
 	public static ArrayList<Unit> rockets = new ArrayList<>();
 	public static Random generator = new Random();
 	
-	public static MapLocation spawn;
 	public static int numWorkers;
 	public static int maxWorkers;
+	public static int spawnsDone;
 
 	public static final int squaresPerWorkerDense = 70;
 	public static final int squaresPerWorkerSparse = 6;
@@ -22,24 +22,28 @@ public class Start {
 	public static void initSpawn(GameController gc) {
 		toHome = new VectorField();
 		Unit unit;
-		if(Minesweeper.isDense){
-			maxWorkers = findKarbonite.accSq / squaresPerWorkerDense;
-		}else{
-			maxWorkers = findKarbonite.accSq / squaresPerWorkerSparse;
-		}
+
 		VecUnit units = gc.startingMap(Player.planet).getInitial_units();
+		
 		for(int i = 0; i < units.size(); i++) {
 			
 			unit = units.get(i);
 			if(unit.team() == Player.team) {
-				spawn = unit.location().mapLocation();
 				findKarbonite.spawns.add(unit.location().mapLocation());
 			}
 		}
 		toHome.setTargets(findKarbonite.spawns);
 	}
 	
-	public static int runTurn(GameController gc, ArrayList<Unit> units){
+	public static void updateMaxWorkers() {
+		if(Minesweeper.isDense){
+			maxWorkers = findKarbonite.accSq / squaresPerWorkerDense;
+		}else{
+			maxWorkers = findKarbonite.accSq / squaresPerWorkerSparse;
+		}
+	}
+	
+	public static void runTurn(GameController gc, ArrayList<Unit> units){
 		
 		Unit unit;
 		int size = (int)units.size();
@@ -50,8 +54,16 @@ public class Start {
 			
 			replicate(gc, units);
 		}
+		
 		if(gc.karbonite() >= 200 && Player.planet == Planet.Earth){
-			if(Factories.buildFactory(gc, units)) return 1;
+			
+			if(spawnsDone < findKarbonite.spawns.size()) {
+				Factories.buildSpawnFactory(gc, units, findKarbonite.spawns.get(spawnsDone));
+			}
+			
+			else{
+				Factories.buildFactory(gc, units);
+			}
 		}
 
 		if(karbDepleted() && Player.planet == Planet.Earth){
@@ -74,8 +86,6 @@ public class Start {
 				goForKarbonite(gc, unit);
 			}
 		}
-
-		return 0;
 	}
 	
 	public static void updateNumWorkers(ArrayList<Unit> units) {
