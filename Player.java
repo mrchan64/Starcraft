@@ -43,8 +43,8 @@ public class Player {
 		Runtime rt = Runtime.getRuntime();
 
 		while (planet == Planet.Earth) {
+      
 			round  = (int)gc.round();
-			System.out.println("Currently round "+round);
 
 			Start.factories = new ArrayList<>();
 			UnitBuildOrder.builtFacts = new ArrayList<>();
@@ -105,12 +105,11 @@ public class Player {
 			
 			if (stage >= 2) {
 
-				if (round > 749) {
+				if (round == 749) {
 					for (Unit rocket : UnitBuildOrder.builtRocks) {
 						int rocketID = (int)rocket.id();
 						Rocket.launchRocket(gc, rocketID);
 					}
-
 				}
 
 				Rocket.runTurn(gc, availableUnits);
@@ -118,7 +117,8 @@ public class Player {
 				for (int i = 0; i < UnitBuildOrder.builtRocks.size(); i++) {
 					
 					if(!workersOnMars) {
-						Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
+						if(Rocket.fighterLoaded) Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
+						else Rocket.loadClosestFighter(gc, UnitBuildOrder.builtRocks.get(i));
 						workersOnMars = true;
 					}
 
@@ -178,11 +178,12 @@ public class Player {
 			round = (int)gc.round();
 			
 			ArrayList<Unit> marsUnits = new ArrayList<>();
+
+			findKarbonite.updateAsters(gc, round);
+
 			units = gc.myUnits();
 			
 			for(int i = 0; i < units.size(); i++) {
-				
-				findKarbonite.updateAsters(gc, round);
 				
 				unit = units.get(i);
 				type = unit.unitType();
@@ -193,15 +194,11 @@ public class Player {
 				
 				else if(type == UnitType.Worker) {
 					marsUnits.add(unit);
-					
-					for (Direction dir : Start.directions) {
-						if (gc.canHarvest(unit.id(), dir)) {
-
-							gc.harvest(unit.id(), dir);
-							break;
-						}
-					}
 				}
+			}
+			findKarbonite.optimizeKarb(gc, marsUnits);
+			for (int i = 0; i < findKarbonite.miners.size(); i++) {
+				findKarbonite.miners.set(i, 0);
 			}
 			
 			CommandUnits.runTurn(gc);

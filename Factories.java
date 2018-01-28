@@ -1,5 +1,6 @@
 import bc.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Factories {
 
@@ -149,29 +150,53 @@ public class Factories {
 	}
 
 	public static Unit[] getClosest(GameController gc, ArrayList<Unit> units, Unit structure, VectorField toFactory) {
-
+		
 		if(units.size() == 0) {
 			return new Unit[0];
 		}
-		
-		int numOpenSpaces = getOpenSpaces(gc, structure.location().mapLocation());
-		int unitsReady = units.size();
-
-		if (numOpenSpaces > unitsReady)
-			numOpenSpaces = unitsReady;
 
 		int size = units.size();
-		Unit[] closestUnits = new Unit[numOpenSpaces];
-		int[] magnitudes = new int[numOpenSpaces];
 		Unit unit = units.get(0);
-		Location unitLoc;
+		Location unitLoc = unit.location();
+		MapLocation currLoc = unitLoc.mapLocation();
 		int magnitude;
 		int last = 0;
 		int place = 0;
-		MapLocation currloc;
+		int unitsReady = units.size();
+		int health = (int)structure.health();
+		
+		MapLocation structureLoc = structure.location().mapLocation();
+		
+		int numOpenSpaces = getOpenSpaces(gc, structure.location().mapLocation());
+		
+		int numAdjacent = 0;
+		int numInRange;
+		
+		for(Direction dir : Start.directions) {
+			try {
+				if(gc.isOccupiable(structureLoc.add(dir)) == 1) numAdjacent++;
+			}
+			catch (Exception E) {
+				//do nothing
+			}
+		}
+		
+		if(numAdjacent == 0) {
+			numInRange = 8;
+		}
+		else {
+			int rangeToCheck = (int)(((300 - health) / numAdjacent / 5) * ((300 - health) / numAdjacent / 5));
+			numInRange = (int)(gc.senseNearbyUnitsByTeam(structureLoc, rangeToCheck, Player.team).size());
+		}
+
+		if (numOpenSpaces > unitsReady) numOpenSpaces = unitsReady;
+		if (numOpenSpaces > numInRange) numOpenSpaces = numInRange;
+		
+		Unit[] closestUnits = new Unit[numOpenSpaces];
+		int[] magnitudes = new int[numOpenSpaces];
 		
 		closestUnits[0] = units.get(0);
-		magnitudes[0] = toFactory.getMagnitude(unit.location().mapLocation());
+		magnitudes[0] = toFactory.getMagnitude(currLoc);
 
 		for (int i = 0; i < size; i++) {
 			
@@ -180,9 +205,9 @@ public class Factories {
 			if (unit.unitType() != UnitType.Worker || unitLoc.isInGarrison() || unitLoc.isInSpace())
 				continue;
 			
-			currloc = unitLoc.mapLocation();
+			currLoc = unitLoc.mapLocation();
 
-			magnitude = toFactory.getMagnitude(currloc);
+			magnitude = toFactory.getMagnitude(currLoc);
 
 			for (place = last; place > 0; place--) {
 				if(place == numOpenSpaces && magnitudes[place - 1] <= magnitude)
@@ -266,8 +291,10 @@ public class Factories {
 	
 	public static boolean buildFactory(GameController gc, ArrayList<Unit> units) {
 		
+		Random generator = new Random();
 		Unit unit;
 		int unitId;
+		int size = units.size();
 		Unit idealUnit = units.get(0);
 		int idealUnitId = idealUnit.id();
 		MapLocation attempt;
@@ -276,11 +303,12 @@ public class Factories {
 		Direction[] allDirs = Direction.values();
 		int bestOption = 0;
 		int numOccupiable = 0;
+		int startPoint = generator.nextInt(size);
 		
 		int x, y;
 		
-		for(int i = 0; i < units.size(); i++) {
-			unit = units.get(i);
+		for(int i = 0; i < size; i++) {
+			unit = units.get((i + startPoint) % size);
 			unitId = unit.id();
 
 			for(Direction dir : allDirs) {
@@ -305,7 +333,7 @@ public class Factories {
 						}
 					}
 					
-					if(numOccupiable >= 7) {
+					if(numOccupiable > 7) {
 						gc.blueprint(unitId, UnitType.Factory, dir);
 						Player.trigger = true;
 						return true;
@@ -334,8 +362,7 @@ public class Factories {
 	
 	private static void detectClose(GameController gc){
 		isClose = false;
-		Team t = Team.Red;
-		if(Player.team==Team.Red)t = Team.Blue;
+		Team t = Player.team == Team.Red ? Team.Red : Team.Blue;
 		for(Unit unit: UnitBuildOrder.builtFacts){
 			try{
 				gc.senseNearbyUnitsByTeam(unit.location().mapLocation(), 25, t);

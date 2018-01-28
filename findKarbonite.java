@@ -27,6 +27,9 @@ public class findKarbonite {
     static ArrayList<MapLocation> done = new ArrayList<MapLocation>();
     static ArrayList<MapLocation> spawns = new ArrayList<MapLocation>();
 
+    public static ArrayList<VectorField> karbsOnMars = new ArrayList<>();
+    public static ArrayList<Integer> miners = new ArrayList<>();
+
 	public static void initKarb(GameController gc) {
 
 		marsAsters = gc.asteroidPattern();
@@ -79,10 +82,58 @@ public class findKarbonite {
         }*/
 	}
 
+	 public static void optimizeKarb(GameController gc, ArrayList<Unit> marsUnits) {
+        for (int i = 0; i < marsUnits.size(); i++) {
+            Unit unit = marsUnits.get(i);
+            if (unit.location().isInGarrison() || unit.location().isInSpace()) {
+                continue;
+            }
+            MapLocation unitLoc = unit.location().mapLocation();
+            int min = 1000;
+            int index = 0;
+            for (int j = 0; j < karbsOnMars.size(); j++) {
+
+                try {
+                    if (gc.karboniteAt(marsKarb.get(j)) == 0) {
+                        marsKarb.remove(j);
+                        karbsOnMars.remove(j);
+                        miners.remove(j);
+                        j--;
+                        continue;
+                    }
+                }
+                catch (Exception e) {
+                    //do nothing xd
+                }
+            	if (miners.get(j) > 1) {
+                	continue;
+            	}
+                int magnitude = karbsOnMars.get(j).getMagnitude(unitLoc);
+                if (magnitude < min) {
+                    min = magnitude;
+                    index = j;
+                }
+            }
+            miners.set(index, miners.get(index)+1);
+            Factories.moveToClosestDirection(gc, unit, karbsOnMars.get(index).getDirection(unitLoc));
+            for (Direction dir : Start.directions) {
+                if (gc.canHarvest(unit.id(), dir)) {
+                    gc.harvest(unit.id(), dir);
+                    break;
+                }
+            }
+        }
+    }
+
+
 	public static void updateAsters(GameController gc, int round) {
 		
 		if(marsAsters.hasAsteroid(round)) {
 			marsKarb.add(marsAsters.asteroid(round).getLocation());
+            VectorField field = new VectorField();
+            field.setTarget(marsAsters.asteroid(round).getLocation());
+            karbsOnMars.add(field);
+            miners.add(0);
 		}
 		else {
 			return;

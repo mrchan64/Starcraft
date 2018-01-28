@@ -1,11 +1,13 @@
 import bc.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Start {
 
 	public static Direction[] directions = Direction.values();
 	public static ArrayList<Unit> factories = new ArrayList<>();
 	public static ArrayList<Unit> rockets = new ArrayList<>();
+	public static Random generator = new Random();
 	
 	public static MapLocation spawn;
 	public static int numWorkers;
@@ -55,7 +57,6 @@ public class Start {
 		if(karbDepleted() && Player.planet == Planet.Earth){
 			Direction ideal;
 			MapLocation loc;
-			System.out.println("GOING HOME");
 			for(int i = 0; i < size; i++) {
 				unit = units.get(i);
 				loc = unit.location().mapLocation();
@@ -105,11 +106,16 @@ public class Start {
 	
 	private static void replicate(GameController gc, ArrayList<Unit> units) {
 		
+		if(units.size() == 0) return;
+		
 		Unit unit;
 		int unitId;
+		int size = units.size();
+		int startPoint = generator.nextInt(size);
 		
-		for(int i = 0; i < units.size(); i++) {
-			unit = units.get(i);
+		for(int i = 0; i < size; i++) {
+			
+			unit = units.get((i + startPoint) % size);
 			unitId = unit.id();
 			
 			for(Direction dir : Direction.values()) {
