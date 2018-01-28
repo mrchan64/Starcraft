@@ -120,8 +120,11 @@ public class Player {
 
 			if (stage >= 1) {
 
+				if (round > 500) {
+					stage = 2;
+				}
+				
 				if (!Rocket.sentFirst) {
-					System.out.println("rocket first turn");
 					Rocket.runFirstTurn(gc, availableUnits);
 				}
 
@@ -131,13 +134,9 @@ public class Player {
 						UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Worker);
 				}
 
-				if (gc.karbonite() > 100) {
+				if (gc.karbonite() > 150 && stage != 2) {
 
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
-				}
-
-				if (round > 550) {
-					stage = 2;
 				}
 			}
 

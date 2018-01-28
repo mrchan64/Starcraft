@@ -43,6 +43,8 @@ public class Rocket {
 		for(Unit builtRocket : UnitBuildOrder.builtRocks) {
 			//sEND COMBAT UNITS TO THESE ROCKETS
 			// also make sure that builtRocks is actually correct
+			System.out.println("combat rocket");
+			loadCombatUnits(gc, builtRocket, Player.availableCombatUnits);
 		}
 
 		for (int i = 0; i < Player.availableUnits.size(); i++) {
@@ -75,6 +77,53 @@ public class Rocket {
 		}
 		
 		runTurn(gc, units);
+	}
+
+	public static void loadCombatUnits(GameController gc, Unit rocket, ArrayList<Unit> units) {
+		int rocketId = rocket.id();
+		MapLocation rocketLoc = rocket.location().mapLocation();
+		toRocket.setTarget(rocketLoc);
+		Unit[] rocketUnits = getClosest(gc, units, toRocket);
+		Unit unit;
+		int unitId;
+		MapLocation unitLoc;
+		MapLocation rocketLocation = rocket.location().mapLocation();
+		boolean adjacent = false;
+		int numAdjacent = units.size();
+		int numLoaded = 0;
+
+		for (int i = 0; i < rocketUnits.length; i++) {
+			
+			unit = rocketUnits[i];
+			unitId = rocketUnits[i].id();
+			unitLoc = unit.location().mapLocation();
+			Player.availableCombatUnits.remove(unit);
+			adjacent = unitLoc.isAdjacentTo(rocketLocation);
+			
+			if (!adjacent) {
+				Factories.moveToClosestDirection(gc, unit, toRocket.getDirection(unitLoc));
+				numAdjacent--;
+			}
+		}
+		if(numAdjacent >= units.size() - 1) {
+			for(int i = 0; i < rocketUnits.length; i++) {
+				
+				unitId = rocketUnits[i].id();
+				if(gc.canLoad(rocketId, unitId)) {
+					gc.load(rocketId, unitId);
+					numLoaded++;
+				}
+			}
+		}
+
+		VecUnitID sizeInRocket = rocket.structureGarrison();
+		System.out.println("num units: " + units.size());
+		System.out.println("num in rocket " + sizeInRocket.size());
+		if(sizeInRocket.size() > 7 || units.size() == 0) {
+			System.out.println("launch rockets");
+			sentFirst = true;
+			launchRocket(gc, rocketId);
+		}
 	}
 	
 	public static void loadUnits(GameController gc, Unit rocket, ArrayList<Unit> units) {
@@ -116,7 +165,10 @@ public class Rocket {
 		}
 
 		VecUnitID sizeInRocket = rocket.structureGarrison();
+		System.out.println("num units: " + units.size());
+		System.out.println("num in rocket " + sizeInRocket.size());
 		if(sizeInRocket.size() > 7 || units.size() == 0) {
+			System.out.println("launch rockets");
 			sentFirst = true;
 			launchRocket(gc, rocketId);
 			Player.workersOnMars = true;
@@ -139,6 +191,7 @@ public class Rocket {
 					Minesweeper.mineMap[ii][j] = 0;
 					destination = new MapLocation(Planet.Mars, x, y);
 					if (gc.canLaunchRocket(rocketId, destination)) {
+						System.out.println("actually launch");
 						gc.launchRocket(rocketId, destination);
 						UnitBuildOrder.builtRocks.remove(gc.unit(rocketId));
 						Minesweeper.updateMap(x, y);
