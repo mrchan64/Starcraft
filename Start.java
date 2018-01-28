@@ -11,13 +11,17 @@ public class Start {
 	public static int numWorkers;
 	public static int maxWorkers;
 
-	public static final int SQUARES_PER_WORKER_DENSE = 5;
-	public static final int SQUARES_PER_WORKER_SPARSE = 10;
+	public static final int squaresPerWorkerDense = 70;
+	public static final int squaresPerWorkerSparse = 6;
 	
 	public static void initSpawn(GameController gc) {
 		
 		Unit unit;
-		
+		if(Minesweeper.isDense){
+			maxWorkers = findKarbonite.accSq / squaresPerWorkerDense;
+		}else{
+			maxWorkers = findKarbonite.accSq / squaresPerWorkerSparse;
+		}
 		VecUnit units = gc.startingMap(Player.planet).getInitial_units();
 		for(int i = 0; i < units.size(); i++) {
 			
@@ -47,11 +51,13 @@ public class Start {
 			
 			replicate(gc, units);
 		}
-		
-		else {
+		if(gc.karbonite() >= 200 && Player.planet == Planet.Earth){
 			if(Factories.buildFactory(gc, units)) return 1;
 		}
-		
+
+		if(Player.round - Player.lastRoundMined > 10){
+			return 0;
+		}
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
 
@@ -107,8 +113,8 @@ public class Start {
 	
 	public static boolean notEnoughUnits(){
 		if(!Minesweeper.isDense)
-			return (numWorkers <= 3 * Player.numFactories + 8);
+			return (numWorkers <= 3 * Player.numFactories + 8) && (numWorkers < findKarbonite.accSq/squaresPerWorkerDense);
 		else
-			return (numWorkers <= 8 * Player.numFactories + 8);
+			return (numWorkers <= 8 * Player.numFactories + 8) && (numWorkers < findKarbonite.accSq/squaresPerWorkerSparse);
 	}
 }

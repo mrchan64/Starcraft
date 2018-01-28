@@ -39,8 +39,8 @@ public class UnitBuildOrder {
 		int factoryId = factory.id();
 		type = typeToBuild();
 
-		if (gc.round() > 100 && Start.numWorkers < 8) {
-			type = UnitType.Worker;
+		if (Start.notEnoughUnits() && Start.numWorkers < Start.maxWorkers) {
+			if(Math.random() > .5)type = UnitType.Worker;
 		}
 
 		if (gc.canProduceRobot(factoryId, type)) {

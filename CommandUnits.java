@@ -120,7 +120,6 @@ public class CommandUnits {
 				}
 			}
 		}
-		//System.out.println(priorityEnemies.size());
 		//TODO what to do when there are no enemies
 		
 		//assign units that can attack priority enemies
@@ -273,11 +272,14 @@ public class CommandUnits {
 	
 	private static ArrayList<Unit> getClosestLeftOver(ArrayList<Unit> avail,int damage, int x, int y){
 		// TODO fix this code to cover for opponent units are unreachable
-		if(enemies[x][y]==null){
-			avail.clear();
-			return avail;
-		}
 		ArrayList<Unit> ret = new ArrayList<Unit>();
+		if(enemies[x][y]==null){
+			int size = avail.size();
+			for(int i = 0; i<size; i++){
+				ret.add(avail.get(i));
+			}
+			return ret;
+		}
 		ArrayList<Integer> mag = new ArrayList<Integer>();
 		VectorField vf = storedField[x][y];
 		int magnitude, rets, dmg;
@@ -323,11 +325,18 @@ public class CommandUnits {
 	private static void attackMove(GameController gc, Unit unit, int x, int y){
 		UnitType unitType = unit.unitType();
 		int id = unit.id();
-		int enemyId = enemies[x][y].id();
-		//if(unitType == UnitType.Ranger && gc.isBeginSnipeReady(id) && gc.canBeginSnipe(id, squares[x][y])) gc.beginSnipe(id, squares[x][y]);
-		//if(unitType == UnitType.Mage && gc.isBlinkReady(id) && gc.is)range = unit.abilityRange(); Blink code need fix
-		if(unitType == UnitType.Knight && gc.isJavelinReady(id) && gc.canJavelin(id, enemyId))gc.javelin(id, enemyId);
-		if(gc.isAttackReady(id) && gc.canAttack(id, enemyId)) gc.attack(id, enemyId);
+		if(enemies[x][y]!=null){
+			int enemyId = enemies[x][y].id();
+			//if(unitType == UnitType.Ranger && gc.isBeginSnipeReady(id) && gc.canBeginSnipe(id, squares[x][y])) gc.beginSnipe(id, squares[x][y]);
+			//if(unitType == UnitType.Mage && gc.isBlinkReady(id) && gc.is)range = unit.abilityRange(); Blink code need fix
+			if(unitType == UnitType.Knight && gc.isJavelinReady(id) && gc.canJavelin(id, enemyId))gc.javelin(id, enemyId);
+			if(gc.isAttackReady(id) && gc.canAttack(id, enemyId)) gc.attack(id, enemyId);
+		}
+		
+		if(Player.round<150){
+			Factories.moveToClosestDirection(gc, unit, Direction.Center);
+			return;
+		}
 		
 		VectorField vf = storedField[x][y];
 		if(vf==null){
