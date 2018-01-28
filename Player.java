@@ -41,8 +41,8 @@ public class Player {
 		Start.initSpawn(gc);
 
 		while (planet == Planet.Earth) {
-			System.out.println("stage: "+stage);
-			round  = (int)gc.round();
+			
+			round = (int)gc.round();
 			System.out.println("Currently round "+round);
 
 			Start.factories = new ArrayList<>();
@@ -104,12 +104,11 @@ public class Player {
 			
 			if (stage >= 2) {
 
-				if (round > 749) {
+				if (round == 749) {
 					for (Unit rocket : UnitBuildOrder.builtRocks) {
 						int rocketID = (int)rocket.id();
 						Rocket.launchRocket(gc, rocketID);
 					}
-
 				}
 
 				Rocket.runTurn(gc, availableUnits);
@@ -117,7 +116,8 @@ public class Player {
 				for (int i = 0; i < UnitBuildOrder.builtRocks.size(); i++) {
 					
 					if(!workersOnMars) {
-						Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
+						if(Rocket.fighterLoaded) Rocket.loadUnits(gc, UnitBuildOrder.builtRocks.get(i), availableUnits);
+						else Rocket.loadClosestFighter(gc, UnitBuildOrder.builtRocks.get(i));
 						workersOnMars = true;
 					}
 
