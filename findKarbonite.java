@@ -30,6 +30,9 @@ public class findKarbonite {
     public static ArrayList<VectorField> karbsOnMars = new ArrayList<>();
     public static ArrayList<Integer> miners = new ArrayList<>();
 
+   	public static VectorField distFronEnemy = new VectorField();
+
+
 	public static void initKarb(GameController gc) {
 
 		marsAsters = gc.asteroidPattern();
@@ -243,6 +246,18 @@ public class findKarbonite {
         addNeighbors(check, map);
         return true;
     }
+
+    private static boolean distanceFromEnemy(MapLocation ourSpawn, MapLocation enemySpawn) {
+    	distFronEnemy.setTarget(enemySpawn);
+    	int distance = distFronEnemy.getMagnitude(ourSpawn);
+
+    	if (distance < 35) {
+    		return true;
+    	}
+    	return false;
+    }
+
+
 
 
     public static void printNumSquares() {
