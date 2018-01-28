@@ -1,6 +1,8 @@
 import bc.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class CommandUnits {
 	
@@ -17,6 +19,8 @@ public class CommandUnits {
 	static int radius;
 	static MapLocation center;
 	static int combatUnitSize = 0;
+
+	static MapLocation enemyLoc;
 	
 	public static void initCommand(GameController gc){
 		storedField = new VectorField[VectorField.width][VectorField.height];
@@ -149,6 +153,20 @@ public class CommandUnits {
 			}
 			totalDamageToEnemy.add(dmg);
 		}
+
+		ResearchInfo ri = gc.researchInfo();
+		if (ri.getLevel(UnitType.Ranger) > 2) {
+			ArrayList<Unit> rangers = new ArrayList<>();
+			for (int i = 0; i < availableUnits.size(); i++) {
+				Unit rangerUnit = availableUnits.get(i);
+				int rangerUnitID = (int)rangerUnit.id();
+				if (rangerUnit.unitType() == UnitType.Ranger && gc.isBeginSnipeReady(rangerUnitID)) {
+					rangers.add(rangerUnit);
+				}
+			}
+			snipe(gc, rangers, priorityEnemies);
+		}
+		
 		
 		//assign leftover units
 		size = priorityEnemies.size();
@@ -401,6 +419,82 @@ public class CommandUnits {
 		storedField = new VectorField[VectorField.width][VectorField.height];
 		System.gc();
 	}
+	
+	private static void snipe(GameController gc, ArrayList<Unit> rangers, ArrayList<MapLocation> enemyTargets) {
+		if (rangers.size() == 0) {
+			return;
+		}
+		int last = 0;
+		int count = 0;
+		Unit target;
+		int required = 0;
+
+		ArrayList<Unit> targets = new ArrayList<>();
+		int x = 0;
+		int y = 0;
+		
+		for (int i = 0; i < enemyTargets.size(); i++) {
+			enemyLoc = enemyTargets.get(i);
+			x = enemyLoc.getX();
+			y = enemyLoc.getY();
+			if (enemies[x][y] != null) {
+				targets.add(enemies[x][y]);
+			}
+		}
+		
+		Collections.sort(targets, new compareSnipe());
+		//target factories
+		for(int i = 0; i < targets.size(); i++){
+			target = targets.get(i);
+			required = (int) target.health() / rangers.get(0).damage() + 1;
+			if(rangers.size() > required){
+
+				for(int j = last; j < rangers.size(); j++){
+					int rangerID = (int)rangers.get(j).id();
+					MapLocation targetLoc = target.location().mapLocation();
+					if (gc.canBeginSnipe(rangerID, targetLoc)) {
+						gc.beginSnipe(rangerID, targetLoc);
+						System.out.println("sniping");
+						count++;
+						if(count == required){
+							last = j;
+							break;
+						}
+					}
+				}
+
+			}else{
+				break;
+			}
+
+		}
+	}
+	
+	 public static class compareSnipe implements Comparator<Unit>{
+		public int compare(Unit first, Unit second){
+			UnitType unitType = first.unitType();
+			int p1 = 0;
+			int p2 = 0;
+			
+			if(unitType == UnitType.Factory)p1 = 0;
+			else if(unitType == UnitType.Rocket)p1 = 1;
+			else if(unitType == UnitType.Healer)p1 = 2;
+			else if(unitType == UnitType.Mage)p1 = 3;
+			else if(unitType == UnitType.Ranger)p1 = 4;
+			else if(unitType == UnitType.Knight)p1 = 5;
+			else if(unitType == UnitType.Worker)p1 = 6;
+			unitType = second.unitType();
+			if(unitType == UnitType.Rocket)p2 = 0;
+			else if(unitType == UnitType.Factory)p2 = 1;
+			else if(unitType == UnitType.Healer)p2 = 2;
+			else if(unitType == UnitType.Mage)p2 = 3;
+			else if(unitType == UnitType.Ranger)p2 = 4;
+			else if(unitType == UnitType.Knight)p2 = 5;
+			else if(unitType == UnitType.Worker)p2 = 6;
+			return p1 - p2;
+		}
+	}
+
 	
 	
 }
