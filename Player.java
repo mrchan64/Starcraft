@@ -24,8 +24,8 @@ public class Player {
 	public static Planet planet;
 	public static int lastRoundMined = 0;
 	public static int round;
+	public static int spawnsDone = 0;
 	
-	public static boolean trigger = false;
 	public static boolean workersOnMars = false;
 
 	public static boolean accSquare = true;
@@ -38,13 +38,11 @@ public class Player {
 		team = gc.team();
 		
 		VectorField.initWalls(gc);
+		Start.initSpawn(gc);
 		findKarbonite.initKarb(gc);
+		Start.updateMaxWorkers();
 		Upgrades.upgradeUnitsSmall(gc);
 		CommandUnits.initCommand(gc);
-		Start.initSpawn(gc);
-		
-		//Runtime rt = Runtime.getRuntime();
-		
 		System.out.println("Currently running on a "+(VectorField.largeMap?"large":"small")+" map and running "+(Minesweeper.isDense?"Knight":"Ranged")+" code");
 
 		while (planet == Planet.Earth) {
@@ -133,14 +131,14 @@ public class Player {
 					stage = 2;
 				}
 
-				if (!Rocket.sentFirst && round > 150) {
+				if (!Rocket.sentFirst && (round >= 150 && round - lastRoundMined > 15)) {
 					Rocket.runFirstTurn(gc, availableUnits);
 				}
 
 				Factories.runTurn(gc, availableUnits);
 
 				if (round > 100 && Start.numWorkers < 8) {
-						UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Worker);
+					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Worker);
 				}
 
 
@@ -152,7 +150,7 @@ public class Player {
 				if (accSquare && round > 150) {
 
 					for (int i = 0; i < units.size(); i++) {
-						if (!units.get(i).location().isInGarrison() || !units.get(i).location().isInSpace()) {
+						if (!units.get(i).location().isInGarrison() && !units.get(i).location().isInSpace()) {
 							startingLoc = units.get(i).location().mapLocation();
 							break;
 						}	
@@ -164,15 +162,20 @@ public class Player {
 			}
 
 			if (stage >= 0) {
+				
 				CommandUnits.runTurn(gc);
+
 				Start.updateNumWorkers(availableUnits);
 
-				if (stage == 0) {
-					stage += Start.runTurn(gc, availableUnits);
-				}
-
-				else if(availableUnits.size() > 0) {
-					Start.runTurn(gc, availableUnits);
+				if(availableUnits.size() > 0) {
+					for(int i = 0; i < findKarbonite.spawns.size(); i++) {
+						
+						Start.runTurn(gc, availableUnits);
+	
+						if(Start.spawnsDone == findKarbonite.spawns.size()) {
+							stage = stage > 1 ? stage : 1;
+						}
+					}
 				}
 				
 				for(Unit worker : workers){
