@@ -9,9 +9,10 @@ public class Start {
 	
 	public static MapLocation spawn;
 	public static int numWorkers;
+	public static int maxWorkers;
 
-	public static final int squaresPerWorkerDense = 5;
-	public static final int squaresPerWorkerSparse = 5;
+	public static final int SQUARES_PER_WORKER_DENSE = 5;
+	public static final int SQUARES_PER_WORKER_SPARSE = 10;
 	
 	public static void initSpawn(GameController gc) {
 		
@@ -26,6 +27,13 @@ public class Start {
 				findKarbonite.spawns.add(unit.location().mapLocation());
 			}
 		}
+		
+		if(Minesweeper.isDense) {
+			maxWorkers = findKarbonite.avaSq / SQUARES_PER_WORKER_DENSE;
+		}
+		else {
+			maxWorkers = findKarbonite.avaSq / SQUARES_PER_WORKER_SPARSE;
+		}
 	}
 	
 	public static int runTurn(GameController gc, ArrayList<Unit> units){
@@ -36,6 +44,7 @@ public class Start {
 		updateNumWorkers(units);
 		
 		if(notEnoughUnits()) {
+			
 			replicate(gc, units);
 		}
 		
@@ -43,9 +52,6 @@ public class Start {
 			if(Factories.buildFactory(gc, units)) return 1;
 		}
 		
-		if(Player.lastRoundMined > 10){
-			return 0;
-		}
 		for(int i = 0; i < size; i++) {
 			unit = units.get(i);
 
@@ -101,8 +107,8 @@ public class Start {
 	
 	public static boolean notEnoughUnits(){
 		if(!Minesweeper.isDense)
-			return (numWorkers <= 3 * Player.numFactories + 8) && (numWorkers < findKarbonite.avaSq/squaresPerWorkerDense) && (Player.round - Player.lastRoundMined < 10);
+			return (numWorkers <= 3 * Player.numFactories + 8);
 		else
-			return (numWorkers <= 8 * Player.numFactories + 8) && (numWorkers < findKarbonite.avaSq/squaresPerWorkerSparse) && (Player.round - Player.lastRoundMined < 10);
+			return (numWorkers <= 8 * Player.numFactories + 8);
 	}
 }
