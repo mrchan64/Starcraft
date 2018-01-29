@@ -46,6 +46,7 @@ public class Player {
 		findKarbonite.initKarb(gc);
 		Start.updateMaxWorkers();
 		CommandUnits.initCommand(gc);
+		VectorField.findMapSize();
 		System.out.println("Currently running on a "+(VectorField.largeMap?"large":"small")+" map and running "+(Minesweeper.isDense?"Knight":"Ranged")+" code");
 
 		if(Minesweeper.isDense) Upgrades.upgradeKnights(gc);
@@ -153,7 +154,7 @@ public class Player {
 
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
-				if (stage == 2 && CommandUnits.combatUnitSize / (UnitBuildOrder.builtRocks.size()+1)<8 ){
+				if (stage == 2 && (CommandUnits.combatUnitSize / (UnitBuildOrder.builtRocks.size()+1)<8 || Start.numWorkers <= 2)){
 					UnitBuildOrder.queueUnitsAllFactories(gc, UnitType.Ranger);
 				}
 

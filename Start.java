@@ -142,7 +142,10 @@ public class Start {
 	}
 	
 	public static boolean notEnoughUnits(){
-		if (numWorkers > minWorkers && numWorkers > maxWorkers) {
+		if (Player.round >=200){
+			return numWorkers<minWorkers;
+		}
+		if (numWorkers >= minWorkers && numWorkers > maxWorkers) {
 			return false;
 		}
 		if(!karbDepleted()){

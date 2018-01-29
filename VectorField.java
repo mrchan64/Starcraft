@@ -44,7 +44,10 @@ public class VectorField {
 				terrain[i][j] = (int)pm.isPassableTerrainAt(new MapLocation(mine, i, j));
 			}
 		}
-		largeMap = Math.pow((findKarbonite.avaSq*4+4),4)>500000000;
+	}
+	
+	public static void findMapSize(){
+		largeMap = findKarbonite.avaSq>30*30;
 	}
 	
 	public void setTargets(ArrayList<MapLocation> start){

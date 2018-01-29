@@ -288,8 +288,8 @@ public class findKarbonite {
 			vf = new VectorField();
 			vf.setTarget(eloc);
 			for(MapLocation loc : spawns){
-				System.out.println(vf.getDirection(loc));
     			if(vf.getDirection(loc)!=Direction.Center)return true;
+    			if(vf.getMagnitude(loc) < 50)return true;
     		}
     	}
     	return false;
