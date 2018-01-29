@@ -110,6 +110,14 @@ public class Rocket {
 			launchRocket(gc, rocketId);
 			sentFirst = true;
 		}
+		
+		if(sizeInRocket.size() == max || units.size() == 0) {
+			if(gc.orbitPattern().duration(Player.round) <= Player.closestLaunchTime + 25 || rocket.health() < 200) {
+				launchRocket(gc, rocketId);
+				sentFirst = true;
+			}
+			return;
+		}
 
 		for (int i = 0; i < rocketUnits.length; i++) {
 			
@@ -139,7 +147,6 @@ public class Rocket {
 
 		sizeInRocket = rocket.structureGarrison();
 		
-		System.out.println("max: " + max + ", size in rocket: " + sizeInRocket.size() + ", numPossible: " + numPossible);
 		if(sizeInRocket.size() == max || units.size() == 0 || numPossible == 0) {
 			if(gc.orbitPattern().duration(Player.round) <= Player.closestLaunchTime + 25 || rocket.health() < 200) {
 				launchRocket(gc, rocketId);
@@ -177,6 +184,15 @@ public class Rocket {
 		
 		for(int i = 0; i < max; i++) {
 			rocketUnits[i] = oldRocketUnits[i];
+		}
+		
+		if(sizeInRocket.size() > max) {
+			if(gc.orbitPattern().duration(Player.round) <= Player.closestLaunchTime + 25 || rocket.health() < 200) {
+				launchRocket(gc, rocketId);
+				sentFirst = true;
+				Player.workersOnMars = true;
+			}
+			return;
 		}
 		
 		int numPossible = max;

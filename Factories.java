@@ -83,6 +83,8 @@ public class Factories {
 			unit = units[i];
 			unitId = unit.id();
 			currLoc = unit.location().mapLocation();
+			
+			if(gc.canRepair(unitId, structureId) && i == units.length - 1) continue;
 
 			if (!currLoc.isAdjacentTo(structure.location().mapLocation())) {
 				moveToClosestDirection(gc, unit, toStructure.getDirection(currLoc));
