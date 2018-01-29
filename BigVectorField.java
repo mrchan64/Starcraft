@@ -14,11 +14,11 @@ public class BigVectorField extends VectorField {
 
 	@Override
 	public Direction getDirection(MapLocation check){
-		return check.directionTo(check);
+		return check.directionTo(targetLocation);
 	}
 	
 	@Override
 	public int getMagnitude(MapLocation check){
-		return (int) check.distanceSquaredTo(check);
+		return (int) check.distanceSquaredTo(targetLocation);
 	}
 }

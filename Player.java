@@ -179,6 +179,9 @@ public class Player {
 				if(availableUnits.size() > 0) {
 					
 					Factories.runTurn(gc, availableUnits);
+				}
+				
+				if(availableUnits.size() > 0){
 					Start.updateNumWorkers(availableUnits);
 					
 					startMax = findKarbonite.spawns.size();
