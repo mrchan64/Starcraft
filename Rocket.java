@@ -25,12 +25,21 @@ public class Rocket {
 			int x = rocketLoc.getX();
 			int y = rocketLoc.getY();
 			
-			if(CommandUnits.storedField[x][y] == null) {
-				CommandUnits.storedField[x][y] = new VectorField();
-				CommandUnits.storedField[x][y].setTarget(rocketLoc);
-			}
-
 			toRocket = CommandUnits.storedField[x][y];
+			
+			if(toRocket == null) {
+				
+				if(VectorField.largeMap) {
+					toRocket = new BigVectorField();
+					toRocket.setTarget(rocketLoc);
+				}
+
+				else {
+					CommandUnits.storedField[x][y] = new VectorField();
+					CommandUnits.storedField[x][y].setTarget(rocketLoc);
+					toRocket = CommandUnits.storedField[x][y];
+				}
+			}
 			
 			closestUnits = Factories.getClosest(gc, Player.availableUnits, rocketLoc, toRocket, true);
 			Factories.sendUnits(gc, closestUnits, rocket, toRocket);
@@ -96,6 +105,11 @@ public class Rocket {
 		boolean adjacent = false;
 		int numAdjacent = units.size();
 		VecUnitID sizeInRocket = rocket.structureGarrison();
+		
+		if(rocket.health() < 200) {
+			launchRocket(gc, rocketId);
+			sentFirst = true;
+		}
 
 		for (int i = 0; i < rocketUnits.length; i++) {
 			
@@ -149,6 +163,12 @@ public class Rocket {
 		VecUnitID sizeInRocket = rocket.structureGarrison();
 		
 		int max; 
+		
+		if(rocket.health() < 200) {
+			launchRocket(gc, rocketId);
+			sentFirst = true;
+			Player.workersOnMars = true;
+		}
 		
 		if(oldRocketUnits.length == 8) max = 7;
 		else max = oldRocketUnits.length;
@@ -333,12 +353,21 @@ public class Rocket {
 		int x = spawn.getX();
 		int y = spawn.getY();
 		
-		if(CommandUnits.storedField[x][y] == null) {
-			CommandUnits.storedField[x][y] = new VectorField();
-			CommandUnits.storedField[x][y].setTarget(spawn);
-		}
-
 		VectorField toSpawn = CommandUnits.storedField[x][y];
+		
+		if(toSpawn == null) {
+			
+			if(VectorField.largeMap) {
+				toSpawn = new BigVectorField();
+				toSpawn.setTarget(spawn);
+			}
+
+			else {
+				CommandUnits.storedField[x][y] = new VectorField();
+				CommandUnits.storedField[x][y].setTarget(spawn);
+				toSpawn = CommandUnits.storedField[x][y];
+			}
+		}
 		
 		Unit unit;
 		int unitId;

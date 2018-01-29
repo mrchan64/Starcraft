@@ -322,10 +322,18 @@ public class CommandUnits {
 		long enemyHealth = enemies[x][y].health();
 		boolean inserted;
 		for(Unit mine: avail){
-			if(vf==null){
-				vf = new VectorField();
-				vf.setTarget(squares[x][y]);
-				storedField[x][y] = vf;
+			if(vf == null) {
+				
+				if(VectorField.largeMap) {
+					vf = new BigVectorField();
+					vf.setTarget(squares[x][y]);
+				}
+
+				else {
+					CommandUnits.storedField[x][y] = new VectorField();
+					CommandUnits.storedField[x][y].setTarget(squares[x][y]);
+					vf = CommandUnits.storedField[x][y];
+				}
 			}
 			MapLocation loc = mine.location().mapLocation();
 			magnitude = vf.getMagnitude(squares[loc.getX()][loc.getY()]);
@@ -375,10 +383,18 @@ public class CommandUnits {
 		}
 		
 		VectorField vf = storedField[x][y];
-		if(vf==null){
-			vf = new VectorField();
-			vf.setTarget(squares[x][y]);
-			storedField[x][y] = vf;
+		if(vf == null) {
+			
+			if(VectorField.largeMap) {
+				vf = new BigVectorField();
+				vf.setTarget(squares[x][y]);
+			}
+
+			else {
+				CommandUnits.storedField[x][y] = new VectorField();
+				CommandUnits.storedField[x][y].setTarget(squares[x][y]);
+				vf = CommandUnits.storedField[x][y];
+			}
 		}
 		//Ranger has range minimum;
 		MapLocation loc = unit.location().mapLocation();

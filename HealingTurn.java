@@ -29,10 +29,19 @@ public class HealingTurn {
 		int x = lowestHealth.getX();
 		int y = lowestHealth.getY();
 		VectorField vf = CommandUnits.storedField[x][y];
-		if(vf == null){
-			vf = new VectorField();
-			vf.setTarget(CommandUnits.squares[x][y]);
-			CommandUnits.storedField[x][y] = vf;
+		
+		if(vf == null) {
+			
+			if(VectorField.largeMap) {
+				vf = new BigVectorField();
+				vf.setTarget(lowestHealth);
+			}
+
+			else {
+				CommandUnits.storedField[x][y] = new VectorField();
+				CommandUnits.storedField[x][y].setTarget(lowestHealth);
+				vf = CommandUnits.storedField[x][y];
+			}
 		}
 
 		size = availableHealers.size();
