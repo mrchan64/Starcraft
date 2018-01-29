@@ -59,7 +59,7 @@ public class Start {
 			replicate(gc, units);
 		}
 		
-		if(gc.karbonite() >= 200 && Player.planet == Planet.Earth){
+		/*if(gc.karbonite() >= 200 && Player.planet == Planet.Earth){
 			
 			if(spawnsDone < findKarbonite.spawns.size()) {
 				Factories.buildSpawnFactory(gc, units, findKarbonite.spawns.get(spawnsDone));
@@ -68,6 +68,12 @@ public class Start {
 			else{
 				Factories.buildFactory(gc, units, findKarbonite.spawns.get(spawnsDone % findKarbonite.spawns.size()));
 			}
+		}*/
+		
+		if(findKarbonite.spawns.size() != 0){
+			int ind = (int)(Math.random() *findKarbonite.spawns.size());
+			MapLocation spawn =  findKarbonite.spawns.get(ind);
+			Factories.buildFactory(gc, units, spawn);
 		}
 
 		if(karbDepleted() && Player.planet == Planet.Earth){

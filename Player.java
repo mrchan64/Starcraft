@@ -112,6 +112,8 @@ public class Player {
 				}
 			}
 			
+			UnitBuildOrder.allDeploy(gc);
+			
 			if (stage >= 2) {
 
 				if (round == 749) {

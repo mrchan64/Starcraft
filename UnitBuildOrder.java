@@ -26,8 +26,8 @@ public class UnitBuildOrder {
 	public static UnitType[] closeUnitOrder = { 
 		UnitType.Knight, 
 		UnitType.Knight, 
-		UnitType.Knight, 
 		UnitType.Knight,
+		UnitType.Ranger,
 		UnitType.Ranger, 
 		UnitType.Knight, 
 		UnitType.Healer};
@@ -42,7 +42,7 @@ public class UnitBuildOrder {
 		type = typeToBuild();
 
 		if (Start.notEnoughUnits() && Start.numWorkers < Start.maxWorkers && Player.round >= 140) {
-			if(Math.random() > 0.3)type = UnitType.Worker;
+			if(Math.random() > 0.4)type = UnitType.Worker;
 		}
 
 		if (gc.canProduceRobot(factoryId, type)) {
@@ -73,17 +73,23 @@ public class UnitBuildOrder {
 			}
 		}
 	}
+	
+	public static void allDeploy(GameController gc){
+		for (int i = 0; i < builtFacts.size(); i++) {
+			Unit unit = builtFacts.get(i);
+			deployUnits(gc, unit);
+		}
+	}
 
 	public static void queueUnitsAllFactories(GameController gc, UnitType type) {
 		for (int i = 0; i < builtFacts.size(); i++) {
 			Unit unit = builtFacts.get(i);
-			deployUnits(gc, unit);
 			buildUnit(gc, type, unit);
 		}
 	}
 
 	private static UnitType typeToBuild() {
-		if(Minesweeper.isDense && index < sparseUnitOrder.length*3){
+		if(Minesweeper.isDense && index < sparseUnitOrder.length*2){
 			order = closeUnitOrder;
 		}
 		else order = sparseUnitOrder;

@@ -288,8 +288,7 @@ public class findKarbonite {
 			vf = new VectorField();
 			vf.setTarget(eloc);
 			for(MapLocation loc : spawns){
-    			if(vf.getDirection(loc)!=Direction.Center)return true;
-    			if(vf.getMagnitude(loc) < 50)return true;
+    			if(vf.getMagnitude(loc) < (VectorField.width+VectorField.height)/2 && vf.getMagnitude(loc) < 30)return true;
     		}
     	}
     	return false;

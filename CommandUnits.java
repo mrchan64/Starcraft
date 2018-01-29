@@ -53,6 +53,7 @@ public class CommandUnits {
 		VecUnit temp = gc.startingMap(Player.planet).getInitial_units();
 		for(int i = 0; i<temp.size(); i++){
 			Unit unit = temp.get(i);
+			if(unit.team()==Player.team)continue;
 			espawn.add(unit.location().mapLocation());
 		}
 	}
