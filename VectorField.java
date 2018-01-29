@@ -47,7 +47,7 @@ public class VectorField {
 	}
 	
 	public static void findMapSize(){
-		largeMap = findKarbonite.avaSq>30*30;
+		largeMap = findKarbonite.avaSq>42*42;
 	}
 	
 	public void setTargets(ArrayList<MapLocation> start){
