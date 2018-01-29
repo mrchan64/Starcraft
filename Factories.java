@@ -23,13 +23,21 @@ public class Factories {
 			factory = fac.location().mapLocation();
 			x = factory.getX();
 			y = factory.getY();
-			
-			if(CommandUnits.storedField[x][y] == null) {
-				CommandUnits.storedField[x][y] = new VectorField();
-				CommandUnits.storedField[x][y].setTarget(factory);
-			}
-
 			toFactory = CommandUnits.storedField[x][y];
+			
+			if(toFactory == null) {
+				
+				if(VectorField.largeMap) {
+					toFactory = new BigVectorField();
+					toFactory.setTarget(factory);
+				}
+
+				else {
+					CommandUnits.storedField[x][y] = new VectorField();
+					CommandUnits.storedField[x][y].setTarget(factory);
+					toFactory = CommandUnits.storedField[x][y];
+				}
+			}
 
 			closestUnits = Factories.getClosest(gc, Player.availableUnits, factory, toFactory, true);
 			sendUnits(gc, closestUnits, fac, toFactory);
@@ -175,20 +183,20 @@ public class Factories {
 		
 		int numOpenSpaces = getOpenSpaces(gc, structureLoc);
 
-		int numAdjacent = 0;
-		int numInRange;
-		int rangeToCheck;
+		//int numAdjacent = 0;
+		//int numInRange;
+		//int rangeToCheck;
 		
-		for(Direction dir : Start.directions) {
-			try {
-				if(gc.isOccupiable(structureLoc.add(dir)) == 1) numAdjacent++;
-			}
-			catch (Exception E) {
-				//do nothing
-			}
-		}
+		//for(Direction dir : Start.directions) {
+		//	try {
+		//		if(gc.isOccupiable(structureLoc.add(dir)) == 1) numAdjacent++;
+		//	}
+		//	catch (Exception E) {
+		//		//do nothing
+		//	}
+		//}
 		
-		if(!forFactory) {
+		/*if(!forFactory) {
 			numInRange = 8;
 		}
 		
@@ -207,9 +215,11 @@ public class Factories {
 					numInRange = 8;
 				}
 			}
-		}
+		}*/
 		
-		if (numOpenSpaces > numInRange) numOpenSpaces = numInRange;
+		//numInRange = 8;
+		
+		//if (numOpenSpaces > numInRange) numOpenSpaces = numInRange;
 		if (numOpenSpaces > unitsReady) numOpenSpaces = unitsReady;
 		
 		if(numOpenSpaces == 0) return new Unit[0];
@@ -264,11 +274,18 @@ public class Factories {
 		int inRange = 0;
 		
 		if(CommandUnits.storedField[x][y] == null) {
-			CommandUnits.storedField[x][y] = new VectorField();
-			CommandUnits.storedField[x][y].setTarget(structureLoc);
-		}
+			
+			if(VectorField.largeMap) {
+				toFactory = new BigVectorField();
+				toFactory.setTarget(structureLoc);
+			}
 
-		toFactory = CommandUnits.storedField[x][y];
+			else {
+				CommandUnits.storedField[x][y] = new VectorField();
+				CommandUnits.storedField[x][y].setTarget(structureLoc);
+				toFactory = CommandUnits.storedField[x][y];
+			}
+		}
 		
 		for(Unit unit : units) {
 			if(toFactory.getMagnitude(unit.location().mapLocation()) <= magnitudeToCheck) inRange++;
@@ -346,13 +363,21 @@ public class Factories {
 		int numOccupiable = 0;
 		int x = spawn.getX();
 		int y = spawn.getY();
-		
-		if(CommandUnits.storedField[x][y] == null) {
-			CommandUnits.storedField[x][y] = new VectorField();
-			CommandUnits.storedField[x][y].setTarget(spawn);
-		}
-		
 		VectorField toSpawn = CommandUnits.storedField[x][y];
+		
+		if(toSpawn == null) {
+			
+			if(VectorField.largeMap) {
+				toSpawn = new BigVectorField();
+				toSpawn.setTarget(spawn);
+			}
+
+			else {
+				CommandUnits.storedField[x][y] = new VectorField();
+				CommandUnits.storedField[x][y].setTarget(spawn);
+				toSpawn = CommandUnits.storedField[x][y];
+			}
+		}
 		
 		Unit[] closestUnits = getClosest(gc, units, spawn, toSpawn, false);
 		
@@ -416,7 +441,6 @@ public class Factories {
 		
 		Unit unit;
 		int unitId;
-		int size = units.size();
 		Unit idealUnit = units.get(0);
 		int idealUnitId = idealUnit.id();
 		MapLocation attempt;
@@ -427,13 +451,21 @@ public class Factories {
 		int numOccupiable = 0;
 		int x = spawn.getX();
 		int y = spawn.getY();
-		
-		if(CommandUnits.storedField[x][y] == null) {
-			CommandUnits.storedField[x][y] = new VectorField();
-			CommandUnits.storedField[x][y].setTarget(spawn);
-		}
-		
 		VectorField toSpawn = CommandUnits.storedField[x][y];
+		
+		if(toSpawn == null) {
+			
+			if(VectorField.largeMap) {
+				toSpawn = new BigVectorField();
+				toSpawn.setTarget(spawn);
+			}
+
+			else {
+				CommandUnits.storedField[x][y] = new VectorField();
+				CommandUnits.storedField[x][y].setTarget(spawn);
+				toSpawn = CommandUnits.storedField[x][y];
+			}
+		}
 		
 		Unit[] closestUnits = getClosest(gc, units, spawn, toSpawn, false);
 		

@@ -3,7 +3,6 @@ import bc.*;
 public class BigVectorField extends VectorField {
 	public static MapLocation targetLocation;
 
-	@Override
 	public BigVectorField() {
 
 	}
