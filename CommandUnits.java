@@ -465,8 +465,13 @@ public class CommandUnits {
 				targets.add(enemies[x][y]);
 			}
 		}
-		
-		Collections.sort(targets, new compareSnipe());
+		try {
+			Collections.sort(targets, new compareSnipe());
+		}
+		catch(Exception E) {
+			// do nothing
+		}
+			
 		//target factories
 		for(int i = 0; i < targets.size(); i++){
 			target = targets.get(i);
