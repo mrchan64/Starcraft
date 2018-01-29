@@ -284,13 +284,21 @@ public class findKarbonite {
 
     public static boolean distanceFromEnemy() {
     	VectorField vf;
+    	int ave = 0;
+    	int count = 0;
 		for(MapLocation eloc : CommandUnits.espawn){
 			vf = new VectorField();
 			vf.setTarget(eloc);
 			for(MapLocation loc : spawns){
-    			if(vf.getMagnitude(loc) < (VectorField.width+VectorField.height)/2 && vf.getMagnitude(loc) < 30)return true;
+    			ave +=vf.getMagnitude(loc);
+    			count ++;
     		}
     	}
+		if(count == 0){
+			return false;
+		}
+		System.out.println(ave/count);
+		if(ave/count<=20 && ave/count < (VectorField.width+VectorField.height)/2)return true;
     	return false;
     }
 

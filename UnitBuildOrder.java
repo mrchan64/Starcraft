@@ -26,8 +26,8 @@ public class UnitBuildOrder {
 	public static UnitType[] closeUnitOrder = { 
 		UnitType.Knight, 
 		UnitType.Knight, 
-		UnitType.Knight,
 		UnitType.Ranger,
+		UnitType.Ranger, 
 		UnitType.Ranger, 
 		UnitType.Knight, 
 		UnitType.Healer};

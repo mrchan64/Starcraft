@@ -35,7 +35,7 @@ public class Player {
 	public static MapLocation startingLoc;
 
 	public static void main(String[] args) {
-		System.out.println("Currently using Version Latch82");
+		System.out.println("Currently using Version Ratch53");
 		gc = new GameController();
 		planet = gc.planet();
 		team = gc.team();
